@@ -509,6 +509,11 @@
           <button class="btn" id="btnLogout">Sair</button>
           <button class="btn adminOnly" id="btnToday" data-admin="1">Ir para mês atual</button>
           <button class="btn adminOnly" id="btnExportJSON" data-admin="1">Exportar JSON</button>
+          <button class="btn adminOnly" id="btnBackupAll" data-admin="1">Backup completo</button>
+          <label class="btn adminOnly" data-admin="1" title="Restaurar um backup completo (.json)">
+            Restaurar backup
+            <input id="fileBackupJSON" type="file" accept=".json,application/json" style="display:none;">
+          </label>
           <button class="btn danger adminOnly" id="btnReset" data-admin="1">Resetar tudo</button>
           <div class="hint">
             v2.12.0: Toggle <b>Mensal/Anual/Ambos</b> no Dashboard.
@@ -1672,7 +1677,7 @@ const teamsInput=$("teamsInput"), sellersInput=$("sellersInput"), channelsInput=
 const businessTypesInput=$("businessTypesInput");
 const btnSaveCatalog=$("btnSaveCatalog"), btnSeedDemo=$("btnSeedDemo");
 
-const btnTheme=$("btnTheme"), btnToday=$("btnToday"), btnReset=$("btnReset"), btnExportJSON=$("btnExportJSON"), btnLogout=$("btnLogout");
+const btnTheme=$("btnTheme"), btnToday=$("btnToday"), btnReset=$("btnReset"), btnExportJSON=$("btnExportJSON"), btnBackupAll=$("btnBackupAll"), fileBackupJSON=$("fileBackupJSON"), btnLogout=$("btnLogout");
 const btnExportCSV=$("btnExportCSV"), fileCSV=$("fileCSV");
 
 /* KPIs anuais */
@@ -2939,6 +2944,91 @@ function exportJSON(){
   URL.revokeObjectURL(a.href);
 }
 
+/* =========================
+   BACKUP COMPLETO (dashboard + usuários + sessão)
+   - Exporta: LS_KEY, LS_USERS_KEY, LS_SESSION_KEY
+   - Importa: substitui os dados no navegador (localStorage) e recarrega
+========================= */
+function buildFullBackupPayload(){
+  const safeParse = (raw)=>{
+    try{ return JSON.parse(raw); }catch{ return raw; }
+  };
+
+  return {
+    app: "metaContratosDashboard",
+    version: 1,
+    createdAt: new Date().toISOString(),
+    keys: {
+      [LS_KEY]: safeParse(localStorage.getItem(LS_KEY)),
+      [LS_USERS_KEY]: safeParse(localStorage.getItem(LS_USERS_KEY)),
+      [LS_SESSION_KEY]: safeParse(localStorage.getItem(LS_SESSION_KEY)),
+    }
+  };
+}
+
+function exportFullBackup(){
+  if(!isAdmin()) return alert("Apenas administradores podem gerar backup completo.");
+  const payload = buildFullBackupPayload();
+
+  const ymd = new Date().toISOString().slice(0,10);
+  const blob = new Blob([JSON.stringify(payload,null,2)], {type:"application/json"});
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download=`backup_dashboard_meta_contratos_${ymd}.json`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+async function importFullBackupFromFile(file){
+  if(!isAdmin()) return alert("Apenas administradores podem restaurar backup completo.");
+  if(!file) return;
+
+  let payload;
+  try{
+    const txt = await file.text();
+    payload = JSON.parse(txt);
+  }catch{
+    alert("Arquivo inválido. Selecione um .json de backup.");
+    return;
+  }
+
+  // validação mínima
+  if(!payload || payload.app!=="metaContratosDashboard" || !payload.keys){
+    alert("Backup não reconhecido (formato inesperado).");
+    return;
+  }
+
+  const keys = payload.keys || {};
+  const hasMain = Object.prototype.hasOwnProperty.call(keys, LS_KEY);
+  if(!hasMain){
+    alert(`Backup incompleto: não encontrei o bloco "${LS_KEY}".`);
+    return;
+  }
+
+  const warn = "Restaurar este backup vai SUBSTITUIR os dados deste navegador (dashboard/usuários/sessão).";
+  if(!confirm(warn + "\n\nContinuar?")) return;
+
+  try{
+    // escreve exatamente como string no localStorage (para manter compatibilidade)
+    const write = (k, v)=>{
+      if(v === undefined) return;
+      if(v === null) localStorage.removeItem(k);
+      else localStorage.setItem(k, typeof v === "string" ? v : JSON.stringify(v));
+    };
+
+    write(LS_KEY, keys[LS_KEY]);
+    write(LS_USERS_KEY, keys[LS_USERS_KEY]);
+    write(LS_SESSION_KEY, keys[LS_SESSION_KEY]);
+
+    alert("Backup restaurado com sucesso! A página será recarregada.");
+    window.location.reload();
+  }catch(err){
+    console.error(err);
+    alert("Não foi possível restaurar o backup (erro ao gravar no navegador).");
+  }
+}
+
+
 function seedDemo(){
   const seg=ensureSegment();
   const y=state.filters.year;
@@ -3177,6 +3267,15 @@ btnReset.addEventListener("click",()=>{
   }
 });
 btnExportJSON.addEventListener("click", exportJSON);
+btnBackupAll.addEventListener("click", exportFullBackup);
+if(fileBackupJSON){
+  fileBackupJSON.addEventListener("change", async (e)=>{
+    const f = e.target.files?.[0];
+    e.target.value = "";
+    if(!f) return;
+    await importFullBackupFromFile(f);
+  });
+}
 
 btnExportCSV.addEventListener("click", exportMonthlyCSV);
 fileCSV.addEventListener("change", async (e)=>{
