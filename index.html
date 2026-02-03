@@ -437,14 +437,14 @@
       </div>
       <div class="authBody">
         <div class="authMsg" id="authSubtitle">
-          Entre com seu <b>e-mail</b> e <b>senha</b>. Usuários do perfil <b>Visualização</b> enxergam apenas a aba Dashboard.
+          Entre com seu <b>usuário</b> e <b>senha</b>.
         </div>
 
         <div class="authError" id="authError">—</div>
 
         <div class="field">
-          <label for="authEmail">E-mail</label>
-          <input id="authEmail" type="email" autocomplete="username" placeholder="nome@empresa.com"/>
+          <label for="authEmail">Usuário</label>
+          <input id="authEmail" type="text" autocomplete="username" placeholder="usuario"/>
         </div>
 
         <div class="authRow">
@@ -470,8 +470,7 @@
 
         <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between;">
           <button class="btn primary" id="btnAuthSubmit">Entrar</button>
-          <button class="btn" id="btnAuthToggleMode">Primeiro acesso (criar admin)</button>
-        </div>
+</div>
 
         <div class="authMsg">
           Observação: este controle é <b>local</b> (salvo no navegador via localStorage). Para segurança real em ambiente multiusuário/online, é preciso autenticação no servidor.
@@ -1216,38 +1215,43 @@ const authPass2 = document.getElementById("authPass2");
 const authRoleWrap = document.getElementById("authRoleWrap");
 const authRole = document.getElementById("authRole");
 const btnAuthSubmit = document.getElementById("btnAuthSubmit");
-const btnAuthToggleMode = document.getElementById("btnAuthToggleMode");
 
-let authMode = "login"; // login | setup
+/* =========================================================
+   IMPORTANTE (link público / GitHub Pages)
+   - Não existe segurança real em app estático.
+   - Aqui a gente GARANTE que sempre será LOGIN (sem tela de "criar admin").
+   - Se não houver usuários no navegador, semeamos 1 admin padrão automaticamente.
+   Troque as credenciais padrão abaixo assim que possível.
+========================================================= */
+const DEFAULT_ADMIN_USER = "admin";
+const DEFAULT_ADMIN_PASSHASH = "s_e6bff2e0bd23dc9c7bbbadb6a4018935000342adc7a5d20f6da11b07a2d70fc1"; // senha padrão: meta1234
 
-function showAuth(mode){
-  authMode = mode;
+function ensureDefaultUsers(){
+  const users = loadUsers();
+  if(users.length) return;
+  users.push({
+    email: normEmail(DEFAULT_ADMIN_USER),
+    role: "admin",
+    passHash: DEFAULT_ADMIN_PASSHASH,
+    createdAt: new Date().toISOString(),
+    seeded: true
+  });
+  saveUsers(users);
+}
+
+function showAuth(){
   authOverlay.classList.add("show");
   authOverlay.setAttribute("aria-hidden","false");
   authError.classList.remove("show");
   authError.textContent = "—";
 
-  const hasUsers = loadUsers().length > 0;
+  authTitle.textContent = "Acesso ao Dashboard";
+  authModePill.textContent = "Login";
+  authSubtitle.innerHTML = "Entre com seu <b>usuário</b> e <b>senha</b>.";
+  authPass2Wrap.style.display = "none";
+  authRoleWrap.style.display = "none";
+  btnAuthSubmit.textContent = "Entrar";
 
-  if(mode === "setup"){
-    authTitle.textContent = "Primeiro acesso — Criar administrador";
-    authModePill.textContent = "Setup";
-    authSubtitle.innerHTML = "Crie o primeiro usuário <b>Administrador</b>. Depois você poderá criar usuários de visualização.";
-    authPass2Wrap.style.display = "";
-    authRoleWrap.style.display = "none";
-    btnAuthSubmit.textContent = "Criar admin";
-    btnAuthToggleMode.textContent = hasUsers ? "Voltar para login" : "Já tenho usuários";
-  } else {
-    authTitle.textContent = "Acesso ao Dashboard";
-    authModePill.textContent = "Login";
-    authSubtitle.innerHTML = "Entre com seu <b>e-mail</b> e <b>senha</b>. Usuários do perfil <b>Visualização</b> enxergam apenas a aba Dashboard.";
-    authPass2Wrap.style.display = "none";
-    authRoleWrap.style.display = "none";
-    btnAuthSubmit.textContent = "Entrar";
-    btnAuthToggleMode.textContent = "Primeiro acesso (criar admin)";
-  }
-
-  // foco
   setTimeout(()=>authEmail?.focus(), 0);
 }
 
@@ -1265,28 +1269,8 @@ async function handleAuthSubmit(){
   const email = normEmail(authEmail.value);
   const pw = String(authPass.value||"");
 
-  if(!email) return showAuthError("Informe um e-mail válido.");
+  if(!email) return showAuthError("Informe um usuário válido.");
   if(pw.length < 4) return showAuthError("Informe uma senha (mín. 4 caracteres).");
-
-  if(authMode === "setup"){
-    const pw2 = String(authPass2.value||"");
-    if(pw !== pw2) return showAuthError("As senhas não conferem.");
-
-    const users = loadUsers();
-    if(users.find(u=>u.email===email)) return showAuthError("Este e-mail já existe.");
-
-    const passHash = await hashPassword(pw);
-    users.push({ email, role:"admin", passHash, createdAt: new Date().toISOString() });
-    saveUsers(users);
-
-    currentUser = { email, role:"admin" };
-    setSession(email);
-    hideAuth();
-    applyAccessControl();
-    renderAll();
-    setView("dashboard");
-    return;
-  }
 
   const u = findUser(email);
   if(!u) return showAuthError("Usuário não encontrado.");
@@ -1301,14 +1285,6 @@ async function handleAuthSubmit(){
   setView("dashboard");
 }
 
-function handleAuthToggle(){
-  const users = loadUsers();
-  if(authMode === "login"){
-    showAuth("setup");
-  } else {
-    showAuth("login");
-  }
-}
 
 /* Access control (UI) */
 function applyAccessControl(){
@@ -3213,7 +3189,6 @@ navBtns.forEach(b=>b.addEventListener("click",()=>setView(b.dataset.nav)));
 
 // Auth events
 btnAuthSubmit.addEventListener("click", handleAuthSubmit);
-btnAuthToggleMode.addEventListener("click", handleAuthToggle);
 authPass.addEventListener("keydown",(e)=>{ if(e.key==="Enter") handleAuthSubmit(); });
 authEmail.addEventListener("keydown",(e)=>{ if(e.key==="Enter") handleAuthSubmit(); });
 if(authPass2) authPass2.addEventListener("keydown",(e)=>{ if(e.key==="Enter") handleAuthSubmit(); });
@@ -3364,19 +3339,21 @@ if(dashToggle){
   businessTypesInput.value = (state.catalogs.businessTypes||[]).join(", ");
   if(clientDateEl) clientDateEl.value = fmtISO(new Date());
 
+  // garante que sempre existirá pelo menos 1 usuário admin (sem tela de "criar admin")
+  ensureDefaultUsers();
+
   // tenta sessão existente
   const sess = loadSession();
   if(sess){
     currentUser = sess;
     applyAccessControl();
     renderAll();
-    setView(isAdmin() ? "dashboard" : "dashboard");
+    setView("dashboard");
     return;
   }
 
-  // se não há usuários, vai para setup; senão, login
-  const hasUsers = loadUsers().length > 0;
-  showAuth(hasUsers ? "login" : "setup");
+  // sempre pede login
+  showAuth();
 })();
 </script>
 <script type="module" src="/index.tsx"></script>
