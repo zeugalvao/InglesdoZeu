@@ -1223,20 +1223,33 @@ const btnAuthSubmit = document.getElementById("btnAuthSubmit");
    - Se não houver usuários no navegador, semeamos 1 admin padrão automaticamente.
    Troque as credenciais padrão abaixo assim que possível.
 ========================================================= */
-const DEFAULT_ADMIN_USER = "admin";
-const DEFAULT_ADMIN_PASSHASH = "s_e6bff2e0bd23dc9c7bbbadb6a4018935000342adc7a5d20f6da11b07a2d70fc1"; // senha padrão: meta1234
+/* =========================================================
+   USUÁRIOS PRÉ-CADASTRADOS (embutidos no HTML)
+   - Em app estático (GitHub Pages), não há banco central.
+   - Estes usuários são "semeados" no primeiro acesso de cada navegador/dispositivo.
+   - Senhas são armazenadas como hash SHA-256 (prefixo "s_").
+========================================================= */
+const SEEDED_USERS = [
+  { email: "elizeu.galvao@trybu.com.br", role: "admin",  passHash: "s_cf2a2eb2f76169162da6c5161840782cebabc9bcddf8e1d42a56eb0abcc477ad" },
+  { email: "gustavo.rivelli@trybu.com.br", role: "viewer", passHash: "s_e7e04de8b8a730a30bbcc1a4ee1d1617755e35522a11e655aaafe0a5efcde07f" },
+  { email: "kaleb.tavares@trybu.com.br", role: "admin",  passHash: "s_1f17a5b0ba3f181d8755a3cf8f0b52274520a5e73e775bb39a2ba0490bd7f28a" },
+  { email: "marcelo@elosgate.com.br",     role: "viewer", passHash: "s_ed4ba7be5ceb4ff652cacdc9317cbb87c170c60b458579e36e6dc7a2918c3f53" }
+];
 
 function ensureDefaultUsers(){
   const users = loadUsers();
   if(users.length) return;
-  users.push({
-    email: normEmail(DEFAULT_ADMIN_USER),
-    role: "admin",
-    passHash: DEFAULT_ADMIN_PASSHASH,
-    createdAt: new Date().toISOString(),
+
+  const now = new Date().toISOString();
+  const seeded = SEEDED_USERS.map(u => ({
+    email: normEmail(u.email),
+    role: u.role,
+    passHash: u.passHash,
+    createdAt: now,
     seeded: true
-  });
-  saveUsers(users);
+  }));
+
+  saveUsers(seeded);
 }
 
 function showAuth(){
@@ -3358,20 +3371,6 @@ if(dashToggle){
 </script>
 <script type="module" src="/index.tsx"></script>
 
-<script>
-(function(){
-  const USERS_KEY = "users";
-  if(!localStorage.getItem(USERS_KEY)){
-    const users = [
-      {email:"elizeu.galvao@trybu.com.br", password:"PA$$w0rd", role:"admin"},
-      {email:"gustavo.rivelli@trybu.com.br", password:"gustav@2026", role:"viewer"},
-      {email:"kaleb.tavares@trybu.com.br", password:"k@leb2026", role:"admin"},
-      {email:"marcelo@elosgate.com.br", password:"m@rcelo2026", role:"viewer"}
-    ];
-    localStorage.setItem(USERS_KEY, JSON.stringify(users));
-  }
-})();
-</script>
 
 </body>
 </html>
