@@ -473,7 +473,7 @@
 </div>
 
         <div class="authMsg">
-          Observação: este app é estático (GitHub Pages). O login serve como proteção básica. Para segurança real em ambiente multiusuário/online, é preciso autenticação no servidor.
+          Observação: este controle é <b>local</b> (salvo no navegador via localStorage). Para segurança real em ambiente multiusuário/online, é preciso autenticação no servidor.
         </div>
       </div>
     </div>
@@ -1139,16 +1139,6 @@ const LS_KEY = "metaContratosDashboard_v28"; // MANTIDO: não perde dados existe
 const LS_USERS_KEY = "metaContratosUsers_v1";
 const LS_SESSION_KEY = "metaContratosSession_v1";
 
-/* =========================================================
-   LOGIN GLOBAL (recomendado para GitHub Pages / acesso multi-dispositivo)
-   - Se habilitado, o acesso NÃO depende de usuários do localStorage.
-   - Não existe cadastro de admin na tela inicial.
-   - Troque USER/PASS abaixo antes de publicar.
-========================================================= */
-const GLOBAL_LOGIN_ENABLED = true;
-const GLOBAL_LOGIN_USER = "admin";
-const GLOBAL_LOGIN_PASS = "meta1234";
-
 let currentUser = null; // {email, role}
 
 function normEmail(e){ return String(e||"").trim().toLowerCase(); }
@@ -1195,10 +1185,6 @@ function findUser(email){
 function isAdmin(){ return currentUser?.role === "admin"; }
 
 function setSession(email){
-  if(GLOBAL_LOGIN_ENABLED){
-    localStorage.setItem(LS_SESSION_KEY, JSON.stringify({ email: normEmail(email), role: "admin", global: true, at: new Date().toISOString() }));
-    return;
-  }
   localStorage.setItem(LS_SESSION_KEY, JSON.stringify({ email: normEmail(email), at: new Date().toISOString() }));
 }
 function clearSession(){
@@ -1210,12 +1196,6 @@ function loadSession(){
     if(!raw) return null;
     const s = JSON.parse(raw);
     if(!s?.email) return null;
-
-    // Sessão global (não depende de usuários locais)
-    if(GLOBAL_LOGIN_ENABLED && s.global){
-      return { email: normEmail(s.email), role: s.role || "admin" };
-    }
-
     const u = findUser(s.email);
     if(!u) return null;
     return { email: u.email, role: u.role };
@@ -1247,7 +1227,6 @@ const DEFAULT_ADMIN_USER = "admin";
 const DEFAULT_ADMIN_PASSHASH = "s_e6bff2e0bd23dc9c7bbbadb6a4018935000342adc7a5d20f6da11b07a2d70fc1"; // senha padrão: meta1234
 
 function ensureDefaultUsers(){
-  if(GLOBAL_LOGIN_ENABLED) return;
   const users = loadUsers();
   if(users.length) return;
   users.push({
@@ -1293,21 +1272,6 @@ async function handleAuthSubmit(){
   if(!email) return showAuthError("Informe um usuário válido.");
   if(pw.length < 4) return showAuthError("Informe uma senha (mín. 4 caracteres).");
 
-  // Login global (multi-dispositivo)
-  if(GLOBAL_LOGIN_ENABLED){
-    if(email !== normEmail(GLOBAL_LOGIN_USER) || pw !== String(GLOBAL_LOGIN_PASS)){
-      return showAuthError("Usuário ou senha inválidos.");
-    }
-    currentUser = { email: normEmail(GLOBAL_LOGIN_USER), role: "admin" };
-    setSession(currentUser.email);
-    hideAuth();
-    applyAccessControl();
-    renderAll();
-    setView("dashboard");
-    return;
-  }
-
-  // Login local (por navegador)
   const u = findUser(email);
   if(!u) return showAuthError("Usuário não encontrado.");
   const h = await hashPassword(pw);
@@ -1322,16 +1286,9 @@ async function handleAuthSubmit(){
 }
 
 
-
 /* Access control (UI) */
 function applyAccessControl(){
   const viewer = !isAdmin();
-
-  // Se login global estiver ativo, escondemos a seção de usuários (evita cadastro de admin/usuários)
-  if(GLOBAL_LOGIN_ENABLED){
-    const usersView = document.getElementById("view-users");
-    if(usersView) usersView.classList.add("hidden");
-  }
 
   // pill "editável" no dashboard
   const editablePills = document.querySelectorAll('.cardHead .pill');
@@ -1376,7 +1333,7 @@ function applyAccessControl(){
 function doLogout(){
   clearSession();
   currentUser = null;
-  showAuth();
+  showAuth(loadUsers().length ? "login" : "setup");
 }
 
 const months = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
@@ -3400,5 +3357,21 @@ if(dashToggle){
 })();
 </script>
 <script type="module" src="/index.tsx"></script>
+
+<script>
+(function(){
+  const USERS_KEY = "users";
+  if(!localStorage.getItem(USERS_KEY)){
+    const users = [
+      {email:"elizeu.galvao@trybu.com.br", password:"PA$$w0rd", role:"admin"},
+      {email:"gustavo.rivelli@trybu.com.br", password:"gustav@2026", role:"viewer"},
+      {email:"kaleb.tavares@trybu.com.br", password:"k@leb2026", role:"admin"},
+      {email:"marcelo@elosgate.com.br", password:"m@rcelo2026", role:"viewer"}
+    ];
+    localStorage.setItem(USERS_KEY, JSON.stringify(users));
+  }
+})();
+</script>
+
 </body>
 </html>
