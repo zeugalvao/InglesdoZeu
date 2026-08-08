@@ -185,7 +185,11 @@ a{color:inherit}
 .vid__l{display:flex;align-items:center;gap:8px}
 .dot{width:9px;height:9px;border-radius:50%;background:var(--signal);animation:blink 1s ease-in-out infinite;flex:0 0 auto}
 @keyframes blink{0%,100%{opacity:.25;transform:scale(.8)}50%{opacity:1;transform:scale(1.15)}}
-.vid__f{width:100%;height:min(70vh,460px);border:0;display:block;background:var(--card)}
+.vid__box{min-height:260px;background:var(--card);display:block}
+.vid__box iframe{width:100%!important;border:0;display:block}
+.vid__fail{padding:34px 22px;text-align:center}
+.vid__failt{font-family:var(--font-display);font-weight:600;font-size:19px;margin:0 0 8px;letter-spacing:-.01em}
+.vid__faild{font-size:14px;color:var(--ink-soft);margin:0 auto 16px;max-width:44ch}
 .vid__note{font-size:12px;color:var(--ink-soft);padding:9px 11px;margin:0;border-top:1px solid var(--line);line-height:1.45}
 .train .vid{border-color:#3c4f48}
 .train .vid__bar{border-bottom-color:#3c4f48;color:var(--ground)}
@@ -1069,21 +1073,82 @@ function videoBlock(p){
         <span class="vid__l" id="vid-msg"><span class="dot"></span> Aguarde, buscando vídeos com “${esc(termo)}”…</span>
         <button class="mini" data-vclose="1">fechar</button>
       </div>
-      <iframe class="vid__f" id="vid-frame" src="${ygURL(termo)}" title="Vídeos com a frase" allow="autoplay; fullscreen"></iframe>
-      <p class="vid__note">Se o quadro ficar em branco, o site não permite ser embutido no seu navegador —
-        <a href="${ygURL(termo)}" target="_blank" rel="noopener">abra em uma aba nova</a>.
-        Frase longa costuma não ter resultado: tente “trecho curto” ou a palavra sozinha.</p>
+      <div class="vid__box" id="yg-box"></div>
+      <p class="vid__note" id="vid-note">Se nada aparecer, o site pode estar bloqueando a incorporação — use os botões acima para abrir em uma aba nova.</p>
     </div>` : ''}
   </div>`;
 }
 
-/* liga o aviso de espera ao carregamento do player */
+/* ---- player do YouGlish: script oficial de incorporação ---- */
+let ygState = 'idle';   // idle | carregando | pronto | falhou
+function loadYG(cb){
+  let respondido = false;
+  const responde = ok => { if(!respondido){ respondido = true; cb(ok); } };
+  if(window.YG){ ygState='pronto'; return responde(true); }
+  if(ygState === 'falhou') return responde(false);
+
+  if(ygState !== 'carregando'){
+    ygState = 'carregando';
+    const s = document.createElement('script');
+    s.src = 'https://youglish.com/public/emb/widget.js';
+    s.charset = 'utf-8';
+    s.onerror = ()=>{ ygState='falhou'; };
+    document.head.appendChild(s);
+  }
+  const t0 = Date.now();
+  const espera = setInterval(()=>{
+    if(window.YG){ clearInterval(espera); ygState='pronto'; responde(true); }
+    else if(ygState==='falhou' || Date.now()-t0 > 8000){ clearInterval(espera); ygState='falhou'; responde(false); }
+  }, 200);
+}
+
+function videoFalhou(motivo, termo){
+  const msg = document.getElementById('vid-msg'), box = document.getElementById('yg-box'),
+        note = document.getElementById('vid-note');
+  if(msg) msg.innerHTML = 'Não deu para mostrar aqui dentro';
+  if(box) box.innerHTML = `<div class="vid__fail">
+      <p class="vid__failt">O player não pôde ser embutido</p>
+      <p class="vid__faild">${esc(motivo)}. Os links abrem normalmente numa aba nova — é o mesmo conteúdo.</p>
+      <div class="acts acts--bare" style="justify-content:center">
+        <a class="act act--main" href="${ygURL(termo)}" target="_blank" rel="noopener">Abrir o YouGlish ↗</a>
+        <a class="act" href="${ppURL(termo)}" target="_blank" rel="noopener">Abrir o PlayPhrase ↗</a>
+      </div></div>`;
+  if(note) note.textContent = 'Dica: no YouGlish, a seta para baixo pula para o próximo falante.';
+}
+
 function wireVideo(){
-  const f = document.getElementById('vid-frame'), m = document.getElementById('vid-msg');
-  if(!f || !m) return;
-  let pronto = false;
-  f.addEventListener('load', ()=>{ pronto = true; m.innerHTML = 'Vídeos carregados. Se não aparecer nada, tente outro termo acima.'; });
-  setTimeout(()=>{ if(!pronto) m.innerHTML = 'Está demorando. Se continuar vazio, abra em uma aba nova pelo link abaixo.'; }, 9000);
+  if(!state.video || !state.video.open) return;
+  const termo = state.video.term;
+  const box = document.getElementById('yg-box');
+  if(!box) return;
+
+  loadYG(ok=>{
+    if(!ok || !window.YG){ videoFalhou('o script do YouGlish não carregou', termo); return; }
+    let respondeu = false;
+    try{
+      const w = new window.YG.Widget('yg-box', {
+        width: box.clientWidth || 620,
+        components: 9,
+        events: {
+          onFetchDone: e => {
+            respondeu = true;
+            const msg = document.getElementById('vid-msg');
+            if(!msg) return;
+            const n = e && typeof e.totalResult === 'number' ? e.totalResult : null;
+            msg.innerHTML = n === 0
+              ? 'Nenhum vídeo com “'+esc(termo)+'”. Tente um termo mais curto acima.'
+              : (n ? n+' vídeos encontrados. Seta para baixo pula de falante.' : 'Vídeos prontos.');
+          },
+          onError: () => videoFalhou('o player retornou um erro', termo)
+        }
+      });
+      w.fetch(termo, 'english', state.accent === 'en-GB' ? 'uk' : 'us');
+      setTimeout(()=>{ if(!respondeu && !box.querySelector('iframe,div,video'))
+        videoFalhou('o player não respondeu a tempo', termo); }, 9000);
+    }catch(err){
+      videoFalhou('o player não inicializou', termo);
+    }
+  });
 }
 
 function isSaved(en){ return state.phrases.some(p=>(p.text||'').trim().toLowerCase()===String(en).trim().toLowerCase()); }
@@ -1285,6 +1350,7 @@ function render(){
         <button class="act" data-nav="1">Próxima →</button>
         <button class="act" data-shuffle="1">↯ Embaralhar</button>
       </div></section>`;
+    wireVideo();
     return;
   }
   view.innerHTML=`<div class="list">${list.map(p=>
