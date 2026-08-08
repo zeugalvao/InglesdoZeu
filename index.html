@@ -5,192 +5,170 @@
 @import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&family=Public+Sans:wght@300..700&family=JetBrains+Mono:wght@400;600&display=swap');
 
 :root{
-  --ground:#E4E9E2;
-  --card:#F4F7F2;
-  --ink:#10211C;
-  --ink-soft:#51635C;
-  --line:#C4CDC1;
-  --signal:#1B3CF5;
-  --chalk:#EDDE3F;
+  --ground:#E4E9E2; --card:#F4F7F2; --ink:#10211C; --ink-soft:#51635C;
+  --line:#C4CDC1; --signal:#1B3CF5; --chalk:#EDDE3F; --alert:#D8342A;
   --font-display:'Bricolage Grotesque','Arial Black',system-ui,sans-serif;
   --font-body:'Public Sans',system-ui,-apple-system,Segoe UI,sans-serif;
   --font-mono:'JetBrains Mono',ui-monospace,'SF Mono',Menlo,monospace;
 }
-
 *{box-sizing:border-box}
 html,body{margin:0;padding:0}
-body{
-  background:var(--ground);
-  color:var(--ink);
-  font-family:var(--font-body);
-  font-size:16px;
-  line-height:1.5;
-  -webkit-font-smoothing:antialiased;
-}
+body{background:var(--ground);color:var(--ink);font-family:var(--font-body);font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased}
 button{font:inherit;color:inherit;cursor:pointer;border:none;background:none}
 a{color:inherit}
-:focus-visible{outline:3px solid var(--signal);outline-offset:2px;border-radius:2px}
+:focus-visible{outline:3px solid var(--signal);outline-offset:2px}
+.wrap{max-width:880px;margin:0 auto;padding:0 20px 120px}
 
-.wrap{max-width:840px;margin:0 auto;padding:0 20px 120px}
-
-/* ---------- cabeçalho ---------- */
+/* cabeçalho */
 .top{padding:36px 0 20px;border-bottom:2px solid var(--ink)}
-.top__eyebrow{
-  font-family:var(--font-mono);font-size:11px;letter-spacing:.16em;
-  text-transform:uppercase;color:var(--ink-soft);margin:0 0 10px
-}
-.top__title{
-  font-family:var(--font-display);
-  font-weight:800;font-size:clamp(38px,9vw,74px);line-height:.9;
-  letter-spacing:-.03em;margin:0;font-stretch:105%;
-}
+.top__eyebrow{font-family:var(--font-mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft);margin:0 0 10px}
+.top__title{font-family:var(--font-display);font-weight:800;font-size:clamp(36px,8.4vw,70px);line-height:.9;letter-spacing:-.03em;margin:0;font-stretch:105%}
 .top__title em{font-style:normal;color:var(--signal)}
-.top__sub{margin:14px 0 0;max-width:48ch;color:var(--ink-soft);font-size:15px}
-
+.top__sub{margin:14px 0 0;max-width:52ch;color:var(--ink-soft);font-size:15px}
 .stats{display:flex;gap:26px;margin-top:22px;flex-wrap:wrap}
 .stat__n{font-family:var(--font-display);font-size:26px;font-weight:700;line-height:1}
 .stat__l{font-family:var(--font-mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft)}
 
-/* ---------- barra de adicionar ---------- */
+/* campos */
 .compose{margin:26px 0 8px}
 .compose__row{display:flex;gap:8px;flex-wrap:wrap}
-.field{
-  flex:1 1 260px;min-width:0;
-  background:var(--card);border:2px solid var(--ink);border-radius:0;
-  padding:14px 16px;font-family:var(--font-body);font-size:17px;color:var(--ink)
-}
+.field{flex:1 1 260px;min-width:0;background:var(--card);border:2px solid var(--ink);padding:14px 16px;font-family:var(--font-body);font-size:17px;color:var(--ink)}
 .field::placeholder{color:#93a29a}
-.btn{
-  border:2px solid var(--ink);background:var(--ink);color:var(--ground);
-  padding:14px 22px;font-weight:600;font-size:15px;white-space:nowrap;
-  transition:transform .12s ease, background .12s ease
-}
+.btn{border:2px solid var(--ink);background:var(--ink);color:var(--ground);padding:14px 22px;font-weight:600;font-size:15px;white-space:nowrap;transition:background .12s ease}
 .btn:hover{background:var(--signal);border-color:var(--signal)}
-.btn:active{transform:translateY(2px)}
 .btn--ghost{background:transparent;color:var(--ink)}
 .btn--ghost:hover{background:var(--ink);color:var(--ground)}
 .compose__hint{font-size:13px;color:var(--ink-soft);margin:10px 2px 0}
 
-/* ---------- controles ---------- */
-.bar{
-  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
-  margin:24px 0 6px;padding-top:18px;border-top:1px solid var(--line)
-}
+/* barras */
+.bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:24px 0 6px;padding-top:18px;border-top:1px solid var(--line)}
 .seg{display:flex;border:2px solid var(--ink)}
-.seg button{
-  padding:8px 15px;font-family:var(--font-mono);font-size:11px;
-  letter-spacing:.1em;text-transform:uppercase
-}
+.seg button{padding:8px 15px;font-family:var(--font-mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase}
 .seg button[aria-pressed="true"]{background:var(--ink);color:var(--ground)}
 .bar__spacer{flex:1}
 
-/* ---------- cartão ---------- */
+/* cartão */
 .list{display:flex;flex-direction:column;gap:14px;margin-top:18px}
-.card{
-  background:var(--card);border:2px solid var(--ink);padding:20px 20px 16px;position:relative
-}
-.card--known{opacity:.62}
-.card--known:hover{opacity:1}
-.card__text{
-  font-family:var(--font-display);font-weight:600;
-  font-size:clamp(21px,4.4vw,30px);line-height:1.15;letter-spacing:-.02em;
-  margin:0 44px 0 0;word-break:break-word
-}
+.card{background:var(--card);border:2px solid var(--ink);padding:20px 20px 16px;position:relative}
+.card--known{opacity:.6}.card--known:hover{opacity:1}
+.card__source{font-size:14px;color:var(--ink-soft);margin:0 44px 6px 0}
+.card__source b{font-weight:600;color:var(--ink)}
+.card__text{font-family:var(--font-display);font-weight:600;font-size:clamp(21px,4.4vw,30px);line-height:1.25;letter-spacing:-.02em;margin:0 44px 0 0;word-break:break-word}
 .card__note{margin:8px 0 0;font-size:14px;color:var(--ink-soft)}
-.card__x{
-  position:absolute;top:12px;right:12px;width:30px;height:30px;
-  font-size:18px;line-height:1;color:var(--ink-soft);border-radius:50%
-}
+.card__x{position:absolute;top:12px;right:12px;width:30px;height:30px;font-size:18px;line-height:1;color:var(--ink-soft);border-radius:50%}
 .card__x:hover{background:var(--ink);color:var(--ground)}
+.card--pending .card__text{color:var(--ink-soft)}
 
-/* ---------- assinatura: a régua de ritmo ---------- */
-.beats{display:flex;align-items:flex-end;gap:5px;margin:16px 0 0;height:34px;position:relative}
-.beat{
-  position:relative;border-radius:1px;
-  transition:background .15s ease,height .15s ease
-}
+/* SONS DIFÍCEIS — a marcação */
+.mark{background:rgba(216,52,42,.12);color:inherit;box-shadow:inset 0 -4px 0 var(--alert);padding:0 1px;cursor:help;border-radius:1px}
+.trips{margin:14px 0 0;display:flex;flex-direction:column;gap:8px}
+.trip{display:flex;gap:10px;align-items:flex-start;font-size:14px}
+.trip__k{flex:0 0 auto;font-family:var(--font-mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;background:var(--alert);color:#fff;padding:3px 7px;margin-top:2px}
+.trip__b b{color:var(--alert);font-weight:600}
+.trip__b span{color:var(--ink-soft)}
+
+/* régua de ritmo */
+.beats{display:flex;align-items:flex-end;gap:5px;margin:16px 0 0;min-height:34px;flex-wrap:wrap}
+.beat{position:relative;border-radius:1px;transition:background .15s ease}
 .beat--strong{background:var(--ink);height:26px}
 .beat--weak{background:var(--line);height:11px}
 .beat--on{background:var(--signal)}
-.beat--on.beat--weak{background:var(--signal);opacity:.55}
-.beat__stress{
-  position:absolute;left:0;right:0;top:-7px;height:4px;background:var(--chalk)
-}
-.beats__legend{
-  font-family:var(--font-mono);font-size:10px;letter-spacing:.12em;
-  text-transform:uppercase;color:var(--ink-soft);margin:7px 0 0
-}
-.ipa{
-  font-family:var(--font-mono);font-size:15px;color:var(--signal);
-  margin:12px 0 0;word-break:break-word
-}
+.beat--on.beat--weak{opacity:.6}
+.beat__stress{position:absolute;left:0;right:0;top:-7px;height:4px;background:var(--chalk)}
+.beats__legend{font-family:var(--font-mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft);margin:7px 0 0}
+.ipa{font-family:var(--font-mono);font-size:15px;color:var(--signal);margin:12px 0 0;word-break:break-word}
 .tips{margin:12px 0 0;padding:0 0 0 18px;font-size:14px;color:var(--ink-soft)}
 .tips li{margin:4px 0}
 .ctx{font-size:14px;color:var(--ink-soft);margin:10px 0 0;font-style:italic}
 
-/* ---------- ações ---------- */
+/* ações */
 .acts{display:flex;flex-wrap:wrap;gap:7px;margin:16px 0 0;padding-top:14px;border-top:1px solid var(--line)}
-.act{
-  border:1.5px solid var(--line);padding:7px 12px;font-size:13px;font-weight:600;
-  background:var(--card);display:inline-flex;align-items:center;gap:6px;text-decoration:none
-}
+.acts--bare{border:0;padding:0;margin:0}
+.act{border:1.5px solid var(--line);padding:7px 12px;font-size:13px;font-weight:600;background:var(--card);display:inline-flex;align-items:center;gap:6px;text-decoration:none}
 .act:hover{border-color:var(--ink);background:var(--ink);color:var(--card)}
 .act--main{border-color:var(--ink);background:var(--ink);color:var(--card)}
 .act--main:hover{background:var(--signal);border-color:var(--signal)}
-.act--busy{opacity:.5;pointer-events:none}
-.act__k{font-family:var(--font-mono);font-size:10px;opacity:.6}
+.act--busy{opacity:.45;pointer-events:none}
+.act__k{font-family:var(--font-mono);font-size:10px;opacity:.6;font-weight:400}
 
-.watch{margin:12px 0 0}
-.watch__l{
-  font-family:var(--font-mono);font-size:10px;letter-spacing:.14em;
-  text-transform:uppercase;color:var(--ink-soft);margin:0 0 7px
-}
+/* blocos */
+.block{margin:18px 0 0;padding-top:14px;border-top:1px solid var(--line)}
+.block__l{font-family:var(--font-mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);margin:0 0 10px;display:flex;gap:8px;flex-wrap:wrap;align-items:baseline}
+.block__l .core{color:var(--signal);letter-spacing:.02em;text-transform:none;font-size:11px}
+.row{display:flex;gap:10px;align-items:flex-start;padding:9px 0;border-bottom:1px dotted var(--line)}
+.row:last-child{border-bottom:0}
+.row__play{flex:0 0 auto;border:1.5px solid var(--line);width:30px;height:30px;display:grid;place-items:center;font-size:12px;background:var(--card)}
+.row__play:hover{background:var(--ink);color:var(--card);border-color:var(--ink)}
+.row__body{flex:1;min-width:0}
+.row__en{font-size:16px;margin:0;line-height:1.35}
+.row__pt{font-size:13px;color:var(--ink-soft);margin:2px 0 0}
+.row__tone{font-family:var(--font-mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--signal);margin:3px 0 0}
+.row__side{flex:0 0 auto;display:flex;gap:5px;align-items:center}
+.mini{border:1.5px solid var(--line);padding:4px 8px;font-size:11px;font-family:var(--font-mono);text-decoration:none;background:var(--card)}
+.mini:hover{background:var(--ink);color:var(--card);border-color:var(--ink)}
+.mini--on{background:var(--signal);border-color:var(--signal);color:#fff}
 
-/* ---------- vazio ---------- */
+/* SITUAÇÕES */
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0 0}
+.chips__l{font-family:var(--font-mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);width:100%;margin:12px 0 2px}
+.chip{border:1.5px solid var(--line);background:var(--card);padding:6px 11px;font-size:13px;border-radius:100px}
+.chip:hover{background:var(--ink);color:var(--card);border-color:var(--ink)}
+.kit{background:var(--card);border:2px solid var(--ink);padding:26px 22px 20px;margin-top:20px}
+.kit__title{font-family:var(--font-display);font-weight:700;font-size:clamp(24px,5.5vw,36px);line-height:1.05;letter-spacing:-.025em;margin:0}
+.kit__brief{margin:12px 0 0;font-size:15px;color:var(--ink-soft);max-width:60ch;border-left:3px solid var(--chalk);padding-left:14px}
+.stage{margin:26px 0 0}
+.stage__h{display:flex;gap:11px;align-items:baseline;border-bottom:2px solid var(--ink);padding-bottom:7px;margin-bottom:4px}
+.stage__n{font-family:var(--font-mono);font-size:12px;color:var(--signal);font-weight:600}
+.stage__t{font-family:var(--font-display);font-weight:600;font-size:17px;letter-spacing:-.01em}
+.hear{margin:28px 0 0;background:rgba(27,60,245,.06);border-left:3px solid var(--signal);padding:16px 18px}
+.hear__l{font-family:var(--font-mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--signal);margin:0 0 4px}
+.hear__d{font-size:13px;color:var(--ink-soft);margin:0 0 8px}
+.hear .row{border-bottom-color:rgba(27,60,245,.18)}
+.kit__foot{margin:24px 0 0;padding-top:16px;border-top:1px solid var(--line);display:flex;gap:8px;flex-wrap:wrap}
+
+/* vazio / carregando */
 .empty{border:2px dashed var(--line);padding:34px 24px;text-align:center;margin-top:20px}
 .empty h2{font-family:var(--font-display);font-size:24px;margin:0 0 8px;letter-spacing:-.02em}
-.empty p{color:var(--ink-soft);margin:0 auto 18px;max-width:42ch;font-size:15px}
+.empty p{color:var(--ink-soft);margin:0 auto 18px;max-width:46ch;font-size:15px}
 
-/* ---------- treino ---------- */
-.train{background:var(--ink);color:var(--ground);margin-top:18px;padding:32px 24px 26px;position:relative}
-.train .card__text{font-size:clamp(24px,6vw,40px);margin-right:0;text-align:center}
+/* treino */
+.train{background:var(--ink);color:var(--ground);margin-top:18px;padding:32px 24px 26px}
+.train .card__text{font-size:clamp(24px,5.6vw,38px);margin-right:0;text-align:center}
+.train .card__source{text-align:center;margin-right:0;color:#9fb0a8}
+.train .card__source b{color:var(--ground)}
+.train .mark{background:rgba(216,52,42,.32);box-shadow:inset 0 -4px 0 #FF6B60}
+.train .trip__b span{color:#9fb0a8}
+.train .trip__b b{color:#FF6B60}
 .train .beat--strong{background:var(--chalk)}
 .train .beat--weak{background:#3c4f48}
 .train .beat--on{background:var(--card)}
 .train .beat__stress{background:var(--card)}
-.train .ipa{color:var(--chalk);text-align:center}
 .train .beats{justify-content:center}
-.train .beats__legend,.train .ctx,.train .tips{color:#9fb0a8}
-.train .acts{border-top-color:#2b3d37;justify-content:center}
-.train .act{background:transparent;border-color:#3c4f48;color:var(--ground)}
-.train .act:hover{background:var(--ground);color:var(--ink);border-color:var(--ground)}
+.train .ipa{color:var(--chalk);text-align:center}
+.train .beats__legend,.train .ctx,.train .tips,.train .block__l,.train .row__pt,.train .card__note{color:#9fb0a8}
+.train .acts,.train .block,.train .row{border-color:#2b3d37}
+.train .acts{justify-content:center}
+.train .act,.train .mini,.train .row__play{background:transparent;border-color:#3c4f48;color:var(--ground)}
+.train .act:hover,.train .mini:hover,.train .row__play:hover{background:var(--ground);color:var(--ink);border-color:var(--ground)}
 .train .act--main{background:var(--ground);color:var(--ink);border-color:var(--ground)}
-.train__pos{
-  font-family:var(--font-mono);font-size:11px;letter-spacing:.14em;
-  text-transform:uppercase;color:#7d918a;text-align:center;margin:0 0 20px
-}
+.train__pos{font-family:var(--font-mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#7d918a;text-align:center;margin:0 0 20px}
 .train__nav{display:flex;gap:8px;justify-content:center;margin-top:20px}
 
-.msg{
-  font-size:13px;color:var(--signal);margin:10px 0 0;font-family:var(--font-mono)
-}
-.foot{
-  margin-top:40px;padding-top:18px;border-top:1px solid var(--line);
-  font-size:13px;color:var(--ink-soft);display:flex;gap:16px;flex-wrap:wrap
-}
+.msg{font-size:13px;color:var(--signal);margin:10px 0 0;font-family:var(--font-mono)}
+.msg--bad{color:var(--alert)}
+.foot{margin-top:40px;padding-top:18px;border-top:1px solid var(--line);font-size:13px;color:var(--ink-soft);display:flex;gap:16px;flex-wrap:wrap}
 .foot button{text-decoration:underline;font-size:13px}
 
-@media (prefers-reduced-motion: reduce){
-  *{transition:none!important;animation:none!important}
-}
+@keyframes pulse{0%,100%{opacity:.35}50%{opacity:.8}}
+.pending{animation:pulse 1.3s ease-in-out infinite}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
 </style>
 
 <div class="wrap">
-
   <header class="top">
     <p class="top__eyebrow">Seu método · pronúncia de inglês</p>
-    <h1 class="top__title">Diga do<br>seu <em>jeito</em>.</h1>
-    <p class="top__sub">Você escolhe as frases que quer saber dizer. O app fala, marca o ritmo e te leva até pessoas reais dizendo aquilo em vídeo.</p>
+    <h1 class="top__title" id="hero">Escreva em<br>português. <em>Fale</em><br>em inglês.</h1>
+    <p class="top__sub" id="hero-sub">Você digita o que queria ter dito, ou busca a situação em que vai se meter. O app traduz, fala, marca em vermelho os sons que não existem no português e te leva até gente real dizendo aquilo.</p>
     <div class="stats">
       <div><div class="stat__n" id="s-total">0</div><div class="stat__l">frases</div></div>
       <div><div class="stat__n" id="s-known">0</div><div class="stat__l">dominadas</div></div>
@@ -198,18 +176,12 @@ a{color:inherit}
     </div>
   </header>
 
-  <section class="compose">
-    <div class="compose__row">
-      <input class="field" id="in-text" placeholder="Escreva uma frase em inglês" autocomplete="off" spellcheck="false">
-      <input class="field" id="in-note" style="flex:0 1 200px" placeholder="Onde ouviu? (opcional)" autocomplete="off">
-      <button class="btn" id="add">Adicionar</button>
-    </div>
-    <p class="compose__hint">Frases curtas de 3 a 8 palavras funcionam melhor — são as que aparecem em vídeo de verdade.</p>
-  </section>
+  <section class="compose" id="compose"></section>
 
   <div class="bar">
     <div class="seg" role="group" aria-label="Modo">
       <button id="m-col" aria-pressed="true">Coleção</button>
+      <button id="m-sit" aria-pressed="false">Situações</button>
       <button id="m-tra" aria-pressed="false">Treino</button>
     </div>
     <div class="seg" role="group" aria-label="Sotaque">
@@ -217,7 +189,7 @@ a{color:inherit}
       <button id="a-uk" aria-pressed="false">Reino Unido</button>
     </div>
     <div class="bar__spacer"></div>
-    <div class="seg" role="group" aria-label="Filtro">
+    <div class="seg" id="filt" role="group" aria-label="Filtro">
       <button id="f-all" aria-pressed="true">Todas</button>
       <button id="f-lea" aria-pressed="false">Aprendendo</button>
     </div>
@@ -235,342 +207,502 @@ a{color:inherit}
 
 <script>
 /* ============================ estado ============================ */
-const KEY = 'metodo:v1';
-const state = { phrases: [], mode: 'col', accent: 'en-US', filter: 'all', idx: 0 };
+const KEY = 'metodo:v3', OLD = 'metodo:v2';
+const state = { phrases:[], kit:null, recent:[], mode:'col', accent:'en-US', filter:'all', idx:0, kitLoading:false, kitError:'' };
 const view = document.getElementById('view');
+const composeEl = document.getElementById('compose');
 
-const WEAK = new Set(('a an the to of in on at for from with by as and but or nor so yet is are was were am be been being will would shall should can could may might must do does did have has had that this these those it its he she they them we us you your my his her our their i me him not no if then than there here what when who how' ).split(' '));
+const WEAK = new Set(('a an the to of in on at for from with by as and but or nor so yet is are was were am be been being will would shall should can could may might must do does did have has had that this these those it its he she they them we us you your my his her our their i me him not no if then than there here what when who how').split(' '));
+
+const SUGGEST = {
+  'Chegando num país': ['Pedir comida no McDonald\'s','Pagar a conta no restaurante','Pedir informação na rua','Check-in no hotel','Passar pela imigração','Pedir um Uber','Comprar remédio na farmácia','Devolver um produto na loja'],
+  'No trabalho': ['Abrir uma palestra','Iniciar uma reunião de metas de vendas','Entrevista de emprego','Falar na daily do time','Discordar sem ser grosso','Fechar uma reunião com próximos passos']
+};
 
 /* ============================ armazenamento ============================ */
 async function load(){
   try{
     const r = await window.storage.get(KEY);
-    if(r && r.value) state.phrases = JSON.parse(r.value);
-  }catch(e){ /* primeira vez: ainda não existe */ }
+    if(r && r.value){ const d = JSON.parse(r.value);
+      state.phrases = d.phrases||[]; state.kit = d.kit||null; state.recent = d.recent||[]; return; }
+  }catch(e){}
+  try{ const r = await window.storage.get(OLD); if(r && r.value) state.phrases = JSON.parse(r.value); }catch(e){}
 }
 let saveTimer;
 function save(){
   clearTimeout(saveTimer);
   saveTimer = setTimeout(async ()=>{
-    try{ await window.storage.set(KEY, JSON.stringify(state.phrases)); }
+    try{ await window.storage.set(KEY, JSON.stringify({phrases:state.phrases, kit:state.kit, recent:state.recent})); }
     catch(e){ console.warn('não deu para salvar', e); }
   }, 250);
 }
 
-/* ============================ ritmo ============================ */
-function words(text){
-  return text.trim().split(/\s+/).filter(Boolean);
-}
-function guessBeats(text){
-  return words(text).map(w=>{
-    const bare = w.toLowerCase().replace(/[^a-z']/g,'');
-    return { w, level: WEAK.has(bare) ? 'weak' : 'strong' };
+/* ============================ utilidades ============================ */
+function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function words(t){ return String(t).trim().split(/\s+/).filter(Boolean); }
+function guessBeats(t){ return words(t).map(w=>({w, level: WEAK.has(w.toLowerCase().replace(/[^a-z']/g,''))?'weak':'strong'})); }
+function guessCore(t){ const w = words(String(t).replace(/[.?!,]/g,'')); return w.length<=6 ? w.join(' ') : w.slice(0,5).join(' '); }
+function find(id){ return state.phrases.find(p=>p.id===id); }
+function uid(){ return 'p'+Date.now().toString(36)+Math.random().toString(36).slice(2,6); }
+
+/* ---- marcação dos sons difíceis ---- */
+function markedHTML(text, marks){
+  if(!marks || !marks.length) return esc(text);
+  const low = String(text).toLowerCase(), used = [];
+  marks.forEach((m,mi)=>{
+    const needle = String(m.text||'').toLowerCase().trim();
+    if(!needle) return;
+    let from = 0, i;
+    while((i = low.indexOf(needle, from)) !== -1){
+      const end = i + needle.length;
+      if(!used.some(u => i < u.end && end > u.start)){ used.push({start:i, end, mi}); break; }
+      from = i + 1;
+    }
   });
+  used.sort((a,b)=>a.start-b.start);
+  let out = '', cur = 0;
+  used.forEach(u=>{
+    out += esc(text.slice(cur, u.start));
+    out += `<mark class="mark" title="${esc(marks[u.mi].why||'')}">${esc(text.slice(u.start,u.end))}</mark>`;
+    cur = u.end;
+  });
+  return out + esc(text.slice(cur));
+}
+
+/* ============================ chamadas ao modelo ============================ */
+async function ask(prompt, maxTokens){
+  const res = await fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({ model:'claude-sonnet-4-6', max_tokens:maxTokens||1000, messages:[{role:'user',content:prompt}] })
+  });
+  const data = await res.json();
+  let txt = (data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('\n');
+  txt = txt.replace(/```json/g,'').replace(/```/g,'').trim();
+  return JSON.parse(txt);
+}
+function accentName(){ return state.accent==='en-GB' ? 'britânico' : 'americano'; }
+
+/* ---- traduzir ao adicionar ---- */
+async function translate(p){
+  p.pending = true; p.failed = false; render();
+  const prompt = `Você traduz para inglês ${accentName()} natural e falado, como nativo diria de verdade — nunca tradução literal.
+
+Texto do aluno: "${p.source}"
+
+Responda SOMENTE com JSON válido, sem markdown, sem crases:
+{"detected":"pt ou en","english":"a melhor forma natural de dizer isso em inglês","core":"o pedaço curto e buscável da expressão, 2 a 5 palavras, sem pontuação","alts":[{"text":"outro jeito natural de dizer o mesmo","tone":"rótulo curto em português, ex: mais formal, gíria, mais direto"}]}
+
+Regras:
+- Se "detected" for "en", o texto já está em inglês: devolva-o corrigido e natural em "english".
+- "core" será buscado no YouGlish, então precisa ser um trecho que gente fala muito. Ex: para "I'll get back to you on that." o core é "get back to you".
+- "alts": exatamente 3 alternativas, todas diferentes de "english".
+- Nada além do JSON.`;
+  try{
+    const o = await ask(prompt, 700);
+    p.text = (o.english||p.source).trim();
+    p.core = (o.core||guessCore(p.text)).trim();
+    p.wasPt = o.detected !== 'en';
+    p.alts = Array.isArray(o.alts) ? o.alts.slice(0,3) : [];
+    p.beats = guessBeats(p.text);
+  }catch(e){
+    console.warn(e); p.failed = true;
+    p.text = p.text || p.source; p.core = p.core || guessCore(p.text);
+  }
+  p.pending = false; save(); render();
+}
+
+/* ---- estudo profundo: ritmo, IPA, sons difíceis, exemplos ---- */
+async function analyze(p, btn){
+  if(btn){ btn.classList.add('act--busy'); btn.textContent = 'estudando…'; }
+  const prompt = `Você é professor de fonética inglesa para brasileiros. Sotaque de referência: inglês ${accentName()}.
+
+Frase: "${p.text}"
+
+Responda SOMENTE com JSON válido, sem markdown, sem crases:
+{"ipa":"transcrição IPA da frase inteira em fala conectada, entre barras","translation":"tradução natural em português do Brasil","beats":[{"w":"palavra exatamente como está na frase","level":"strong ou weak"}],"marks":[{"text":"trecho EXATO copiado da frase, o menor possível, geralmente 1 a 4 letras","kind":"rótulo curtíssimo do som, ex: th, æ, ɪ, ɜr, ŋ, h, -ed, final, cluster, schwa","why":"em português, como fazer esse som e qual o erro que o brasileiro comete"}],"tips":["dica curta"],"context":"em que situação se usa isso, uma frase em português","examples":[{"en":"frase completa e natural em inglês contendo a expressão","pt":"tradução em português","core":"trecho curto buscável, 2 a 5 palavras"}]}
+
+Regras:
+- "beats" contém TODAS as palavras da frase, mesma ordem e grafia. "strong" = palavra de conteúdo acentuada, "weak" = palavra funcional reduzida.
+- "marks": no máximo 4, SOMENTE sons que não existem no português ou que brasileiro erra sistematicamente: th (/θ/ /ð/), /æ/, /ɪ/ vs /iː/, /ɜr/ /ər/, /ŋ/, /h/ aspirado, consoante final sem vogal parasita, encontro consonantal difícil (st-, str-, -sks), -ed final, schwa em sílaba átona. O campo "text" precisa ser uma substring literal e exata da frase, respeitando maiúsculas e minúsculas. Se a frase não tiver nenhuma dificuldade real, devolva lista vazia.
+- "tips": 2 ou 3 dicas curtas em português.
+- "examples": exatamente 4 frases diferentes, do dia a dia ou de diálogo de filme e série, todas usando a expressão da frase original.
+- Nada além do JSON.`;
+  try{
+    const o = await ask(prompt, 1600);
+    p.ipa = o.ipa||''; p.translation = o.translation||'';
+    p.tips = Array.isArray(o.tips)?o.tips.slice(0,3):[];
+    p.context = o.context||'';
+    p.marks = Array.isArray(o.marks)?o.marks.slice(0,4):[];
+    p.examples = Array.isArray(o.examples)?o.examples.slice(0,4):[];
+    if(Array.isArray(o.beats) && o.beats.length === words(p.text).length){
+      p.beats = o.beats.map((b,i)=>({w:words(p.text)[i], level:b.level==='weak'?'weak':'strong'}));
+    }
+    save(); render();
+  }catch(e){
+    console.warn(e);
+    if(btn){ btn.classList.remove('act--busy'); btn.textContent='tentar de novo'; }
+  }
+}
+
+/* ---- buscar um kit de situação ---- */
+async function searchKit(q){
+  q = String(q||'').trim(); if(!q) return;
+  state.kitLoading = true; state.kitError = ''; render();
+  const prompt = `Um brasileiro precisa se virar em inglês ${accentName()} nesta situação: "${q}"
+
+Monte o kit de frases que ele realmente vai usar. Responda SOMENTE com JSON válido, sem markdown, sem crases:
+{"title":"título curto da situação em português","brief":"2 ou 3 frases em português explicando como funciona na prática nesse país: o costume, o ritmo, o que surpreende brasileiro","steps":[{"step":"nome do momento, em português","lines":[{"en":"frase completa em inglês, como nativo fala","pt":"tradução em português","core":"trecho curto buscável dessa frase, 2 a 5 palavras"}]}],"hear":[{"en":"frase que a OUTRA pessoa vai dizer para você","pt":"tradução em português"}]}
+
+Regras:
+- "steps": 3 a 5 momentos, em ordem cronológica real. Cada um com 2 a 4 frases.
+- As frases em inglês precisam ser o que gente de verdade fala, com contrações e naturalidade, não inglês de livro didático.
+- "core" precisa ser um trecho comum, que apareça em muitos vídeos.
+- "hear": 4 a 6 frases que o atendente, o público ou o interlocutor vai dizer de volta. Essa é a parte que mais trava brasileiro.
+- Se a situação for vaga, escolha a interpretação mais provável e siga.
+- Nada além do JSON.`;
+  try{
+    const o = await ask(prompt, 3000);
+    o.q = q;
+    state.kit = o;
+    state.recent = [q, ...state.recent.filter(r=>r.toLowerCase()!==q.toLowerCase())].slice(0,8);
+  }catch(e){
+    console.warn(e); state.kitError = 'Não consegui montar o kit agora. Tente de novo.';
+  }
+  state.kitLoading = false; save(); render();
 }
 
 /* ============================ voz ============================ */
 let voices = [];
 function loadVoices(){
   if(!('speechSynthesis' in window)) return;
-  voices = speechSynthesis.getVoices() || [];
-  const warn = document.getElementById('voice-warn');
-  if(voices.length && !voices.some(v=>/^en/i.test(v.lang))){
-    warn.hidden = false;
-    warn.textContent = 'Nenhuma voz em inglês instalada neste dispositivo — os vídeos ainda funcionam.';
-  } else { warn.hidden = true; }
-}
-if('speechSynthesis' in window){
-  loadVoices();
-  speechSynthesis.onvoiceschanged = loadVoices;
-} else {
+  voices = speechSynthesis.getVoices()||[];
   const w = document.getElementById('voice-warn');
-  w.hidden = false; w.textContent = 'Este navegador não fala em voz alta — use os links de vídeo.';
+  if(voices.length && !voices.some(v=>/^en/i.test(v.lang))){
+    w.hidden=false; w.textContent='Nenhuma voz em inglês instalada aqui — os vídeos continuam funcionando.';
+  } else w.hidden=true;
 }
+if('speechSynthesis' in window){ loadVoices(); speechSynthesis.onvoiceschanged = loadVoices; }
+else { const w=document.getElementById('voice-warn'); w.hidden=false; w.textContent='Este navegador não fala em voz alta — use os links de vídeo.'; }
 function pickVoice(lang){
-  const exact = voices.filter(v=>v.lang.replace('_','-') === lang);
-  if(exact.length) return exact.find(v=>v.localService) || exact[0];
-  const fam = voices.filter(v=>/^en/i.test(v.lang));
-  return fam[0] || null;
+  const ex = voices.filter(v=>v.lang.replace('_','-')===lang);
+  if(ex.length) return ex.find(v=>v.localService)||ex[0];
+  return voices.filter(v=>/^en/i.test(v.lang))[0]||null;
 }
-
-let sweepTimer = null;
-function clearSweep(){
-  clearInterval(sweepTimer); sweepTimer = null;
-  document.querySelectorAll('.beat--on').forEach(b=>b.classList.remove('beat--on'));
-}
-function speak(p, rate){
-  if(!('speechSynthesis' in window)) return;
+let sweep=null;
+function clearSweep(){ clearInterval(sweep); sweep=null; document.querySelectorAll('.beat--on').forEach(b=>b.classList.remove('beat--on')); }
+function say(text, rate, stripId){
+  if(!('speechSynthesis' in window) || !text) return;
   speechSynthesis.cancel(); clearSweep();
-  const u = new SpeechSynthesisUtterance(p.text);
+  const u = new SpeechSynthesisUtterance(text);
   u.lang = state.accent; u.rate = rate;
   const v = pickVoice(state.accent); if(v) u.voice = v;
-
-  const strip = document.querySelectorAll(`[data-beats="${p.id}"] .beat`);
-  const n = strip.length;
-  let boundaryWorked = false;
-
-  u.onboundary = (e)=>{
-    if(e.name && e.name !== 'word') return;
-    boundaryWorked = true;
-    clearInterval(sweepTimer);
-    const before = p.text.slice(0, e.charIndex).trim();
-    const i = before ? before.split(/\s+/).length : 0;
-    strip.forEach((b,j)=>b.classList.toggle('beat--on', j === i));
-  };
-  u.onstart = ()=>{
-    if(!n) return;
-    let i = 0;
-    const step = 340 / rate;
-    sweepTimer = setInterval(()=>{
-      if(boundaryWorked){ clearInterval(sweepTimer); return; }
-      strip.forEach((b,j)=>b.classList.toggle('beat--on', j === i));
-      if(++i >= n) clearInterval(sweepTimer);
-    }, step);
-  };
-  u.onend = u.onerror = clearSweep;
-
-  speechSynthesis.speak(u);
-  p.plays = (p.plays||0) + 1;
-  save(); renderStats();
-}
-
-/* ============================ análise com IA ============================ */
-async function analyze(p, btn){
-  btn.classList.add('act--busy');
-  btn.textContent = 'analisando…';
-  const accent = state.accent === 'en-GB' ? 'britânico' : 'americano';
-  const prompt = `Você é professor de fonética inglesa para brasileiros. Analise a frase abaixo e responda SOMENTE com um objeto JSON válido, sem markdown, sem crases, sem texto antes ou depois.
-
-Frase: "${p.text}"
-Sotaque de referência: inglês ${accent}
-
-Formato exato:
-{"ipa":"transcrição IPA da frase inteira, em fala conectada, entre barras","translation":"tradução natural em português do Brasil","beats":[{"w":"palavra exatamente como aparece na frase","level":"strong ou weak"}],"tips":["dica curta","dica curta"],"context":"uma frase em português dizendo em que situação se usa isso"}
-
-Regras:
-- "beats" deve conter TODAS as palavras da frase, na mesma ordem e grafia. "strong" = palavra de conteúdo acentuada; "weak" = palavra funcional reduzida.
-- "tips": 2 ou 3 dicas curtas em português, focadas em erros típicos de brasileiro (th, schwa, -ed final, s final, vogal /ɪ/ vs /i/, ligação entre palavras, sílaba tônica, não colocar "i" no fim das palavras).
-- Nada além do JSON.`;
-
-  try{
-    const res = await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({
-        model:'claude-sonnet-4-6',
-        max_tokens:1000,
-        messages:[{role:'user',content:prompt}]
-      })
-    });
-    const data = await res.json();
-    let txt = (data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('\n');
-    txt = txt.replace(/```json|```/g,'').trim();
-    const o = JSON.parse(txt);
-
-    p.ipa = o.ipa || '';
-    p.translation = o.translation || '';
-    p.tips = Array.isArray(o.tips) ? o.tips.slice(0,3) : [];
-    p.context = o.context || '';
-    if(Array.isArray(o.beats) && o.beats.length === words(p.text).length){
-      p.beats = o.beats.map((b,i)=>({ w: words(p.text)[i], level: b.level === 'weak' ? 'weak':'strong' }));
-    }
-    p.analyzedAccent = state.accent;
-    save(); render();
-  }catch(e){
-    btn.classList.remove('act--busy');
-    btn.textContent = 'tentar de novo';
-    console.warn(e);
+  const strip = stripId ? document.querySelectorAll(`[data-beats="${stripId}"] .beat`) : [];
+  let ok = false;
+  if(strip.length){
+    u.onboundary = e=>{
+      if(e.name && e.name!=='word') return;
+      ok = true; clearInterval(sweep);
+      const before = text.slice(0, e.charIndex).trim();
+      const i = before ? before.split(/\s+/).length : 0;
+      strip.forEach((b,j)=>b.classList.toggle('beat--on', j===i));
+    };
+    u.onstart = ()=>{ let i=0; sweep = setInterval(()=>{
+      if(ok){ clearInterval(sweep); return; }
+      strip.forEach((b,j)=>b.classList.toggle('beat--on', j===i));
+      if(++i>=strip.length) clearInterval(sweep);
+    }, 340/rate); };
   }
+  u.onend = u.onerror = clearSweep;
+  speechSynthesis.speak(u);
+}
+function speakPhrase(p, rate){ say(p.text, rate, p.id); p.plays=(p.plays||0)+1; save(); renderStats(); }
+
+/* ============================ links ============================ */
+function dial(){ return state.accent==='en-GB' ? 'uk' : 'us'; }
+function ygURL(c){ return `https://youglish.com/pronounce/${encodeURIComponent(String(c).replace(/["“”.?!,]/g,'').trim())}/english/${dial()}`; }
+function ppURL(c){ return `https://www.playphrase.me/#/search?q=${encodeURIComponent(String(c).replace(/["“”.?!,]/g,'').trim())}`; }
+function ytURL(f){ return `https://www.youtube.com/results?search_query=%22${encodeURIComponent(String(f).replace(/["“”]/g,'').trim())}%22`; }
+function miniLinks(core){
+  return `<a class="mini" href="${ygURL(core)}" target="_blank" rel="noopener" title="YouGlish — pessoas reais">YG</a>
+          <a class="mini" href="${ppURL(core)}" target="_blank" rel="noopener" title="PlayPhrase — cenas de filme">PP</a>`;
 }
 
-/* ============================ links de vídeo ============================ */
-function links(text){
-  const q = encodeURIComponent(text.replace(/["“”]/g,''));
-  const dial = state.accent === 'en-GB' ? 'uk' : 'us';
-  return [
-    ['YouGlish', `https://youglish.com/pronounce/${q}/english/${dial}`, 'pessoas reais em vídeo'],
-    ['PlayPhrase', `https://www.playphrase.me/#/search?q=${q}`, 'cenas de filme'],
-    ['YouTube', `https://www.youtube.com/results?search_query=%22${q}%22`, 'busca aberta']
-  ];
-}
-
-/* ============================ render ============================ */
-function esc(s){ return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
-
+/* ============================ render: cartão ============================ */
 function beatsHTML(p){
-  const bs = p.beats && p.beats.length ? p.beats : guessBeats(p.text);
+  const bs = (p.beats&&p.beats.length) ? p.beats : guessBeats(p.text||p.source);
   const inner = bs.map(b=>{
-    const w = Math.max(16, Math.min(90, b.w.replace(/[^A-Za-z']/g,'').length * 11));
-    return `<span class="beat beat--${b.level}" style="width:${w}px" title="${esc(b.w)}">
-      ${b.level==='strong' ? '<span class="beat__stress"></span>' : ''}
-    </span>`;
+    const w = Math.max(16, Math.min(90, b.w.replace(/[^A-Za-z']/g,'').length*11));
+    return `<span class="beat beat--${b.level}" style="width:${w}px" title="${esc(b.w)}">${b.level==='strong'?'<span class="beat__stress"></span>':''}</span>`;
   }).join('');
-  const src = p.beats && p.beats.length ? 'ritmo conferido' : 'ritmo estimado';
-  return `<div class="beats" data-beats="${p.id}">${inner}</div>
-    <p class="beats__legend">Alto = sílaba forte · baixo = engolida — ${src}</p>`;
+  return `<div class="beats" data-beats="${p.id}">${inner}</div><p class="beats__legend">Alto = sílaba forte · baixo = engolida</p>`;
 }
 
 function cardHTML(p, train){
-  const l = links(p.text);
+  if(p.pending) return `<p class="card__source">Você escreveu: <b>${esc(p.source)}</b></p><p class="card__text pending">traduzindo…</p>`;
+  const showSrc = p.source && p.source.trim().toLowerCase() !== (p.text||'').trim().toLowerCase();
+  const core = p.core || guessCore(p.text);
+
   return `
-  ${train ? '' : `<button class="card__x" data-del="${p.id}" aria-label="Remover frase">×</button>`}
-  <p class="card__text">${esc(p.text)}</p>
-  ${p.note && !train ? `<p class="card__note">${esc(p.note)}</p>` : ''}
+  ${train?'':`<button class="card__x" data-del="${p.id}" aria-label="Remover">×</button>`}
+  ${showSrc?`<p class="card__source">Você escreveu: <b>${esc(p.source)}</b></p>`:''}
+  <p class="card__text">${markedHTML(p.text, p.marks)}</p>
+  ${p.note && !train ? `<p class="card__note">${esc(p.note)}</p>`:''}
+  ${p.failed?`<p class="msg msg--bad">Não consegui traduzir agora. <button class="act" data-retry="${p.id}" style="margin-left:6px">Tentar de novo</button></p>`:''}
+
+  ${p.marks && p.marks.length ? `<div class="trips">${p.marks.map(m=>`
+    <div class="trip"><span class="trip__k">${esc(m.kind||'som')}</span>
+      <span class="trip__b"><b>${esc(m.text)}</b> <span>${esc(m.why||'')}</span></span></div>`).join('')}</div>` : ''}
+
   ${beatsHTML(p)}
-  ${p.ipa ? `<p class="ipa">${esc(p.ipa)}</p>` : ''}
-  ${p.translation ? `<p class="card__note">${esc(p.translation)}</p>` : ''}
-  ${p.tips && p.tips.length ? `<ul class="tips">${p.tips.map(t=>`<li>${esc(t)}</li>`).join('')}</ul>` : ''}
-  ${p.context ? `<p class="ctx">${esc(p.context)}</p>` : ''}
+  ${p.ipa?`<p class="ipa">${esc(p.ipa)}</p>`:''}
+  ${p.translation && !showSrc ? `<p class="card__note">${esc(p.translation)}</p>`:''}
+  ${p.tips&&p.tips.length?`<ul class="tips">${p.tips.map(t=>`<li>${esc(t)}</li>`).join('')}</ul>`:''}
+  ${p.context?`<p class="ctx">${esc(p.context)}</p>`:''}
+
   <div class="acts">
     <button class="act act--main" data-say="${p.id}" data-rate="1">▶ Ouvir</button>
     <button class="act" data-say="${p.id}" data-rate="0.6">▶ Devagar</button>
-    <button class="act" data-an="${p.id}">${p.ipa ? 'Refazer análise' : 'Ver ritmo e IPA'}</button>
-    <button class="act" data-known="${p.id}">${p.known ? '↺ Voltar a treinar' : '✓ Já domino'}</button>
+    <button class="act" data-an="${p.id}">${p.ipa?'Refazer estudo':'Estudar a fundo'}</button>
+    <button class="act" data-known="${p.id}">${p.known?'↺ Voltar a treinar':'✓ Já domino'}</button>
   </div>
-  <div class="watch">
-    <p class="watch__l">Ver gente falando</p>
-    <div class="acts" style="border:0;padding:0;margin:0">
-      ${l.map(([n,u,d])=>`<a class="act" href="${u}" target="_blank" rel="noopener">${n} <span class="act__k">${d}</span></a>`).join('')}
+
+  ${p.alts&&p.alts.length?`
+  <div class="block"><p class="block__l">Outros jeitos de dizer</p>
+    ${p.alts.map((a,i)=>`<div class="row">
+      <button class="row__play" data-sayraw="${esc(a.text)}" aria-label="Ouvir">▶</button>
+      <div class="row__body"><p class="row__en">${esc(a.text)}</p>${a.tone?`<p class="row__tone">${esc(a.tone)}</p>`:''}</div>
+      <div class="row__side">${miniLinks(a.text)}<button class="mini" data-promote="${p.id}" data-i="${i}" title="Salvar como frase própria">+</button></div>
+    </div>`).join('')}
+  </div>`:''}
+
+  ${p.examples&&p.examples.length?`
+  <div class="block"><p class="block__l">Em uso, no dia a dia</p>
+    ${p.examples.map(x=>`<div class="row">
+      <button class="row__play" data-sayraw="${esc(x.en)}" aria-label="Ouvir">▶</button>
+      <div class="row__body"><p class="row__en">${esc(x.en)}</p><p class="row__pt">${esc(x.pt||'')}</p></div>
+      <div class="row__side">${miniLinks(x.core||x.en)}</div>
+    </div>`).join('')}
+  </div>`:''}
+
+  <div class="block">
+    <p class="block__l">Ver gente falando <span class="core">buscando por “${esc(core)}”</span></p>
+    <div class="acts acts--bare">
+      <a class="act" href="${ygURL(core)}" target="_blank" rel="noopener">YouGlish <span class="act__k">pessoas reais</span></a>
+      <a class="act" href="${ppURL(core)}" target="_blank" rel="noopener">PlayPhrase <span class="act__k">cenas de filme</span></a>
+      <a class="act" href="${ytURL(p.text)}" target="_blank" rel="noopener">YouTube <span class="act__k">busca aberta</span></a>
     </div>
   </div>`;
 }
 
-function visible(){
-  return state.filter === 'lea' ? state.phrases.filter(p=>!p.known) : state.phrases;
+/* ============================ render: situações ============================ */
+function kitLineHTML(x, saved){
+  return `<div class="row">
+    <button class="row__play" data-sayraw="${esc(x.en)}" aria-label="Ouvir">▶</button>
+    <div class="row__body"><p class="row__en">${esc(x.en)}</p><p class="row__pt">${esc(x.pt||'')}</p></div>
+    <div class="row__side">${miniLinks(x.core||x.en)}
+      <button class="mini ${saved?'mini--on':''}" data-keep="${esc(x.en)}" data-pt="${esc(x.pt||'')}" data-core="${esc(x.core||guessCore(x.en))}" title="Salvar na minha coleção">${saved?'✓':'+'}</button>
+    </div></div>`;
+}
+function isSaved(en){ return state.phrases.some(p=>(p.text||'').trim().toLowerCase()===String(en).trim().toLowerCase()); }
+
+function kitHTML(k){
+  return `<section class="kit">
+    <h2 class="kit__title">${esc(k.title||k.q)}</h2>
+    ${k.brief?`<p class="kit__brief">${esc(k.brief)}</p>`:''}
+    ${(k.steps||[]).map((s,i)=>`
+      <div class="stage">
+        <div class="stage__h"><span class="stage__n">${String(i+1).padStart(2,'0')}</span><span class="stage__t">${esc(s.step)}</span></div>
+        ${(s.lines||[]).map(x=>kitLineHTML(x, isSaved(x.en))).join('')}
+      </div>`).join('')}
+    ${(k.hear&&k.hear.length)?`
+      <div class="hear">
+        <p class="hear__l">O que você vai ouvir de volta</p>
+        <p class="hear__d">A parte que mais trava: entender a resposta. Ouça até reconhecer de primeira.</p>
+        ${k.hear.map(x=>`<div class="row">
+          <button class="row__play" data-sayraw="${esc(x.en)}" aria-label="Ouvir">▶</button>
+          <div class="row__body"><p class="row__en">${esc(x.en)}</p><p class="row__pt">${esc(x.pt||'')}</p></div>
+          <div class="row__side">${miniLinks(x.en)}</div>
+        </div>`).join('')}
+      </div>`:''}
+    <div class="kit__foot">
+      <button class="act act--main" data-keepall="1">Salvar as ${(k.steps||[]).reduce((a,s)=>a+(s.lines||[]).length,0)} frases na coleção</button>
+      <button class="act" data-redo="1">Buscar de novo</button>
+    </div>
+  </section>`;
 }
 
+/* ============================ render ============================ */
+function visible(){ return state.filter==='lea' ? state.phrases.filter(p=>!p.known) : state.phrases; }
 function renderStats(){
   document.getElementById('s-total').textContent = state.phrases.length;
   document.getElementById('s-known').textContent = state.phrases.filter(p=>p.known).length;
   document.getElementById('s-plays').textContent = state.phrases.reduce((a,p)=>a+(p.plays||0),0);
 }
 
-function render(){
-  renderStats();
-  const list = visible();
+function renderCompose(){
+  document.getElementById('filt').style.display = state.mode==='sit' ? 'none' : '';
+  if(state.mode==='sit'){
+    composeEl.innerHTML = `
+      <div class="compose__row">
+        <input class="field" id="in-sit" placeholder="O que você precisa fazer em inglês?" autocomplete="off" value="${esc(state.kit&&state.kit.q||'')}">
+        <button class="btn" id="go-sit">Montar o kit</button>
+      </div>
+      <p class="compose__hint">Descreva a situação como ela é de verdade: “pedir comida no McDonald's nos EUA”, “abrir uma palestra para 200 pessoas”, “falar com o caixa para pagar a conta”.</p>
+      ${state.recent.length?`<div class="chips"><span class="chips__l">Suas buscas</span>${state.recent.map(r=>`<button class="chip" data-sit="${esc(r)}">${esc(r)}</button>`).join('')}</div>`:''}
+      ${Object.entries(SUGGEST).map(([g,items])=>`<div class="chips"><span class="chips__l">${g}</span>${items.map(s=>`<button class="chip" data-sit="${esc(s)}">${esc(s)}</button>`).join('')}</div>`).join('')}`;
+    document.getElementById('go-sit').onclick = ()=>searchKit(document.getElementById('in-sit').value);
+    document.getElementById('in-sit').addEventListener('keydown', e=>{ if(e.key==='Enter') searchKit(e.target.value); });
+    composeEl.querySelectorAll('[data-sit]').forEach(b=> b.onclick = ()=>searchKit(b.dataset.sit));
+  } else {
+    composeEl.innerHTML = `
+      <div class="compose__row">
+        <input class="field" id="in-text" placeholder="O que você queria ter dito? (em português)" autocomplete="off">
+        <input class="field" id="in-note" style="flex:0 1 190px" placeholder="Onde? (opcional)" autocomplete="off">
+        <button class="btn" id="add">Traduzir e salvar</button>
+      </div>
+      <p class="compose__hint">Pode escrever em inglês também — o app reconhece e só corrige.</p>`;
+    document.getElementById('add').onclick = addPhrase;
+    ['in-text','in-note'].forEach(id=>document.getElementById(id).addEventListener('keydown', e=>{ if(e.key==='Enter') addPhrase(); }));
+  }
+}
 
-  if(!state.phrases.length){
-    view.innerHTML = `<div class="empty">
-      <h2>Comece pela frase que você travou ontem</h2>
-      <p>Aquela que você quis dizer e não saiu. Ou uma que ouviu numa série e ficou na cabeça.</p>
-      <button class="btn btn--ghost" id="seed">Começar com 6 frases de exemplo</button>
-    </div>`;
-    document.getElementById('seed').onclick = seed;
-    return;
+function render(){
+  renderStats(); renderCompose();
+
+  if(state.mode==='sit'){
+    if(state.kitLoading){ view.innerHTML = `<div class="empty"><h2 class="pending">montando seu kit…</h2><p>Estou separando as frases por momento e incluindo o que a outra pessoa vai te responder.</p></div>`; return; }
+    if(state.kitError){ view.innerHTML = `<div class="empty"><h2>Deu ruim na busca</h2><p>${esc(state.kitError)}</p></div>`; return; }
+    if(!state.kit){ view.innerHTML = `<div class="empty"><h2>Qual situação te dá medo?</h2><p>Escolha uma sugestão acima ou escreva a sua. O kit vem dividido por momento, com áudio, vídeo e o que o outro lado vai dizer de volta.</p></div>`; return; }
+    view.innerHTML = kitHTML(state.kit); return;
   }
 
-  if(state.mode === 'tra'){
-    if(!list.length){
-      view.innerHTML = `<div class="empty"><h2>Nada para treinar</h2><p>Todas as frases estão marcadas como dominadas. Troque o filtro ou adicione uma nova.</p></div>`;
-      return;
-    }
-    if(state.idx >= list.length) state.idx = 0;
+  const list = visible();
+  if(!state.phrases.length){
+    view.innerHTML = `<div class="empty">
+      <h2>Comece pela frase que travou na sua boca</h2>
+      <p>Escreva em português mesmo — “eu te retorno sobre isso”, “deixa eu pensar” — e o app vira isso em inglês de gente de verdade.</p>
+      <button class="btn btn--ghost" id="seed">Começar com 5 exemplos prontos</button></div>`;
+    document.getElementById('seed').onclick = seed; return;
+  }
+
+  if(state.mode==='tra'){
+    if(!list.length){ view.innerHTML = `<div class="empty"><h2>Nada para treinar</h2><p>Tudo marcado como dominado. Troque o filtro ou escreva uma frase nova.</p></div>`; return; }
+    if(state.idx>=list.length) state.idx=0;
     const p = list[state.idx];
     view.innerHTML = `<section class="card train">
-      <p class="train__pos">${state.idx+1} de ${list.length}</p>
-      ${cardHTML(p, true)}
+      <p class="train__pos">${state.idx+1} de ${list.length} · espaço ouve, setas navegam</p>
+      ${cardHTML(p,true)}
       <div class="train__nav">
         <button class="act" data-nav="-1">← Anterior</button>
         <button class="act" data-nav="1">Próxima →</button>
         <button class="act" data-shuffle="1">↯ Embaralhar</button>
-      </div>
-    </section>`;
+      </div></section>`;
     return;
   }
 
-  view.innerHTML = `<div class="list">${
-    list.map(p=>`<article class="card ${p.known?'card--known':''}">${cardHTML(p,false)}</article>`).join('')
-  }</div>`;
+  view.innerHTML = `<div class="list">${list.map(p=>
+    `<article class="card ${p.known?'card--known':''} ${p.pending?'card--pending':''}">${cardHTML(p,false)}</article>`).join('')}</div>`;
 }
 
-/* ============================ ações ============================ */
-function find(id){ return state.phrases.find(p=>p.id===id); }
+/* ============================ interação ============================ */
+function keep(en, pt, core, note){
+  if(isSaved(en)) return false;
+  state.phrases.unshift({ id:uid(), source:pt||en, text:en, core:core||guessCore(en), wasPt:!!pt,
+    note:note||'', translation:pt||'', beats:guessBeats(en), known:false, plays:0 });
+  return true;
+}
 
 view.addEventListener('click', e=>{
-  const t = e.target.closest('[data-say],[data-an],[data-del],[data-known],[data-nav],[data-shuffle]');
+  const t = e.target.closest('[data-say],[data-sayraw],[data-an],[data-del],[data-known],[data-nav],[data-shuffle],[data-promote],[data-retry],[data-keep],[data-keepall],[data-redo]');
   if(!t) return;
 
-  if(t.dataset.say)   return speak(find(t.dataset.say), parseFloat(t.dataset.rate));
-  if(t.dataset.an)    return analyze(find(t.dataset.an), t);
-  if(t.dataset.del){
-    state.phrases = state.phrases.filter(p=>p.id !== t.dataset.del);
+  if(t.dataset.say)    return speakPhrase(find(t.dataset.say), parseFloat(t.dataset.rate));
+  if(t.dataset.sayraw) return say(t.dataset.sayraw, 1, null);
+  if(t.dataset.an)     return analyze(find(t.dataset.an), t);
+  if(t.dataset.retry)  return translate(find(t.dataset.retry));
+  if(t.dataset.del){ state.phrases = state.phrases.filter(p=>p.id!==t.dataset.del); save(); render(); return; }
+  if(t.dataset.known){ const p=find(t.dataset.known); p.known=!p.known; save(); render(); return; }
+  if(t.dataset.keep){
+    keep(t.dataset.keep, t.dataset.pt, t.dataset.core, state.kit?('kit: '+(state.kit.title||state.kit.q)):'');
     save(); render(); return;
   }
-  if(t.dataset.known){
-    const p = find(t.dataset.known); p.known = !p.known; save(); render(); return;
+  if(t.dataset.keepall){
+    let n=0; (state.kit.steps||[]).forEach(s=>(s.lines||[]).forEach(x=>{
+      if(keep(x.en, x.pt, x.core, 'kit: '+(state.kit.title||state.kit.q))) n++; }));
+    save(); render();
+    t.textContent = n ? `${n} frases salvas na coleção` : 'já estavam todas salvas';
+    return;
   }
-  if(t.dataset.nav){
-    const n = visible().length;
-    state.idx = (state.idx + parseInt(t.dataset.nav) + n) % n;
-    render(); return;
+  if(t.dataset.redo){ state.kit=null; save(); render(); document.getElementById('in-sit').focus(); return; }
+  if(t.dataset.promote){
+    const p=find(t.dataset.promote), a=p.alts[+t.dataset.i]; if(!a) return;
+    keep(a.text, '', guessCore(a.text), 'variação de: '+p.text);
+    save(); render(); window.scrollTo({top:0,behavior:'smooth'}); return;
   }
-  if(t.dataset.shuffle){
-    state.phrases.sort(()=>Math.random()-0.5);
-    state.idx = 0; save(); render(); return;
-  }
+  if(t.dataset.nav){ const n=visible().length; state.idx=(state.idx + +t.dataset.nav + n)%n; render(); return; }
+  if(t.dataset.shuffle){ state.phrases.sort(()=>Math.random()-.5); state.idx=0; save(); render(); return; }
 });
 
-function addPhrase(text, note){
-  text = text.trim(); if(!text) return;
-  state.phrases.unshift({
-    id: 'p'+Date.now()+Math.random().toString(36).slice(2,6),
-    text, note: (note||'').trim(), known:false, plays:0
+function addPhrase(){
+  const el = document.getElementById('in-text'); if(!el) return;
+  const src = el.value.trim(); if(!src) return;
+  const p = { id:uid(), source:src, text:src, note:document.getElementById('in-note').value.trim(), known:false, plays:0, pending:true };
+  state.phrases.unshift(p);
+  el.value=''; document.getElementById('in-note').value='';
+  render(); document.getElementById('in-text').focus();
+  translate(p);
+}
+
+function seed(){
+  [["eu te retorno sobre isso","I'll get back to you on that.","get back to you","reunião de trabalho"],
+   ["não é nada demais","It's not a big deal.","not a big deal","conversa do dia a dia"],
+   ["deixa eu pensar um pouco","Let me think about it for a second.","let me think about it","ganhando tempo"],
+   ["não entendi, pode repetir?","Sorry, I didn't catch that.","didn't catch that","quando não entendeu"],
+   ["vou só pegar um café","I'm just gonna grab a coffee.","grab a coffee","fala rápida, informal"]
+  ].reverse().forEach(([src,en,core,note])=>{
+    state.phrases.unshift({id:uid(), source:src, text:en, core, wasPt:true, note, beats:guessBeats(en), known:false, plays:0});
   });
   save(); render();
 }
-const inText = document.getElementById('in-text');
-const inNote = document.getElementById('in-note');
-function submit(){
-  addPhrase(inText.value, inNote.value);
-  inText.value=''; inNote.value=''; inText.focus();
-}
-document.getElementById('add').onclick = submit;
-[inText,inNote].forEach(el=>el.addEventListener('keydown', e=>{ if(e.key==='Enter') submit(); }));
 
-function seed(){
-  [
-    ["I'll get back to you on that.","reunião de trabalho"],
-    ["It's not a big deal.","conversa do dia a dia"],
-    ["Let me think about it for a second.","ganhando tempo"],
-    ["I didn't catch that, could you say it again?","quando não entendeu"],
-    ["That's exactly what I was going to say.","concordando"],
-    ["I'm just gonna grab a coffee.","fala rápida, informal"]
-  ].reverse().forEach(([t,n])=>addPhrase(t,n));
+/* segmentos */
+function group(ids, fns){
+  ids.forEach((id,i)=>{
+    document.getElementById(id).onclick = ()=>{
+      ids.forEach(o=>document.getElementById(o).setAttribute('aria-pressed', o===id ? 'true':'false'));
+      fns[i]();
+    };
+  });
 }
+group(['m-col','m-sit','m-tra'], [
+  ()=>{state.mode='col';render();},
+  ()=>{state.mode='sit';render();},
+  ()=>{state.mode='tra';state.idx=0;render();}
+]);
+group(['a-us','a-uk'], [()=>{state.accent='en-US';render();}, ()=>{state.accent='en-GB';render();}]);
+group(['f-all','f-lea'], [()=>{state.filter='all';state.idx=0;render();}, ()=>{state.filter='lea';state.idx=0;render();}]);
 
-/* ---- segmentos ---- */
-function pair(aId,bId,onA,onB){
-  const a = document.getElementById(aId), b = document.getElementById(bId);
-  a.onclick = ()=>{ a.setAttribute('aria-pressed','true'); b.setAttribute('aria-pressed','false'); onA(); };
-  b.onclick = ()=>{ b.setAttribute('aria-pressed','true'); a.setAttribute('aria-pressed','false'); onB(); };
-}
-pair('m-col','m-tra', ()=>{state.mode='col';render();}, ()=>{state.mode='tra';state.idx=0;render();});
-pair('a-us','a-uk',  ()=>{state.accent='en-US';render();}, ()=>{state.accent='en-GB';render();});
-pair('f-all','f-lea',()=>{state.filter='all';state.idx=0;render();}, ()=>{state.filter='lea';state.idx=0;render();});
-
-/* ---- rodapé ---- */
+/* rodapé */
 document.getElementById('export').onclick = ()=>{
-  const txt = state.phrases.map(p=>[p.text,p.ipa||'',p.translation||'',p.note||''].join(' | ')).join('\n');
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(new Blob([txt],{type:'text/plain'}));
-  a.download = 'minhas-frases.txt'; a.click();
+  const txt = state.phrases.map(p=>[p.source,'→',p.text, p.ipa?('  '+p.ipa):'', p.note?('  ['+p.note+']'):''].join(' ')).join('\n');
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([txt],{type:'text/plain'}));
+  a.download='minhas-frases.txt'; a.click();
 };
 document.getElementById('wipe').onclick = async ()=>{
-  state.phrases = []; state.idx = 0;
+  state.phrases=[]; state.kit=null; state.recent=[]; state.idx=0;
   try{ await window.storage.delete(KEY); }catch(e){}
   render();
 };
 
-/* ---- teclado global: espaço ouve a frase do treino ---- */
+/* teclado no treino */
 document.addEventListener('keydown', e=>{
-  if(e.target.tagName === 'INPUT') return;
-  if(state.mode !== 'tra') return;
-  const list = visible(); if(!list.length) return;
-  if(e.code === 'Space'){ e.preventDefault(); speak(list[state.idx], 1); }
-  if(e.code === 'ArrowRight'){ state.idx = (state.idx+1)%list.length; render(); }
-  if(e.code === 'ArrowLeft'){ state.idx = (state.idx-1+list.length)%list.length; render(); }
+  if(e.target.tagName==='INPUT' || state.mode!=='tra') return;
+  const list=visible(); if(!list.length) return;
+  if(e.code==='Space'){ e.preventDefault(); speakPhrase(list[state.idx],1); }
+  if(e.code==='ArrowRight'){ state.idx=(state.idx+1)%list.length; render(); }
+  if(e.code==='ArrowLeft'){ state.idx=(state.idx-1+list.length)%list.length; render(); }
 });
 
-/* ---- início ---- */
-(async ()=>{ await load(); render(); })();
+(async()=>{ await load(); render(); })();
 </script>
