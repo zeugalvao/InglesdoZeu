@@ -194,7 +194,7 @@ a{color:inherit}
 
   <header class="top">
     <h1 class="top__title">Fale o que<br>você <em>precisa</em><br>falar.</h1>
-    <p class="top__sub">Banco de frases reais, áudio na hora, os sons difíceis marcados em vermelho e o link direto para gente de verdade dizendo aquilo em vídeo. Tudo roda no seu aparelho, sem internet depois de carregar.</p>
+    <p class="top__sub">Escreva em português: ele procura no banco embutido e, se não achar, busca a tradução online e guarda no seu aparelho. Áudio na hora, sons difíceis marcados em vermelho e link direto para gente de verdade dizendo aquilo em vídeo.</p>
     <div class="stats">
       <div><div class="stat__n" id="s-total">0</div><div class="stat__l">frases</div></div>
       <div><div class="stat__n" id="s-known">0</div><div class="stat__l">dominadas</div></div>
@@ -228,7 +228,8 @@ a{color:inherit}
   <main id="view"></main>
 
   <div class="foot">
-    <span>100% local. Nada sai do seu aparelho.</span>
+    <span>Suas frases ficam no aparelho. Só a tradução consulta a internet.</span>
+    <button id="cfg-btn">Tradução</button>
     <button id="logo-btn">Trocar logo</button>
     <button id="export">Baixar minhas frases</button>
     <button id="wipe">Apagar tudo</button>
@@ -672,8 +673,9 @@ const store = {
 };
 
 /* ---------------------------- estado ---------------------------- */
-const state = { phrases:[], log:[], logo:'ritmo', kit:null, mode:'col', accent:'en-US',
-                filter:'all', idx:0, sugg:[], showLogo:false, tag:'todos' };
+const state = { phrases:[], log:[], cache:{}, mmEmail:'', logo:'ritmo', kit:null, mode:'col', accent:'en-US',
+                filter:'all', idx:0, sugg:[], showLogo:false, showCfg:false, tag:'todos',
+                tStatus:'', tSrc:'', tBusy:false };
 const view=document.getElementById('view'), composeEl=document.getElementById('compose'),
       logoEl=document.getElementById('logopick');
 
@@ -708,24 +710,111 @@ function markedHTML(text){
   return out + esc(text.slice(cur));
 }
 
-/* busca no banco + no que o usuário já salvou */
+/* palavras vazias que não devem valer ponto na busca */
+const PT_STOP = new Set(('a o as os um uma uns umas de do da dos das em no na nos nas por para pra com sem que se e ou mas ao aos eu tu ele ela nos voce voces eles elas meu minha seu sua isso isto aquilo lhe me te ja ainda mais menos muito como quando onde qual quais e é ser estar ter fazer').split(' '));
+
+/* peso por raridade (IDF): palavra comum vale pouco, palavra específica vale muito */
+const DF = {};
+INDEX.forEach(it=>{
+  new Set(norm(it.pt||'').split(' ')).forEach(w=>{ if(w.length>2) DF[w]=(DF[w]||0)+1; });
+});
+const NDOCS = INDEX.length;
+function idf(t){ return Math.log(NDOCS / (1 + (DF[t]||0))) + 0.4; }
+
+/* busca no banco embutido + no que o usuário já salvou */
 function search(q){
-  const n = norm(q); if(n.length < 2) return [];
-  const terms = n.split(' ');
+  const n = norm(q); if(n.length < 3) return [];
+  const terms = n.split(' ').filter(t=>t.length>2 && !PT_STOP.has(t));
+  if(!terms.length) return [];
+
+  const peso = terms.map(idf);
+  const total = peso.reduce((a,b)=>a+b, 0);
+
   const pool = INDEX.concat(state.phrases.map(p=>({en:p.text, pt:p.source, core:p.core, kit:'sua coleção', mine:true})));
   const seen = new Set();
+
   return pool.map(it=>{
-    const hay = norm(it.pt + ' ' + it.en);
-    let sc = 0;
-    if(hay.startsWith(n)) sc += 60;
-    if(hay.includes(n)) sc += 40;
-    terms.forEach(t=>{ if(t.length>2 && hay.includes(t)) sc += 12; });
-    if(norm(it.pt) === n) sc += 100;
-    return {...it, sc};
+    const hpt = norm(it.pt||''), hen = norm(it.en||'');
+    let ganho = 0;
+    terms.forEach((t,i)=>{
+      if(hpt.includes(t))      ganho += peso[i];
+      else if(hen.includes(t)) ganho += peso[i] * 0.4;
+    });
+    const ratio = total ? ganho / total : 0;
+    let sc = ratio * 100;
+    if(hpt === n)            sc += 200;   // idêntica
+    else if(hpt.includes(n)) sc += 60;    // frase inteira contida
+    return {...it, sc, ratio};
   }).filter(it=>{
-    if(it.sc <= 0) return false;
+    if(it.ratio < 0.55) return false;     // os termos que importam precisam bater
     const k = it.en.toLowerCase(); if(seen.has(k)) return false; seen.add(k); return true;
   }).sort((a,b)=>b.sc-a.sc).slice(0,6);
+}
+
+/* ---------------------------- TRADUÇÃO ONLINE ---------------------------- */
+/* Três serviços em cascata. O primeiro que responder ganha.
+   Para desligar algum, basta apagar o objeto correspondente desta lista. */
+const PROVIDERS = [
+  { label:'MyMemory', note:'API pública documentada, grátis',
+    async run(text, tgt){
+      const mail = state.mmEmail ? '&de=' + encodeURIComponent(state.mmEmail) : '';
+      const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=pt-BR|${tgt}${mail}`;
+      const j = await (await fetch(url)).json();
+      const out = j && j.responseData && j.responseData.translatedText;
+      if(!out || /MYMEMORY WARNING|QUERY LENGTH LIMIT|INVALID/i.test(out)) throw new Error(out||'sem resposta');
+      return out;
+    } },
+  { label:'Lingva', note:'proxy comunitário de código aberto',
+    async run(text){
+      const url = `https://lingva.ml/api/v1/pt/en/${encodeURIComponent(text)}`;
+      const j = await (await fetch(url)).json();
+      if(!j || !j.translation) throw new Error('sem resposta');
+      return j.translation;
+    } },
+  { label:'Google (não oficial)', note:'endpoint sem documentação — pode sair do ar',
+    async run(text){
+      const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=pt&tl=en&dt=t&q=${encodeURIComponent(text)}`;
+      const j = await (await fetch(url)).json();
+      const out = (j && j[0] || []).map(x=>x[0]).join('');
+      if(!out) throw new Error('sem resposta');
+      return out;
+    } }
+];
+
+function withTimeout(p, ms){
+  return Promise.race([p, new Promise((_,rej)=>setTimeout(()=>rej(new Error('tempo esgotado')), ms))]);
+}
+
+/* heurística: o texto parece português? */
+function looksPortuguese(t){
+  const l = ' ' + t.toLowerCase() + ' ';
+  if(/[ãõçáéíóúâêô]/.test(l)) return true;
+  const pt = [' eu ',' que ',' não ',' nao ',' como ',' onde ',' quero ',' pode ',' você ',' voce ',' uma ',' meu ',' minha ',' pra ',' para ',' com ',' está ',' esta ',' isso ',' fazer ',' tem '];
+  const en = [' the ',' you ',' can ',' could ',' would ',' please ',' what ',' where ',' i ',' my ',' is ',' are ',' do ',' to '];
+  const ps = pt.filter(w=>l.includes(w)).length, es = en.filter(w=>l.includes(w)).length;
+  return ps >= es;
+}
+
+/* traduz, gravando no cache local para nunca repetir a chamada */
+async function translateOnline(text){
+  const key = norm(text);
+  if(state.cache[key]) return { en: state.cache[key].en, src: state.cache[key].src + ' · do cache' };
+
+  const tgt = state.accent === 'en-GB' ? 'en-GB' : 'en-US';
+  const erros = [];
+  for(const p of PROVIDERS){
+    try{
+      const out = await withTimeout(p.run(text, tgt), 8000);
+      const en = String(out).trim();
+      if(en){
+        state.cache[key] = { en, src:p.label, t:Date.now() };
+        logEvent('translate', text + ' → ' + en);
+        save();
+        return { en, src:p.label };
+      }
+    }catch(e){ erros.push(p.label + ': ' + (e.message||'falhou')); }
+  }
+  throw new Error(erros.join(' | ') || 'nenhum serviço respondeu');
 }
 
 /* ---------------------------- persistência ---------------------------- */
@@ -733,13 +822,15 @@ async function load(){
   const v = await store.get(KEY);
   if(v){ try{ const d=JSON.parse(v);
     state.phrases=d.phrases||[]; state.log=d.log||[]; state.logo=d.logo||'ritmo'; state.kit=d.kit||null;
+    state.cache=d.cache||{}; state.mmEmail=d.mmEmail||'';
   }catch(e){} }
 }
 let saveTimer;
 function save(){
   clearTimeout(saveTimer);
   saveTimer=setTimeout(()=>store.set(KEY, JSON.stringify({
-    phrases:state.phrases, log:state.log.slice(-800), logo:state.logo, kit:state.kit
+    phrases:state.phrases, log:state.log.slice(-800), logo:state.logo, kit:state.kit,
+    cache:state.cache, mmEmail:state.mmEmail
   })),250);
 }
 function logEvent(kind, text){
@@ -822,6 +913,29 @@ function renderBrand(){
   document.getElementById('brand-mark').innerHTML = LOGOS[state.logo].svg;
 }
 function renderLogoPick(){
+  if(state.showCfg){
+    const n=Object.keys(state.cache).length;
+    logoEl.innerHTML = `<div class="logopick">
+      <p class="logopick__l">Tradução</p>
+      <p class="logopick__t">De onde vem o inglês</p>
+      <p class="opt__d" style="max-width:64ch;margin:0 0 14px">Quando a frase não está no banco embutido, o app tenta estes serviços nesta ordem. O resultado é gravado no seu aparelho e nunca mais é buscado de novo.</p>
+      ${PROVIDERS.map((p,i)=>`<div class="rank"><span class="rank__n">${String(i+1).padStart(2,'0')}</span>
+        <span><b>${esc(p.label)}</b> <span style="color:var(--ink-soft)">— ${esc(p.note)}</span></span></div>`).join('')}
+      <p class="hist__h" style="margin-top:20px">Limite diário do MyMemory</p>
+      <p class="opt__d" style="max-width:60ch;margin:0 0 10px">Sem e-mail são 5 mil caracteres por dia. Informando um e-mail o limite sobe para 50 mil. Ele fica só aqui e vai apenas para o MyMemory.</p>
+      <div class="compose__row">
+        <input class="field" id="mm-in" style="flex:1 1 260px" placeholder="seu@email.com (opcional)" value="${esc(state.mmEmail)}">
+        <button class="btn" id="mm-save">Salvar</button>
+      </div>
+      <p class="hist__h" style="margin-top:22px">Cache local</p>
+      <p class="opt__d">${n} tradução${n===1?'':'ões'} guardada${n===1?'':'s'} neste aparelho. <button class="act" id="mm-clear" style="margin-left:8px">Limpar cache</button></p>
+    </div>`;
+    document.getElementById('mm-save').onclick=()=>{
+      state.mmEmail=document.getElementById('mm-in').value.trim(); save(); state.showCfg=false; renderLogoPick();
+    };
+    document.getElementById('mm-clear').onclick=()=>{ state.cache={}; save(); renderLogoPick(); };
+    return;
+  }
   if(!state.showLogo){ logoEl.innerHTML=''; return; }
   logoEl.innerHTML = `<div class="logopick">
     <p class="logopick__l">Identidade</p>
@@ -945,18 +1059,61 @@ function renderCompose(){
   if(state.mode==='sit' || state.mode==='his'){ composeEl.innerHTML=''; return; }
   composeEl.innerHTML=`
     <div class="compose__row">
-      <input class="field" id="in-pt" placeholder="Busque em português: “quanto ficou a conta”" autocomplete="off">
-      <input class="field" id="in-en" style="flex:1 1 220px" placeholder="Em inglês (se você já souber)" autocomplete="off">
-      <button class="btn" id="add">Salvar</button>
+      <input class="field" id="in-pt" placeholder="Escreva em português: “eu quero pedir a conta”" autocomplete="off">
+      <input class="field" id="in-en" style="flex:1 1 220px" placeholder="Em inglês (aparece aqui)" autocomplete="off">
+      <button class="btn" id="add">${state.tBusy?'traduzindo…':'Traduzir'}</button>
     </div>
-    <p class="compose__hint">Digite em português e o app procura no banco de frases. Se não achar, escreva o inglês do seu jeito e ele entra no seu banco pessoal.</p>
+    <p class="compose__hint">Primeiro ele procura no banco embutido. Se não achar, busca a tradução online e guarda no seu aparelho — da segunda vez em diante já sai na hora, sem internet.</p>
+    ${state.tStatus?`<p class="msg ${/não|erro|nenhum/i.test(state.tStatus)?'msg--bad':''}">${esc(state.tStatus)}</p>`:''}
     <div id="sugg"></div>`;
-  const pt=document.getElementById('in-pt');
-  pt.addEventListener('input', ()=>{ state.sugg = search(pt.value); renderSugg(); });
-  pt.addEventListener('keydown', e=>{ if(e.key==='Enter'){ if(state.sugg[0]) pickSugg(0); else addPhrase(); } });
-  document.getElementById('in-en').addEventListener('keydown', e=>{ if(e.key==='Enter') addPhrase(); });
-  document.getElementById('add').onclick=addPhrase;
+  const pt=document.getElementById('in-pt'), en=document.getElementById('in-en');
+  pt.addEventListener('input', ()=>{ state.sugg=search(pt.value); state.tStatus=''; renderSugg(); });
+  pt.addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); go(); } });
+  en.addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); saveTyped(); } });
+  document.getElementById('add').onclick=go;
   renderSugg();
+}
+
+/* Enter / botão: se tem inglês digitado, salva. Se tem sugestão boa, usa. Senão traduz online. */
+async function go(){
+  const pt=document.getElementById('in-pt'), en=document.getElementById('in-en');
+  if(en.value.trim()) return saveTyped();
+  const src = pt.value.trim();
+  if(!src) return;
+
+  const hits = search(src);
+  if(hits.length && hits[0].sc >= 130){ state.sugg=hits; renderSugg(); return pickSugg(0); }
+  if(hits.length){ state.sugg=hits; renderSugg(); }
+
+  if(!looksPortuguese(src)){
+    en.value = src; pt.value='';
+    state.tStatus='Isso já parece inglês — salvei como está.';
+    return saveTyped(src);
+  }
+
+  state.tBusy=true; state.tStatus='procurando tradução online…'; renderCompose();
+  document.getElementById('in-pt').value = src;
+  try{
+    const r = await translateOnline(src);
+    state.tBusy=false; state.tStatus='Traduzido por '+r.src+'. Confira e salve.';
+    renderCompose();
+    const e2=document.getElementById('in-en'); e2.value=r.en; e2.focus(); e2.select();
+  }catch(err){
+    state.tBusy=false;
+    state.tStatus='Nenhum serviço de tradução respondeu ('+String(err.message).slice(0,90)+'). Escreva o inglês no campo ao lado.';
+    renderCompose();
+    document.getElementById('in-pt').value=src;
+    document.getElementById('in-en').focus();
+  }
+}
+
+function saveTyped(srcOverride){
+  const pt=document.getElementById('in-pt'), en=document.getElementById('in-en');
+  const e=en.value.trim(), p=(srcOverride!==undefined?srcOverride:pt.value.trim());
+  if(!e) return;
+  keep(e, p, coreOf(e), p?'traduzida':'sua frase');
+  pt.value=''; en.value=''; state.sugg=[]; state.tStatus=''; save(); render();
+  const f=document.getElementById('in-pt'); if(f) f.focus();
 }
 function renderSugg(){
   const el=document.getElementById('sugg'); if(!el) return;
@@ -1036,18 +1193,6 @@ function keep(en, pt, core, note){
   logEvent('add', en);
   return true;
 }
-function addPhrase(){
-  const pt=document.getElementById('in-pt'), en=document.getElementById('in-en');
-  if(!pt||!en) return;
-  const e=en.value.trim(), p=pt.value.trim();
-  if(!e){
-    if(state.sugg.length) return pickSugg(0);
-    en.focus(); en.placeholder='Escreva aqui como se diz em inglês'; return;
-  }
-  keep(e, p, coreOf(e), 'sua frase');
-  pt.value=''; en.value=''; state.sugg=[]; save(); render();
-  const f=document.getElementById('in-pt'); if(f) f.focus();
-}
 
 view.addEventListener('click', e=>{
   const t=e.target.closest('[data-say],[data-sayraw],[data-del],[data-known],[data-nav],[data-shuffle],[data-keep],[data-keepall],[data-openkit],[data-backkits]');
@@ -1081,7 +1226,8 @@ group(['m-col','m-sit','m-tra','m-his'],[
 group(['a-us','a-uk'],[()=>{state.accent='en-US';render();},()=>{state.accent='en-GB';render();}]);
 group(['f-all','f-lea'],[()=>{state.filter='all';state.idx=0;render();},()=>{state.filter='lea';state.idx=0;render();}]);
 
-document.getElementById('logo-btn').onclick=()=>{ state.showLogo=!state.showLogo; renderLogoPick(); window.scrollTo({top:0,behavior:'smooth'}); };
+document.getElementById('logo-btn').onclick=()=>{ state.showLogo=!state.showLogo; state.showCfg=false; renderLogoPick(); window.scrollTo({top:0,behavior:'smooth'}); };
+document.getElementById('cfg-btn').onclick=()=>{ state.showCfg=!state.showCfg; state.showLogo=false; renderLogoPick(); window.scrollTo({top:0,behavior:'smooth'}); };
 document.getElementById('export').onclick=()=>{
   const txt=state.phrases.map(p=>[p.source||'—','→',p.text, p.note?('  ['+p.note+']'):''].join(' ')).join('\n');
   const a=document.createElement('a');
@@ -1089,7 +1235,7 @@ document.getElementById('export').onclick=()=>{
   a.download='ingles-do-zeu.txt'; a.click();
 };
 document.getElementById('wipe').onclick=async()=>{
-  state.phrases=[]; state.log=[]; state.kit=null; state.idx=0;
+  state.phrases=[]; state.log=[]; state.cache={}; state.kit=null; state.idx=0;
   await store.del(KEY); render();
 };
 document.addEventListener('keydown', e=>{
