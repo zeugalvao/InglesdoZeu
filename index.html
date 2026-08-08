@@ -1,3376 +1,576 @@
-<!doctype html>
-<html lang="pt-BR">
-<head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Dashboard Meta Mensal — Contratos Ativos (v2.12.0)</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Meu Método — pronúncia de inglês</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&family=Public+Sans:wght@300..700&family=JetBrains+Mono:wght@400;600&display=swap');
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+:root{
+  --ground:#E4E9E2;
+  --card:#F4F7F2;
+  --ink:#10211C;
+  --ink-soft:#51635C;
+  --line:#C4CDC1;
+  --signal:#1B3CF5;
+  --chalk:#EDDE3F;
+  --font-display:'Bricolage Grotesque','Arial Black',system-ui,sans-serif;
+  --font-body:'Public Sans',system-ui,-apple-system,Segoe UI,sans-serif;
+  --font-mono:'JetBrains Mono',ui-monospace,'SF Mono',Menlo,monospace;
+}
 
-  <style>
-    :root{
-      --bg0:#070A12; --bg1:#0B1020;
-      --card:rgba(14,22,48,.78);
-      --stroke:rgba(30,42,85,.9);
-      --txt:#EAF0FF; --muted:#A9B4D0;
-      --good:#35D07F; --warn:#FBBF24; --bad:#FF5C7C;
-      --accent:#6D5EF6; --accent2:#2EE7FF;
-      --shadow: 0 18px 70px rgba(0,0,0,.45);
-      --r: 18px;
-      --glass: blur(12px);
-      --grid: rgba(255,255,255,.06);
-    }
-    [data-theme="light"]{
-      --bg0:#F6F7FB; --bg1:#EDEFF7;
-      --card:rgba(255,255,255,.76);
-      --stroke:rgba(18,28,60,.14);
-      --txt:#0B1226; --muted:#4C5A7A;
-      --shadow: 0 18px 60px rgba(10,18,40,.12);
-      --grid: rgba(0,0,0,.06);
-    }
-    *{ box-sizing:border-box; }
-    html,body{ height:100%; }
-    body{
-      margin:0;
-      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      color:var(--txt);
-      background:
-        radial-gradient(1200px 700px at 10% 15%, rgba(109,94,246,.22), transparent 55%),
-        radial-gradient(900px 600px at 80% 10%, rgba(46,231,255,.16), transparent 55%),
-        radial-gradient(900px 700px at 70% 85%, rgba(53,208,127,.10), transparent 55%),
-        linear-gradient(180deg, var(--bg0), var(--bg1));
-    }
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--ground);
+  color:var(--ink);
+  font-family:var(--font-body);
+  font-size:16px;
+  line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+}
+button{font:inherit;color:inherit;cursor:pointer;border:none;background:none}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--signal);outline-offset:2px;border-radius:2px}
 
-    .app{ display:grid; grid-template-columns: 280px 1fr; min-height:100vh; }
-    @media (max-width: 980px){
-      .app{ grid-template-columns: 1fr; }
-      .sidebar{ position:sticky; top:0; z-index:5; }
-    }
+.wrap{max-width:840px;margin:0 auto;padding:0 20px 120px}
 
-    .sidebar{
-      padding: 18px 14px;
-      border-right:1px solid var(--stroke);
-      background: rgba(255,255,255,.03);
-      backdrop-filter: var(--glass);
-    }
-    [data-theme="light"] .sidebar{ background: rgba(255,255,255,.55); }
+/* ---------- cabeçalho ---------- */
+.top{padding:36px 0 20px;border-bottom:2px solid var(--ink)}
+.top__eyebrow{
+  font-family:var(--font-mono);font-size:11px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-soft);margin:0 0 10px
+}
+.top__title{
+  font-family:var(--font-display);
+  font-weight:800;font-size:clamp(38px,9vw,74px);line-height:.9;
+  letter-spacing:-.03em;margin:0;font-stretch:105%;
+}
+.top__title em{font-style:normal;color:var(--signal)}
+.top__sub{margin:14px 0 0;max-width:48ch;color:var(--ink-soft);font-size:15px}
 
-    .brand{ display:flex; align-items:center; gap:10px; padding: 10px 10px 14px; border-bottom:1px solid var(--stroke); margin-bottom: 14px; }
-    .logo{ width:38px; height:38px; border-radius: 14px; background: linear-gradient(135deg, rgba(109,94,246,.95), rgba(46,231,255,.55)); box-shadow: 0 18px 40px rgba(109,94,246,.18); }
-    .brand h1{ margin:0; font-size: 14px; letter-spacing:.2px; }
-    .brand .sub{ margin-top:2px; color:var(--muted); font-size: 12px; }
+.stats{display:flex;gap:26px;margin-top:22px;flex-wrap:wrap}
+.stat__n{font-family:var(--font-display);font-size:26px;font-weight:700;line-height:1}
+.stat__l{font-family:var(--font-mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft)}
 
-    .nav{ display:flex; flex-direction:column; gap:6px; margin: 14px 0; }
-    .nav button{
-      all:unset; cursor:pointer; display:flex; align-items:center; justify-content:space-between;
-      padding: 10px 10px; border-radius: 14px; border:1px solid transparent; color: var(--txt); transition:.16s ease;
-    }
-    .nav button:hover{ background: rgba(109,94,246,.08); border-color: rgba(109,94,246,.25); }
-    .nav button.active{ background: linear-gradient(135deg, rgba(109,94,246,.30), rgba(46,231,255,.10)); border-color: rgba(109,94,246,.32); }
-    .nav .tag{ font-size: 11px; color: var(--muted); padding: 4px 8px; border-radius: 999px; border:1px solid var(--stroke); background: rgba(255,255,255,.04); }
+/* ---------- barra de adicionar ---------- */
+.compose{margin:26px 0 8px}
+.compose__row{display:flex;gap:8px;flex-wrap:wrap}
+.field{
+  flex:1 1 260px;min-width:0;
+  background:var(--card);border:2px solid var(--ink);border-radius:0;
+  padding:14px 16px;font-family:var(--font-body);font-size:17px;color:var(--ink)
+}
+.field::placeholder{color:#93a29a}
+.btn{
+  border:2px solid var(--ink);background:var(--ink);color:var(--ground);
+  padding:14px 22px;font-weight:600;font-size:15px;white-space:nowrap;
+  transition:transform .12s ease, background .12s ease
+}
+.btn:hover{background:var(--signal);border-color:var(--signal)}
+.btn:active{transform:translateY(2px)}
+.btn--ghost{background:transparent;color:var(--ink)}
+.btn--ghost:hover{background:var(--ink);color:var(--ground)}
+.compose__hint{font-size:13px;color:var(--ink-soft);margin:10px 2px 0}
 
-    .sideCard{ margin-top: 12px; border:1px solid var(--stroke); border-radius: var(--r); background: rgba(255,255,255,.04); box-shadow: var(--shadow); overflow:hidden; }
-    .sideCard .head{ padding: 12px 12px; border-bottom:1px solid var(--stroke); display:flex; align-items:center; justify-content:space-between; gap:10px; }
-    .sideCard .head b{ font-size: 12px; }
-    .sideCard .body{ padding: 12px; display:flex; flex-direction:column; gap:10px; }
+/* ---------- controles ---------- */
+.bar{
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  margin:24px 0 6px;padding-top:18px;border-top:1px solid var(--line)
+}
+.seg{display:flex;border:2px solid var(--ink)}
+.seg button{
+  padding:8px 15px;font-family:var(--font-mono);font-size:11px;
+  letter-spacing:.1em;text-transform:uppercase
+}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--ground)}
+.bar__spacer{flex:1}
 
-    .main{ padding: 20px 18px 40px; max-width: 1280px; margin: 0 auto; width:100%; }
-    .topbar{ display:flex; align-items:flex-end; justify-content:space-between; gap:14px; margin-bottom: 14px; }
-    .title h2{ margin:0; font-size: 18px; letter-spacing:.2px; }
-    .title p{ margin:6px 0 0; color: var(--muted); font-size: 13px; line-height: 1.35; }
+/* ---------- cartão ---------- */
+.list{display:flex;flex-direction:column;gap:14px;margin-top:18px}
+.card{
+  background:var(--card);border:2px solid var(--ink);padding:20px 20px 16px;position:relative
+}
+.card--known{opacity:.62}
+.card--known:hover{opacity:1}
+.card__text{
+  font-family:var(--font-display);font-weight:600;
+  font-size:clamp(21px,4.4vw,30px);line-height:1.15;letter-spacing:-.02em;
+  margin:0 44px 0 0;word-break:break-word
+}
+.card__note{margin:8px 0 0;font-size:14px;color:var(--ink-soft)}
+.card__x{
+  position:absolute;top:12px;right:12px;width:30px;height:30px;
+  font-size:18px;line-height:1;color:var(--ink-soft);border-radius:50%
+}
+.card__x:hover{background:var(--ink);color:var(--ground)}
 
-    .actions{ display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end; }
-    .btn{
-      border:1px solid var(--stroke);
-      background: rgba(255,255,255,.06);
-      color:var(--txt);
-      padding:10px 12px;
-      border-radius: 12px;
-      font-weight:800;
-      cursor:pointer;
-      transition:.16s ease;
-      backdrop-filter: var(--glass);
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-    }
-    .btn:hover{ transform: translateY(-1px); border-color: rgba(109,94,246,.55); }
-    .btn.primary{ background: linear-gradient(135deg, rgba(109,94,246,.85), rgba(46,231,255,.40)); border-color: rgba(255,255,255,.12); box-shadow: 0 14px 40px rgba(109,94,246,.16); }
-    .btn.danger:hover{ border-color: rgba(255,92,124,.8); }
-    .btn.small{ padding:8px 10px; border-radius: 10px; font-size: 12px; }
+/* ---------- assinatura: a régua de ritmo ---------- */
+.beats{display:flex;align-items:flex-end;gap:5px;margin:16px 0 0;height:34px;position:relative}
+.beat{
+  position:relative;border-radius:1px;
+  transition:background .15s ease,height .15s ease
+}
+.beat--strong{background:var(--ink);height:26px}
+.beat--weak{background:var(--line);height:11px}
+.beat--on{background:var(--signal)}
+.beat--on.beat--weak{background:var(--signal);opacity:.55}
+.beat__stress{
+  position:absolute;left:0;right:0;top:-7px;height:4px;background:var(--chalk)
+}
+.beats__legend{
+  font-family:var(--font-mono);font-size:10px;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--ink-soft);margin:7px 0 0
+}
+.ipa{
+  font-family:var(--font-mono);font-size:15px;color:var(--signal);
+  margin:12px 0 0;word-break:break-word
+}
+.tips{margin:12px 0 0;padding:0 0 0 18px;font-size:14px;color:var(--ink-soft)}
+.tips li{margin:4px 0}
+.ctx{font-size:14px;color:var(--ink-soft);margin:10px 0 0;font-style:italic}
 
-    .card{
-      background: var(--card);
-      border:1px solid var(--stroke);
-      border-radius: var(--r);
-      box-shadow: var(--shadow);
-      overflow:hidden;
-      position:relative;
-      backdrop-filter: var(--glass);
-    }
-    .card::before{
-      content:"";
-      position:absolute;
-      inset:-2px;
-      pointer-events:none;
-      background:
-        radial-gradient(700px 220px at 10% 10%, rgba(109,94,246,.22), transparent 55%),
-        radial-gradient(520px 240px at 90% 0%, rgba(46,231,255,.12), transparent 55%);
-    }
-    .card > *{ position:relative; }
-    .cardHead{ padding: 14px 16px; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid var(--stroke); gap:12px; flex-wrap:wrap; }
-    .cardHead h3{ margin:0; font-size: 13px; letter-spacing:.2px; }
-    .pill{ display:flex; align-items:center; gap:8px; padding: 6px 10px; border-radius: 999px; border:1px solid rgba(255,255,255,.10); background: rgba(255,255,255,.05); color: var(--muted); font-size: 12px; white-space:nowrap; }
-    .dot{ width:8px;height:8px;border-radius:50%; background: var(--accent2); box-shadow: 0 0 18px rgba(46,231,255,.35); }
-    .cardBody{ padding: 14px 16px 16px; }
+/* ---------- ações ---------- */
+.acts{display:flex;flex-wrap:wrap;gap:7px;margin:16px 0 0;padding-top:14px;border-top:1px solid var(--line)}
+.act{
+  border:1.5px solid var(--line);padding:7px 12px;font-size:13px;font-weight:600;
+  background:var(--card);display:inline-flex;align-items:center;gap:6px;text-decoration:none
+}
+.act:hover{border-color:var(--ink);background:var(--ink);color:var(--card)}
+.act--main{border-color:var(--ink);background:var(--ink);color:var(--card)}
+.act--main:hover{background:var(--signal);border-color:var(--signal)}
+.act--busy{opacity:.5;pointer-events:none}
+.act__k{font-family:var(--font-mono);font-size:10px;opacity:.6}
 
-    .filters{ display:grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 12px; }
-    @media (max-width: 980px){ .filters{ grid-template-columns: 1fr 1fr; } }
-    .field{ display:flex; flex-direction:column; gap:6px; }
-    .field label{ font-size: 12px; color: var(--muted); font-weight:800; letter-spacing:.2px; }
-    input, select{
-      width:100%; padding:10px 11px; border-radius: 12px; border:1px solid var(--stroke);
-      background: rgba(8,12,25,.45); color: var(--txt); outline:none; transition:.15s ease;
-      font-family: inherit;
-    }
-    [data-theme="light"] input, [data-theme="light"] select{ background: rgba(255,255,255,.75); }
-    input:focus, select:focus{ border-color: rgba(109,94,246,.7); box-shadow: 0 0 0 3px rgba(109,94,246,.16); }
+.watch{margin:12px 0 0}
+.watch__l{
+  font-family:var(--font-mono);font-size:10px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-soft);margin:0 0 7px
+}
 
-    .grid2{ display:grid; grid-template-columns: 1.25fr .75fr; gap: 14px; }
-    @media (max-width: 980px){ .grid2{ grid-template-columns: 1fr; } }
+/* ---------- vazio ---------- */
+.empty{border:2px dashed var(--line);padding:34px 24px;text-align:center;margin-top:20px}
+.empty h2{font-family:var(--font-display);font-size:24px;margin:0 0 8px;letter-spacing:-.02em}
+.empty p{color:var(--ink-soft);margin:0 auto 18px;max-width:42ch;font-size:15px}
 
-    .kpis{ display:grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
-    @media (max-width: 980px){ .kpis{ grid-template-columns: 1fr; } }
-    .kpi{ border:1px solid var(--stroke); background: rgba(255,255,255,.04); border-radius: 16px; padding: 12px; min-height: 98px; display:flex; flex-direction:column; gap:8px; }
-    .kpi .top{ display:flex; align-items:center; justify-content:space-between; gap:10px; }
-    .kpi .label{ color: var(--muted); font-size: 12px; font-weight:800; }
-    .kpi .value{ font-size: 22px; font-weight: 900; letter-spacing:.2px; }
-    .kpi .sub{ color: var(--muted); font-size: 12px; display:flex; justify-content:space-between; gap:10px; }
-    .spark{ width: 92px; height: 28px; border-radius: 10px; background: rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.08); padding: 4px; }
+/* ---------- treino ---------- */
+.train{background:var(--ink);color:var(--ground);margin-top:18px;padding:32px 24px 26px;position:relative}
+.train .card__text{font-size:clamp(24px,6vw,40px);margin-right:0;text-align:center}
+.train .beat--strong{background:var(--chalk)}
+.train .beat--weak{background:#3c4f48}
+.train .beat--on{background:var(--card)}
+.train .beat__stress{background:var(--card)}
+.train .ipa{color:var(--chalk);text-align:center}
+.train .beats{justify-content:center}
+.train .beats__legend,.train .ctx,.train .tips{color:#9fb0a8}
+.train .acts{border-top-color:#2b3d37;justify-content:center}
+.train .act{background:transparent;border-color:#3c4f48;color:var(--ground)}
+.train .act:hover{background:var(--ground);color:var(--ink);border-color:var(--ground)}
+.train .act--main{background:var(--ground);color:var(--ink);border-color:var(--ground)}
+.train__pos{
+  font-family:var(--font-mono);font-size:11px;letter-spacing:.14em;
+  text-transform:uppercase;color:#7d918a;text-align:center;margin:0 0 20px
+}
+.train__nav{display:flex;gap:8px;justify-content:center;margin-top:20px}
 
-    .charts{ display:grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
-    @media (max-width: 980px){ .charts{ grid-template-columns: 1fr; } }
-    .charts3{ display:grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-top: 12px; }
-    @media (max-width: 1100px){ .charts3{ grid-template-columns: 1fr; } }
+.msg{
+  font-size:13px;color:var(--signal);margin:10px 0 0;font-family:var(--font-mono)
+}
+.foot{
+  margin-top:40px;padding-top:18px;border-top:1px solid var(--line);
+  font-size:13px;color:var(--ink-soft);display:flex;gap:16px;flex-wrap:wrap
+}
+.foot button{text-decoration:underline;font-size:13px}
 
-    .chartBox{ border:1px solid var(--stroke); background: rgba(255,255,255,.03); border-radius: 16px; padding: 12px; min-height: 300px; }
-    .chartBox.small{ min-height: 240px; }
+@media (prefers-reduced-motion: reduce){
+  *{transition:none!important;animation:none!important}
+}
+</style>
 
-    .tableWrap{ border:1px solid var(--stroke); border-radius: 16px; overflow:auto; background: rgba(255,255,255,.03); margin-top: 12px; }
-    table{ width:100%; border-collapse:collapse; font-size: 12px; min-width: 1040px; }
-    thead th{
-      text-align:left; padding: 10px 10px; color:var(--muted);
-      background: rgba(255,255,255,.04); border-bottom:1px solid var(--stroke);
-      position:sticky; top:0; backdrop-filter: var(--glass); z-index:1;
-      font-weight:900;
-    }
-    tbody td{ padding: 8px 10px; border-bottom: 1px solid rgba(30,42,85,.45); vertical-align:middle; }
-    tbody tr:hover td{ background: rgba(109,94,246,.06); }
-    td.num{ text-align:right; font-variant-numeric: tabular-nums; }
-    td.center{ text-align:center; }
+<div class="wrap">
 
-    .badge{
-      padding: 6px 10px; border-radius: 999px; display:inline-flex; align-items:center; gap:8px;
-      border:1px solid rgba(255,255,255,.12); background: rgba(255,255,255,.05);
-      color: var(--muted); font-weight: 900; font-size: 12px; white-space:nowrap;
-    }
-    .badge .d{ width:8px;height:8px;border-radius:50%; }
-    .badge.good .d{ background: #22C55E; box-shadow: 0 0 16px rgba(34,197,94,.28); }
-    .badge.warn .d{ background: #FBBF24; box-shadow: 0 0 16px rgba(251,191,36,.24); }
-    .badge.bad  .d{ background: #EF4444; box-shadow: 0 0 16px rgba(239,68,68,.26); }
+  <header class="top">
+    <p class="top__eyebrow">Seu método · pronúncia de inglês</p>
+    <h1 class="top__title">Diga do<br>seu <em>jeito</em>.</h1>
+    <p class="top__sub">Você escolhe as frases que quer saber dizer. O app fala, marca o ritmo e te leva até pessoas reais dizendo aquilo em vídeo.</p>
+    <div class="stats">
+      <div><div class="stat__n" id="s-total">0</div><div class="stat__l">frases</div></div>
+      <div><div class="stat__n" id="s-known">0</div><div class="stat__l">dominadas</div></div>
+      <div><div class="stat__n" id="s-plays">0</div><div class="stat__l">repetições</div></div>
+    </div>
+  </header>
 
-    .hint{ margin-top: 12px; color: var(--muted); font-size: 12px; line-height:1.45; }
+  <section class="compose">
+    <div class="compose__row">
+      <input class="field" id="in-text" placeholder="Escreva uma frase em inglês" autocomplete="off" spellcheck="false">
+      <input class="field" id="in-note" style="flex:0 1 200px" placeholder="Onde ouviu? (opcional)" autocomplete="off">
+      <button class="btn" id="add">Adicionar</button>
+    </div>
+    <p class="compose__hint">Frases curtas de 3 a 8 palavras funcionam melhor — são as que aparecem em vídeo de verdade.</p>
+  </section>
 
-    .view{ display:none; }
-    .view.active{ display:block; }
+  <div class="bar">
+    <div class="seg" role="group" aria-label="Modo">
+      <button id="m-col" aria-pressed="true">Coleção</button>
+      <button id="m-tra" aria-pressed="false">Treino</button>
+    </div>
+    <div class="seg" role="group" aria-label="Sotaque">
+      <button id="a-us" aria-pressed="true">EUA</button>
+      <button id="a-uk" aria-pressed="false">Reino Unido</button>
+    </div>
+    <div class="bar__spacer"></div>
+    <div class="seg" role="group" aria-label="Filtro">
+      <button id="f-all" aria-pressed="true">Todas</button>
+      <button id="f-lea" aria-pressed="false">Aprendendo</button>
+    </div>
+  </div>
 
-    details{ border:1px solid var(--stroke); border-radius: 16px; overflow:hidden; background: rgba(255,255,255,.03); margin-top: 12px; }
-    summary{
-      cursor:pointer; padding: 12px 12px; font-weight: 900; list-style:none;
-      display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid rgba(30,42,85,.45); gap:10px;
-    }
-    summary::-webkit-details-marker{ display:none; }
-    .detailsBody{ padding: 12px; }
+  <div id="voice-warn" class="msg" hidden></div>
+  <main id="view"></main>
 
-    .holidayGrid{ display:grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
-    @media (max-width: 980px){ .holidayGrid{ grid-template-columns: 1fr; } }
-    .holidayItem{
-      display:flex; align-items:center; justify-content:space-between; gap:10px;
-      padding: 10px; border:1px solid rgba(30,42,85,.55); border-radius: 14px; background: rgba(8,12,25,.30);
-    }
-    [data-theme="light"] .holidayItem{ background: rgba(255,255,255,.65); border-color: rgba(18,28,60,.14); }
-    .holidayItem .name{ min-width:0; }
-    .holidayItem b{ font-size: 12px; display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-    .holidayItem span{ font-size: 11px; color: var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-    .toggle{ display:flex; align-items:center; gap:8px; color: var(--muted); font-size: 12px; white-space:nowrap; }
-    .toggle input{ width:auto; }
-
-    tr.defWarn td{ background: rgba(251,191,36,.08) !important; }
-    tr.defBad  td{ background: rgba(239,68,68,.10) !important; }
-
-    .inlineRow{ display:flex; gap:10px; flex-wrap:wrap; align-items:flex-end; }
-    .inlineRow .field{ min-width: 200px; flex: 1; }
-
-    .miniCards{ display:grid; grid-template-columns: repeat(6, 1fr); gap: 10px; margin-top: 10px; }
-    @media (max-width: 1100px){ .miniCards{ grid-template-columns: repeat(3, 1fr); } }
-    @media (max-width: 980px){ .miniCards{ grid-template-columns: 1fr; } }
-    .miniCard{
-      border:1px solid var(--stroke); background: rgba(255,255,255,.04);
-      border-radius: 16px; padding: 12px;
-      display:flex; flex-direction:column; gap:6px;
-    }
-    .miniCard b{ font-size: 12px; color: var(--muted); font-weight:900; }
-    .miniCard .big{ font-size: 18px; font-weight: 900; }
-
-    .slicerWrap{
-      border:1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.03);
-      border-radius: 16px;
-      padding: 12px;
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-      margin-top: 12px;
-    }
-    .slicerRow{
-      display:flex;
-      align-items:flex-start;
-      justify-content:space-between;
-      gap:10px;
-      flex-wrap:wrap;
-    }
-    .slicerTitle{
-      color: var(--muted);
-      font-weight: 900;
-      font-size: 12px;
-      white-space:nowrap;
-      margin-top: 6px;
-    }
-    .chips{
-      display:flex; gap:8px; flex-wrap:wrap;
-    }
-    .chipBtn{
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(255,255,255,.05);
-      color: var(--muted);
-      padding: 8px 10px;
-      border-radius: 999px;
-      font-weight: 900;
-      font-size: 12px;
-      display:flex; gap:8px; align-items:center;
-      cursor:pointer;
-      transition:.14s ease;
-      user-select:none;
-    }
-    .chipBtn:hover{ transform: translateY(-1px); border-color: rgba(109,94,246,.45); }
-    .chipBtn.active{
-      color: var(--txt);
-      border-color: rgba(109,94,246,.55);
-      background: linear-gradient(135deg, rgba(109,94,246,.35), rgba(46,231,255,.12));
-    }
-    .chipBtn.top-seller{
-      border-color: var(--good);
-      color: var(--good);
-    }
-    .chipBtn.top-seller.active{
-      color: var(--txt);
-      border-color: var(--good);
-      background: linear-gradient(135deg, rgba(53,208,127,.45), rgba(46,231,255,.12));
-    }
-    .chipBtn .pct{ color: var(--txt); opacity:.9; font-variant-numeric: tabular-nums; }
-
-    .bmWrap{
-      border:1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.03);
-      border-radius: 16px;
-      padding: 12px;
-      margin-top: 12px;
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-    }
-    .bmTop{ display:flex; gap:10px; flex-wrap:wrap; align-items:flex-end; }
-    .bmList{ display:flex; flex-wrap:wrap; gap:8px; }
-    .bmItem{
-      display:flex;
-      gap:8px;
-      align-items:center;
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(255,255,255,.05);
-      border-radius: 999px;
-      padding: 8px 10px;
-    }
-    .bmItem button{ all:unset; cursor:pointer; font-weight:900; }
-    .bmItem .del{
-      all:unset; cursor:pointer;
-      padding: 2px 6px;
-      border-radius: 999px;
-      border:1px solid rgba(239,68,68,.35);
-      color: #EF4444;
-      font-weight:900;
-    }
-
-    .split2{ display:grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    @media (max-width: 980px){ .split2{ grid-template-columns: 1fr; } }
-
-    .sectionTitle{
-      margin: 12px 0 8px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-      color: var(--muted);
-      font-weight: 900;
-      font-size: 12px;
-      letter-spacing:.2px;
-      text-transform: uppercase;
-    }
-    .dividerLine{
-      height:1px;
-      background: rgba(255,255,255,.08);
-      border-radius: 999px;
-      margin: 10px 0 6px;
-    }
-
-    /* Toggle estilo Power BI */
-    .segToggle{
-      display:flex;
-      gap:6px;
-      padding: 6px;
-      border-radius: 999px;
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(255,255,255,.04);
-      align-items:center;
-    }
-    .segToggle .tbtn{
-      all:unset;
-      cursor:pointer;
-      padding: 8px 10px;
-      border-radius: 999px;
-      font-weight: 900;
-      font-size: 12px;
-      color: var(--muted);
-      transition: .14s ease;
-      user-select:none;
-      white-space:nowrap;
-    }
-    .segToggle .tbtn:hover{
-      transform: translateY(-1px);
-      border: 1px solid rgba(109,94,246,.22);
-    }
-    .segToggle .tbtn.active{
-      color: var(--txt);
-      background: linear-gradient(135deg, rgba(109,94,246,.40), rgba(46,231,255,.14));
-      box-shadow: 0 10px 28px rgba(109,94,246,.14);
-    }
-
-    .hidden{ display:none !important; }
-
-    /* =========================
-       AUTH / PERFIS DE USUÁRIO
-    ========================= */
-    .authOverlay{
-      position:fixed; inset:0; z-index:9999;
-      display:none;
-      background:
-        radial-gradient(1000px 600px at 15% 20%, rgba(109,94,246,.28), transparent 55%),
-        radial-gradient(800px 520px at 85% 10%, rgba(46,231,255,.20), transparent 55%),
-        linear-gradient(180deg, rgba(7,10,18,.92), rgba(11,16,32,.92));
-      backdrop-filter: blur(12px);
-      padding: 18px;
-      align-items:center;
-      justify-content:center;
-    }
-    [data-theme="light"] .authOverlay{
-      background:
-        radial-gradient(1000px 600px at 15% 20%, rgba(109,94,246,.18), transparent 55%),
-        radial-gradient(800px 520px at 85% 10%, rgba(46,231,255,.14), transparent 55%),
-        linear-gradient(180deg, rgba(246,247,251,.94), rgba(237,239,247,.94));
-    }
-    .authOverlay.show{ display:flex; }
-    .authCard{
-      width:min(520px, 100%);
-      border:1px solid var(--stroke);
-      border-radius: 22px;
-      background: var(--card);
-      box-shadow: var(--shadow);
-      overflow:hidden;
-    }
-    .authHead{
-      padding: 16px 16px;
-      display:flex; align-items:center; justify-content:space-between; gap:10px;
-      border-bottom:1px solid var(--stroke);
-    }
-    .authHead b{ font-size: 13px; letter-spacing:.2px; }
-    .authBody{ padding: 16px; display:flex; flex-direction:column; gap:12px; }
-    .authRow{ display:grid; grid-template-columns: 1fr 1fr; gap:10px; }
-    @media (max-width: 520px){ .authRow{ grid-template-columns: 1fr; } }
-    .authMsg{
-      color: var(--muted);
-      font-size: 12px;
-      line-height: 1.4;
-    }
-    .authError{
-      color:#FF5C7C;
-      font-weight: 900;
-      font-size: 12px;
-      display:none;
-    }
-    .authError.show{ display:block; }
-    .adminOnly{ }
-
-  </style>
-<link rel="stylesheet" href="/index.css">
-</head>
-
-<body data-theme="dark">
-
-  <!-- AUTH / LOGIN -->
-  <div id="authOverlay" class="authOverlay" aria-hidden="true">
-    <div class="authCard">
-      <div class="authHead">
-        <b id="authTitle">Acesso ao Dashboard</b>
-        <span class="pill"><span class="dot"></span><span id="authModePill">Login</span></span>
-      </div>
-      <div class="authBody">
-        <div class="authMsg" id="authSubtitle">
-          Entre com seu <b>usuário</b> e <b>senha</b>.
-        </div>
-
-        <div class="authError" id="authError">—</div>
-
-        <div class="field">
-          <label for="authEmail">Usuário</label>
-          <input id="authEmail" type="text" autocomplete="username" placeholder="usuario"/>
-        </div>
-
-        <div class="authRow">
-          <div class="field">
-            <label for="authPass">Senha</label>
-            <input id="authPass" type="password" autocomplete="current-password" placeholder="••••••••"/>
-          </div>
-          <div class="field" id="authPass2Wrap" style="display:none;">
-            <label for="authPass2">Confirmar senha</label>
-            <input id="authPass2" type="password" autocomplete="new-password" placeholder="••••••••"/>
-          </div>
-        </div>
-
-        <div class="authRow" id="authRoleWrap" style="display:none;">
-          <div class="field" style="grid-column:1/-1;">
-            <label for="authRole">Perfil</label>
-            <select id="authRole">
-              <option value="admin">Perfil 1 — Administrador (incluir/alterar/visualizar)</option>
-              <option value="viewer">Perfil 2 — Visualização (somente visualizar)</option>
-            </select>
-          </div>
-        </div>
-
-        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between;">
-          <button class="btn primary" id="btnAuthSubmit">Entrar</button>
+  <div class="foot">
+    <span>Salvo automaticamente neste navegador.</span>
+    <button id="export">Baixar minhas frases</button>
+    <button id="wipe">Apagar tudo</button>
+  </div>
 </div>
 
-        <div class="authMsg">
-          Observação: este controle é <b>local</b> (salvo no navegador via localStorage). Para segurança real em ambiente multiusuário/online, é preciso autenticação no servidor.
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="app">
-    <aside class="sidebar">
-      <div class="brand">
-        <div class="logo"></div>
-        <div>
-          <h1>Meta Mensal</h1>
-          <div class="sub">Contratos Ativos • v2.12.0</div>
-        </div>
-      </div>
-
-      <div class="nav">
-        <button class="active" data-nav="dashboard"><span>Dashboard</span><span class="tag">KPIs</span></button>
-        <button class="adminOnly" data-nav="monthly" data-admin="1"><span>Mensal</span><span class="tag">Lançar</span></button>
-        <button class="adminOnly" data-nav="deficit" data-admin="1"><span>Déficit</span><span class="tag">MoM</span></button>
-        <button class="adminOnly" data-nav="clients" data-admin="1"><span>Clientes</span><span class="tag">Cadastros</span></button>
-        <button class="adminOnly" data-nav="config" data-admin="1"><span>Config</span><span class="tag">Cadastros</span></button>
-        <button class="adminOnly" data-nav="holidays" data-admin="1"><span>Feriados</span><span class="tag">Dias úteis</span></button>
-      </div>
-
-      <div class="sideCard">
-        <div class="head">
-          <b>Controles</b>
-          <span class="pill"><span class="dot"></span><span id="sidePeriod">—</span></span>
-        </div>
-        <div class="body">
-          <button class="btn primary" id="btnTheme">Alternar tema</button>
-          <button class="btn" id="btnLogout">Sair</button>
-          <button class="btn adminOnly" id="btnToday" data-admin="1">Ir para mês atual</button>
-          <button class="btn adminOnly" id="btnExportJSON" data-admin="1">Exportar JSON</button>
-          <button class="btn adminOnly" id="btnBackupAll" data-admin="1">Backup completo</button>
-          <label class="btn adminOnly" data-admin="1" title="Restaurar um backup completo (.json)">
-            Restaurar backup
-            <input id="fileBackupJSON" type="file" accept=".json,application/json" style="display:none;">
-          </label>
-          <button class="btn danger adminOnly" id="btnReset" data-admin="1">Resetar tudo</button>
-          <div class="hint">
-            v2.12.0: Toggle <b>Mensal/Anual/Ambos</b> no Dashboard.
-          </div>
-        </div>
-      </div>
-    </aside>
-
-    <main class="main">
-      <div class="topbar">
-        <div class="title">
-          <h2 id="mainTitle">Dashboard</h2>
-          <p id="mainSubtitle">Lançamento mensal + déficit mês a mês + visão de clientes para apresentação.</p>
-        </div>
-        <div class="actions adminOnly" id="topActions" data-admin="1">
-          <button class="btn" id="btnExportCSV">Exportar CSV (Mensal)</button>
-          <label class="btn">
-            Importar CSV (Mensal)
-            <input id="fileCSV" type="file" accept=".csv" style="display:none;">
-          </label>
-        </div>
-      </div>
-
-      <div class="card" style="margin-bottom:14px;">
-        <div class="cardHead">
-          <h3>Filtros (contexto do Dashboard/Mensal/Déficit)</h3>
-          <div class="pill"><span class="dot"></span><span id="periodLabel">—</span></div>
-        </div>
-        <div class="cardBody">
-          <div class="filters">
-            <div class="field">
-              <label for="year">Ano</label>
-              <input id="year" type="number" min="2020" max="2035"/>
-            </div>
-            <div class="field">
-              <label for="month">Mês</label>
-              <select id="month"></select>
-            </div>
-            <div class="field">
-              <label for="team">Equipe</label>
-              <select id="team"></select>
-            </div>
-            <div class="field">
-              <label for="seller">Vendedor</label>
-              <select id="seller"></select>
-            </div>
-          </div>
-          <div class="hint">* Clientes têm filtros próprios na aba Clientes. Os gráficos de Clientes ficam no Dashboard (apresentação).</div>
-        </div>
-      </div>
-
-      <!-- DASHBOARD -->
-      <section id="view-dashboard" class="view active">
-        <div class="grid2">
-          <div class="card">
-            <div class="cardHead">
-              <h3>Painel Principal</h3>
-
-              <!-- TOGGLE (Power BI like) -->
-              <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
-                <div class="segToggle" id="dashToggle">
-                  <button class="tbtn" data-mode="monthly">Mensal</button>
-                  <button class="tbtn" data-mode="annual">Anual</button>
-                  <button class="tbtn" data-mode="both">Ambos</button>
-                </div>
-                <div class="pill"><span class="dot"></span><span id="kpiPill">—</span></div>
-              </div>
-            </div>
-
-            <div class="cardBody">
-
-              <!-- VISÃO MENSAL -->
-              <div id="dashMonthlySection">
-                <div class="sectionTitle">
-                  <span>Visão mensal (mês selecionado)</span>
-                  <span class="pill"><span class="dot"></span><span id="kpiMonthLabel">—</span></span>
-                </div>
-
-                <div class="kpis">
-                  <div class="kpi">
-                    <div class="top"><div class="label">Meta mensal (Qtd)</div><canvas id="spkTarget" class="spark"></canvas></div>
-                    <div class="value" id="kpiMonthlyTarget">—</div>
-                    <div class="sub"><span id="kpiBDMonth">— dias úteis</span><span class="muted">derivada da meta anual</span></div>
-                  </div>
-
-                  <div class="kpi">
-                    <div class="top"><div class="label">Lançado no mês (Qtd)</div><canvas id="spkAch" class="spark"></canvas></div>
-                    <div class="value" id="kpiAchieved">—</div>
-                    <div class="sub"><span id="kpiRemaining">— falta</span><span id="badgeDeficit" class="badge good"><span class="d"></span><span>—</span></span></div>
-                  </div>
-
-                  <div class="kpi">
-                    <div class="top"><div class="label">% Atingido</div><canvas id="spkPct" class="spark"></canvas></div>
-                    <div class="value" id="kpiPct">—</div>
-                    <div class="sub"><span class="muted">déficit</span><span id="kpiDefPct">—</span></div>
-                  </div>
-
-                  <div class="kpi">
-                    <div class="top"><div class="label">Carteira estimada (mês)</div><canvas id="spkVal" class="spark"></canvas></div>
-                    <div class="value" id="kpiValue">—</div>
-                    <div class="sub"><span class="muted">valor médio</span><span id="kpiAvgValue">—</span></div>
-                  </div>
-                </div>
-
-                <div class="charts">
-                  <div class="chartBox"><canvas id="pieChart"></canvas></div>
-                  <div class="chartBox"><canvas id="lineChart"></canvas></div>
-                </div>
-
-                <div class="dividerLine"></div>
-              </div>
-
-              <!-- VISÃO ANUAL -->
-              <div id="dashAnnualSection">
-                <div class="sectionTitle">
-                  <span>Visão anual (ano selecionado)</span>
-                  <span class="pill"><span class="dot"></span><span id="kpiYearLabel">—</span></span>
-                </div>
-
-                <div class="kpis" style="margin-top:10px;">
-                  <div class="kpi">
-                    <div class="top"><div class="label">Meta anual (Qtd)</div></div>
-                    <div class="value" id="kpiAnnualTarget">—</div>
-                    <div class="sub"><span class="muted">dias úteis no ano</span><span id="kpiBDYear">—</span></div>
-                  </div>
-
-                  <div class="kpi">
-                    <div class="top"><div class="label">Realizado no ano (Qtd)</div></div>
-                    <div class="value" id="kpiAnnualAchieved">—</div>
-                    <div class="sub"><span class="muted">falta no ano</span><span id="kpiAnnualRemaining">—</span></div>
-                  </div>
-
-                  <div class="kpi">
-                    <div class="top"><div class="label">% Atingido no ano</div></div>
-                    <div class="value" id="kpiAnnualPct">—</div>
-                    <div class="sub"><span class="muted">déficit anual</span><span id="kpiAnnualDefPct">—</span></div>
-                  </div>
-
-                  <div class="kpi">
-                    <div class="top"><div class="label">Carteira estimada (ano)</div></div>
-                    <div class="value" id="kpiAnnualValue">—</div>
-                    <div class="sub"><span class="muted">valor médio</span><span id="kpiAnnualAvgValue">—</span></div>
-                  </div>
-                </div>
-
-                <div class="charts" style="margin-top:12px;">
-                  <div class="chartBox"><canvas id="pieYearChart"></canvas></div>
-                  <div class="chartBox">
-                    <div class="pill"><span class="dot"></span><span>Meta x Real por mês (Ano)</span></div>
-                    <div class="chartBox small" style="margin-top:10px;">
-                      <canvas id="barYearChart"></canvas>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-            </div>
-          </div>
-
-          <div class="card">
-            <div class="cardHead">
-              <h3>Status & Config do Segmento</h3>
-              <div class="pill"><span class="dot"></span><span>editável</span></div>
-            </div>
-            <div class="cardBody">
-              <div class="filters" style="grid-template-columns: 1fr 1fr;">
-                <div class="field"><label>Meta anual (Qtd)</label><input id="annualTarget" type="number" min="0" step="1"/></div>
-                <div class="field"><label>Valor médio (R$)</label><input id="avgValue" type="number" min="0" step="0.01"/></div>
-                <div class="field"><label>Ativos no início do mês</label><input id="startActive" type="number" min="0" step="1"/></div>
-                <div class="field"><label>Dias úteis no ano</label><input id="bdYear" type="text" disabled/></div>
-                <div class="field"><label>Meta diária</label><input id="dailyTarget" type="text" disabled/></div>
-                <div class="field"><label>Ativos atuais (estim.)</label><input id="currentActive" type="text" disabled/></div>
-              </div>
-
-              <div style="height:10px"></div>
-
-              <div class="filters" style="grid-template-columns: 1fr 1fr;">
-                <div class="field"><label>Fechados (editável)</label><input id="closed" type="number" min="0" step="1"/></div>
-                <div class="field"><label>Em produção (editável)</label><input id="inProd" type="number" min="0" step="1"/></div>
-                <div class="field"><label>Cancelados (editável)</label><input id="canceled" type="number" min="0" step="1"/></div>
-                <div class="field"><label>% Cancelamento</label><input id="cancelRate" type="text" disabled/></div>
-              </div>
-
-              <div class="chartBox small" style="margin-top:12px;">
-                <canvas id="barStatus"></canvas>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- CLIENTES no Dashboard (apresentação) -->
-        <div class="card" style="margin-top:14px;">
-          <div class="cardHead">
-            <h3>Clientes — Visão para Apresentação</h3>
-            <div class="pill"><span class="dot"></span><span id="clientsTotalLabel">Total: —</span></div>
-          </div>
-          <div class="cardBody">
-            <div class="miniCards" style="margin-top:0;">
-              <div class="miniCard"><b>Total (quantidade)</b><div class="big" id="clientsTotalQty">—</div></div>
-              <div class="miniCard"><b>NEGOCIANDO</b><div class="big" id="clientsNegotiating">—</div></div>
-              <div class="miniCard"><b>VENDIDO</b><div class="big" id="clientsSold">—</div></div>
-              <div class="miniCard"><b>EM CREDENCIAMENTO</b><div class="big" id="clientsCred">—</div></div>
-              <div class="miniCard"><b>PRE=PRODUÇÃO</b><div class="big" id="clientsPreProd">—</div></div>
-              <div class="miniCard"><b>PRODUÇÃO</b><div class="big" id="clientsProd">—</div></div>
-            </div>
-
-            <div class="slicerWrap">
-              <div class="slicerRow">
-                <div class="slicerTitle">Slicer: Status</div>
-                <div class="chips" id="statusSlicers"></div>
-              </div>
-              <div class="slicerRow">
-                <div class="slicerTitle">Slicer: Canal</div>
-                <div class="chips" id="channelSlicers"></div>
-              </div>
-              <div class="hint" style="margin:0;">
-                Drill: clique no <b>canal</b> na pizza ou em um <b>status</b> no funil.
-              </div>
-            </div>
-
-            <div class="charts3">
-              <div class="chartBox">
-                <div class="pill"><span class="dot"></span><span>Funil (Status) — clique para filtrar</span></div>
-                <canvas id="funnelChart" style="margin-top:10px;"></canvas>
-              </div>
-
-              <div class="chartBox">
-                <div class="pill"><span class="dot"></span><span>Participação por Canal (clique para filtrar)</span></div>
-                <div class="chartBox small" style="margin-top:10px;">
-                  <canvas id="channelChart"></canvas>
-                </div>
-              </div>
-
-              <div class="chartBox">
-                <div class="pill"><span class="dot"></span><span>% por Tipo de Negócio</span></div>
-                <div class="chartBox small" style="margin-top:10px;">
-                  <canvas id="businessTypeChart"></canvas>
-                </div>
-                <div class="hint" style="margin-top:10px;">
-                  Percentual em cima da <b>soma de quantidades</b> dos clientes filtrados.
-                </div>
-              </div>
-            </div>
-
-            <div class="hint">
-              Os gráficos acima refletem os filtros/slicers atuais de Clientes. Para cadastrar/editar registros, use a aba <b>Clientes</b>.
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- MENSAL -->
-      <section id="view-monthly" class="view">
-        <div class="card">
-          <div class="cardHead">
-            <h3>Lançamento mensal — Contratos ativos lançados no mês</h3>
-            <div class="pill"><span class="dot"></span><span id="monthlyPill">—</span></div>
-          </div>
-          <div class="cardBody">
-            <div class="filters" style="grid-template-columns: 1fr 1fr 1fr;">
-              <div class="field">
-                <label>Contratos ativos lançados no mês (Qtd)</label>
-                <input id="monthlyActual" type="number" step="1" min="0"/>
-              </div>
-              <div class="field">
-                <label>Meta mensal (Qtd) (calc)</label>
-                <input id="monthlyTargetCalc" type="text" disabled/>
-              </div>
-              <div class="field">
-                <label>Déficit (Qtd) (calc)</label>
-                <input id="monthlyDefQty" type="text" disabled/>
-              </div>
-            </div>
-            <div class="hint">Você lança <b>um único número</b> por mês.</div>
-          </div>
-        </div>
-      </section>
-
-      <!-- DEFICIT -->
-      <section id="view-deficit" class="view">
-        <div class="card">
-          <div class="cardHead">
-            <h3>Déficit — comparação mês a mês (MoM)</h3>
-            <div class="pill"><span class="dot"></span><span id="deficitPill">—</span></div>
-          </div>
-          <div class="cardBody">
-            <div class="charts">
-              <div class="chartBox"><canvas id="deficitChart"></canvas></div>
-              <div class="chartBox"><canvas id="momChart"></canvas></div>
-            </div>
-
-            <div class="tableWrap">
-              <table>
-                <thead>
-                  <tr>
-                    <th style="width:90px">Mês</th>
-                    <th class="num" style="width:150px">Meta (Qtd)</th>
-                    <th class="num" style="width:160px">Lançado (Qtd)</th>
-                    <th class="num" style="width:150px">Déficit (Qtd)</th>
-                    <th class="num" style="width:140px">Déficit (%)</th>
-                    <th class="num" style="width:220px">Δ Déficit vs mês anterior (Qtd)</th>
-                  </tr>
-                </thead>
-                <tbody id="deficitBody"></tbody>
-              </table>
-            </div>
-            <div class="hint">Cores: <b>amarelo ≥ 20%</b> • <b>vermelho ≥ 21%</b>.</div>
-          </div>
-        </div>
-      </section>
-
-      <!-- CLIENTES -->
-      <section id="view-clients" class="view">
-        <div class="card">
-          <div class="cardHead">
-            <h3>Clientes — Cadastro, edição e lista (os gráficos ficam no Dashboard)</h3>
-            <div class="pill"><span class="dot"></span><span id="clientsPill">—</span></div>
-          </div>
-          <div class="cardBody">
-
-            <div class="split2">
-              <div class="card" style="box-shadow:none; background: rgba(255,255,255,.03); border-radius:16px; border:1px solid rgba(255,255,255,.10);">
-                <div class="cardHead" style="border-bottom:1px solid rgba(255,255,255,.10);">
-                  <h3>Novo lançamento / Edição</h3>
-                  <div class="pill"><span class="dot"></span><span id="clientsPeriodMini">—</span></div>
-                </div>
-                <div class="cardBody">
-                  <div class="inlineRow">
-                    <div class="field" style="min-width:190px;">
-                      <label>Data</label>
-                      <input id="clientDate" type="date"/>
-                    </div>
-
-                    <div class="field" style="flex:2; min-width:260px;">
-                      <label>Cliente</label>
-                      <input id="clientName" type="text" placeholder="Ex.: Empresa XPTO"/>
-                    </div>
-
-                    <div class="field">
-                      <label>Status</label>
-                      <select id="clientStatus"></select>
-                    </div>
-
-                    <div class="field">
-                      <label>Canal</label>
-                      <select id="clientChannel"></select>
-                    </div>
-
-                    <div class="field" style="min-width:240px;">
-                      <label>Tipo de Negócio</label>
-                      <select id="clientBusinessType"></select>
-                    </div>
-
-                    <div class="field">
-                      <label>Quantidade de clientes</label>
-                      <input id="clientQty" type="number" min="1" step="1" value="1"/>
-                    </div>
-
-                    <div class="field" style="min-width:220px;">
-                      <label>Obs (opcional)</label>
-                      <input id="clientNote" type="text" placeholder="Ex.: retorno na sexta"/>
-                    </div>
-
-                    <div class="field" style="min-width:220px;">
-                      <label>&nbsp;</label>
-                      <div style="display:flex;gap:10px;flex-wrap:wrap;">
-                        <button class="btn primary" id="btnAddClient">Adicionar</button>
-                        <button class="btn" id="btnCancelEditClient" style="display:none;">Cancelar</button>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="hint">* Ao editar e trocar a data, o registro <b>migra automaticamente</b> para o mês correspondente.</div>
-                </div>
-              </div>
-
-              <div>
-                <div class="rowActions" style="margin-bottom:10px; display:flex; gap:10px; flex-wrap:wrap;">
-                  <button class="btn" id="btnExportClientsCSVMonth">Exportar CSV (Clientes — mês)</button>
-                  <button class="btn primary" id="btnExportClientsCSVYear">Exportar CSV (Clientes — ano)</button>
-                  <label class="btn">
-                    Importar CSV (Clientes)
-                    <input id="fileClientsCSV" type="file" accept=".csv" style="display:none;">
-                  </label>
-                  <button class="btn danger" id="btnClearClientFilters">Limpar filtros</button>
-                </div>
-
-                <div class="bmWrap">
-                  <div class="bmTop">
-                    <div class="field" style="min-width:260px; flex:1;">
-                      <label>Salvar bookmark (visão atual)</label>
-                      <input id="bmName" type="text" placeholder='Ex.: "Vendidos + Parceiro"'/>
-                    </div>
-                    <div class="field" style="min-width:200px;">
-                      <label>&nbsp;</label>
-                      <button class="btn primary" id="btnSaveBookmark">Salvar bookmark</button>
-                    </div>
-                    <div class="field" style="min-width:180px;">
-                      <label>&nbsp;</label>
-                      <button class="btn" id="btnClearBookmarks">Limpar bookmarks</button>
-                    </div>
-                  </div>
-                  <div class="bmList" id="bmList"></div>
-                  <div class="hint" style="margin:0;">Clique no bookmark para aplicar. Clique no ✕ para excluir.</div>
-                </div>
-
-                <div class="hint" style="margin-top:12px;">
-                  Os gráficos (funil/canal/tipo) estão no <b>Dashboard</b> para apresentação.
-                </div>
-              </div>
-            </div>
-
-            <div style="height:12px"></div>
-
-            <div class="filters" style="grid-template-columns: 200px 1.2fr 1fr 1fr 1fr 1fr;">
-              <div class="field">
-                <label>Filtro por mês (clientes)</label>
-                <select id="clientMonthScope">
-                  <option value="ALL">Ano todo</option>
-                </select>
-              </div>
-              <div class="field">
-                <label>Buscar por nome</label>
-                <input id="clientSearch" type="text" placeholder="Digite parte do nome..."/>
-              </div>
-              <div class="field">
-                <label>Filtrar status (dropdown)</label>
-                <select id="filterStatus"></select>
-              </div>
-              <div class="field">
-                <label>Filtrar canal (dropdown)</label>
-                <select id="filterChannel"></select>
-              </div>
-              <div class="field">
-                <label>Filtrar tipo de negócio</label>
-                <select id="filterBusinessType"></select>
-              </div>
-              <div class="field">
-                <label>Ordenar</label>
-                <select id="clientSort">
-                  <option value="date_desc">Mais recente</option>
-                  <option value="date_asc">Mais antigo</option>
-                  <option value="name_asc">Nome (A→Z)</option>
-                  <option value="qty_desc">Quantidade (↓)</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="tableWrap">
-              <table>
-                <thead>
-                  <tr>
-                    <th style="width:120px">Data</th>
-                    <th>Cliente</th>
-                    <th style="width:220px">Status</th>
-                    <th style="width:190px">Canal</th>
-                    <th style="width:230px">Tipo de Negócio</th>
-                    <th class="num" style="width:160px">Quantidade</th>
-                    <th style="width:260px">Obs</th>
-                    <th style="width:170px">Ações</th>
-                  </tr>
-                </thead>
-                <tbody id="clientsBody"></tbody>
-              </table>
-            </div>
-
-            <div class="hint">
-              CSV clientes (ano) exporta colunas: <b>year_month,team,seller,dateISO,name,status,channel,businessType,qty,note</b>.
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- CONFIG -->
-      <section id="view-config" class="view">
-        <div class="card">
-          <div class="cardHead">
-            <h3>Config — Equipes, Vendedores, Canais & Tipo de Negócio</h3>
-            <div class="pill"><span class="dot"></span><span>cadastros locais</span></div>
-          </div>
-          <div class="cardBody">
-            <div class="filters" style="grid-template-columns: 1fr 1fr;">
-              <div class="field"><label>Equipes (separe por vírgula)</label><input id="teamsInput" type="text" placeholder="Ex.: Comercial, SMB, Enterprise"/></div>
-              <div class="field"><label>Vendedores (separe por vírgula)</label><input id="sellersInput" type="text" placeholder="Ex.: Ana, Bruno, Carla"/></div>
-            </div>
-
-            <div style="height:10px"></div>
-
-            <div class="filters" style="grid-template-columns: 1fr;">
-              <div class="field">
-                <label>Canais (separe por vírgula)</label>
-                <input id="channelsInput" type="text" placeholder="Ex.: Indicação, Google, Instagram, Parceiro, Evento"/>
-              </div>
-            </div>
-
-            <div style="height:10px"></div>
-
-            <div class="filters" style="grid-template-columns: 1fr;">
-              <div class="field">
-                <label>Tipo de Negócio (separe por vírgula)</label>
-                <input id="businessTypesInput" type="text" placeholder="Ex.: Clínica de Depilação, Clínica de Estética, Odontologia, ..."/>
-              </div>
-            </div>
-
-            <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;">
-              <button class="btn primary" id="btnSaveCatalog">Salvar cadastros</button>
-              <button class="btn" id="btnSeedDemo">Criar dados demo</button>
-            </div>
-
-            <div class="hint">
-              Você pode acrescentar tipos novos — eles aparecerão no cadastro do cliente e nos filtros.
-            </div>
-          </div>
-        </div>
-      
-
-        <div style="height:14px"></div>
-        <div id="view-users">
-<div class="card">
-          <div class="cardHead">
-            <h3>Usuários — Controle de acesso (local)</h3>
-            <div class="pill"><span class="dot"></span><span id="usersPill">admin</span></div>
-          </div>
-          <div class="cardBody">
-            <div class="hint" style="margin-top:0;">
-              Perfil 1 (Administrador): incluir/alterar/visualizar. • Perfil 2 (Visualização): só vê o Dashboard.
-            </div>
-
-            <div class="split2" style="margin-top:12px;">
-              <div class="card" style="box-shadow:none; background: rgba(255,255,255,.03); border-radius:16px; border:1px solid rgba(255,255,255,.10);">
-                <div class="cardHead" style="border-bottom:1px solid rgba(255,255,255,.10);">
-                  <h3>Novo usuário</h3>
-                  <div class="pill"><span class="dot"></span><span>criar</span></div>
-                </div>
-                <div class="cardBody">
-                  <div class="filters" style="grid-template-columns: 1fr 1fr;">
-                    <div class="field">
-                      <label>E-mail</label>
-                      <input id="newUserEmail" type="email" placeholder="usuario@empresa.com" data-admin="1"/>
-                    </div>
-                    <div class="field">
-                      <label>Perfil</label>
-                      <select id="newUserRole" data-admin="1">
-                        <option value="admin">Perfil 1 — Administrador</option>
-                        <option value="viewer">Perfil 2 — Visualização</option>
-                      </select>
-                    </div>
-                    <div class="field" style="grid-column:1/-1;">
-                      <label>Senha</label>
-                      <input id="newUserPass" type="password" placeholder="Defina uma senha" data-admin="1"/>
-                    </div>
-                  </div>
-                  <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;">
-                    <button class="btn primary" id="btnCreateUser" data-admin="1">Criar usuário</button>
-                  </div>
-                  <div class="hint">Dica: você pode redefinir a senha na lista abaixo.</div>
-                </div>
-              </div>
-
-              <div class="card" style="box-shadow:none; background: rgba(255,255,255,.03); border-radius:16px; border:1px solid rgba(255,255,255,.10);">
-                <div class="cardHead" style="border-bottom:1px solid rgba(255,255,255,.10);">
-                  <h3>Lista de usuários</h3>
-                  <div class="pill"><span class="dot"></span><span id="usersCount">—</span></div>
-                </div>
-                <div class="cardBody">
-                  <div class="tableWrap" style="margin-top:0;">
-                    <table style="min-width: 760px;">
-                      <thead>
-                        <tr>
-                          <th>E-mail</th>
-                          <th style="width:160px">Perfil</th>
-                          <th style="width:170px">Criado</th>
-                          <th style="width:240px">Ações</th>
-                        </tr>
-                      </thead>
-                      <tbody id="usersBody"></tbody>
-                    </table>
-                  </div>
-                  <div class="hint">As contas são salvas neste navegador (localStorage).</div>
-                </div>
-              </div>
-            </div>
-
-          </div>
-        
-        </div>
-</section>
-
-
-      <!-- FERIADOS -->
-      <section id="view-holidays" class="view">
-        <div class="card">
-          <div class="cardHead">
-            <h3>Feriados do Brasil — cálculo de dias úteis</h3>
-            <div class="pill"><span class="dot"></span><span id="holidayCount">—</span></div>
-          </div>
-          <div class="cardBody">
-            <details open>
-              <summary>
-                <span>Marque para incluir no cálculo</span>
-                <span class="pill"><span class="dot"></span><span id="holidayPill">—</span></span>
-              </summary>
-              <div class="detailsBody">
-                <div class="holidayGrid" id="holidayGrid"></div>
-                <div class="hint">Você pode desmarcar pontos facultativos se não forem folga.</div>
-              </div>
-            </details>
-          </div>
-        </div>
-      </section>
-    </main>
-  </div>
-
 <script>
-/* =========================
-   Util + Feriados BR
-========================= */
-const LS_KEY = "metaContratosDashboard_v28"; // MANTIDO: não perde dados existentes
+/* ============================ estado ============================ */
+const KEY = 'metodo:v1';
+const state = { phrases: [], mode: 'col', accent: 'en-US', filter: 'all', idx: 0 };
+const view = document.getElementById('view');
 
-/* =========================
-   AUTH (local) + Perfis
-   - admin: incluir/alterar/visualizar
-   - viewer: somente visualizar (apenas Dashboard)
-========================= */
-const LS_USERS_KEY = "metaContratosUsers_v1";
-const LS_SESSION_KEY = "metaContratosSession_v1";
+const WEAK = new Set(('a an the to of in on at for from with by as and but or nor so yet is are was were am be been being will would shall should can could may might must do does did have has had that this these those it its he she they them we us you your my his her our their i me him not no if then than there here what when who how' ).split(' '));
 
-let currentUser = null; // {email, role}
-
-function normEmail(e){ return String(e||"").trim().toLowerCase(); }
-
-async function sha256Hex(str){
-  const enc = new TextEncoder();
-  const data = enc.encode(str);
-  const buf = await crypto.subtle.digest("SHA-256", data);
-  const arr = Array.from(new Uint8Array(buf));
-  return arr.map(b=>b.toString(16).padStart(2,"0")).join("");
-}
-
-// fallback simples (caso crypto.subtle não exista)
-function weakHash(str){
-  // NÃO é criptograficamente seguro — usado apenas como fallback.
-  let h = 0;
-  for(let i=0;i<str.length;i++){ h = ((h<<5)-h) + str.charCodeAt(i); h |= 0; }
-  return "w_" + Math.abs(h).toString(16);
-}
-
-async function hashPassword(pw){
-  const p = String(pw||"");
-  if(window.crypto && crypto.subtle){
-    try{ return "s_" + await sha256Hex(p); }catch{ /* ignore */ }
-  }
-  return weakHash(p);
-}
-
-function loadUsers(){
+/* ============================ armazenamento ============================ */
+async function load(){
   try{
-    const raw = localStorage.getItem(LS_USERS_KEY);
-    if(!raw) return [];
-    const u = JSON.parse(raw);
-    return Array.isArray(u) ? u : [];
-  }catch{ return []; }
+    const r = await window.storage.get(KEY);
+    if(r && r.value) state.phrases = JSON.parse(r.value);
+  }catch(e){ /* primeira vez: ainda não existe */ }
 }
-function saveUsers(users){
-  localStorage.setItem(LS_USERS_KEY, JSON.stringify(users));
-}
-function findUser(email){
-  const e = normEmail(email);
-  return loadUsers().find(u=>u.email===e) || null;
-}
-function isAdmin(){ return currentUser?.role === "admin"; }
-
-function setSession(email){
-  localStorage.setItem(LS_SESSION_KEY, JSON.stringify({ email: normEmail(email), at: new Date().toISOString() }));
-}
-function clearSession(){
-  localStorage.removeItem(LS_SESSION_KEY);
-}
-function loadSession(){
-  try{
-    const raw = localStorage.getItem(LS_SESSION_KEY);
-    if(!raw) return null;
-    const s = JSON.parse(raw);
-    if(!s?.email) return null;
-    const u = findUser(s.email);
-    if(!u) return null;
-    return { email: u.email, role: u.role };
-  }catch{ return null; }
+let saveTimer;
+function save(){
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(async ()=>{
+    try{ await window.storage.set(KEY, JSON.stringify(state.phrases)); }
+    catch(e){ console.warn('não deu para salvar', e); }
+  }, 250);
 }
 
-/* UI auth overlay */
-const authOverlay = document.getElementById("authOverlay");
-const authTitle = document.getElementById("authTitle");
-const authModePill = document.getElementById("authModePill");
-const authSubtitle = document.getElementById("authSubtitle");
-const authError = document.getElementById("authError");
-const authEmail = document.getElementById("authEmail");
-const authPass = document.getElementById("authPass");
-const authPass2Wrap = document.getElementById("authPass2Wrap");
-const authPass2 = document.getElementById("authPass2");
-const authRoleWrap = document.getElementById("authRoleWrap");
-const authRole = document.getElementById("authRole");
-const btnAuthSubmit = document.getElementById("btnAuthSubmit");
-
-/* =========================================================
-   IMPORTANTE (link público / GitHub Pages)
-   - Não existe segurança real em app estático.
-   - Aqui a gente GARANTE que sempre será LOGIN (sem tela de "criar admin").
-   - Se não houver usuários no navegador, semeamos 1 admin padrão automaticamente.
-   Troque as credenciais padrão abaixo assim que possível.
-========================================================= */
-/* =========================================================
-   USUÁRIOS PRÉ-CADASTRADOS (embutidos no HTML)
-   - Em app estático (GitHub Pages), não há banco central.
-   - Estes usuários são "semeados" no primeiro acesso de cada navegador/dispositivo.
-   - Senhas são armazenadas como hash SHA-256 (prefixo "s_").
-========================================================= */
-const SEEDED_USERS = [
-  { email: "elizeu.galvao@trybu.com.br", role: "admin",  passHash: "s_cf2a2eb2f76169162da6c5161840782cebabc9bcddf8e1d42a56eb0abcc477ad" },
-  { email: "gustavo.rivelli@trybu.com.br", role: "viewer", passHash: "s_e7e04de8b8a730a30bbcc1a4ee1d1617755e35522a11e655aaafe0a5efcde07f" },
-  { email: "kaleb.tavares@trybu.com.br", role: "admin",  passHash: "s_1f17a5b0ba3f181d8755a3cf8f0b52274520a5e73e775bb39a2ba0490bd7f28a" },
-  { email: "marcelo@elosgate.com.br",     role: "viewer", passHash: "s_ed4ba7be5ceb4ff652cacdc9317cbb87c170c60b458579e36e6dc7a2918c3f53" }
-];
-
-function ensureDefaultUsers(){
-  const users = loadUsers();
-  if(users.length) return;
-
-  const now = new Date().toISOString();
-  const seeded = SEEDED_USERS.map(u => ({
-    email: normEmail(u.email),
-    role: u.role,
-    passHash: u.passHash,
-    createdAt: now,
-    seeded: true
-  }));
-
-  saveUsers(seeded);
+/* ============================ ritmo ============================ */
+function words(text){
+  return text.trim().split(/\s+/).filter(Boolean);
 }
-
-function showAuth(){
-  authOverlay.classList.add("show");
-  authOverlay.setAttribute("aria-hidden","false");
-  authError.classList.remove("show");
-  authError.textContent = "—";
-
-  authTitle.textContent = "Acesso ao Dashboard";
-  authModePill.textContent = "Login";
-  authSubtitle.innerHTML = "Entre com seu <b>usuário</b> e <b>senha</b>.";
-  authPass2Wrap.style.display = "none";
-  authRoleWrap.style.display = "none";
-  btnAuthSubmit.textContent = "Entrar";
-
-  setTimeout(()=>authEmail?.focus(), 0);
-}
-
-function hideAuth(){
-  authOverlay.classList.remove("show");
-  authOverlay.setAttribute("aria-hidden","true");
-}
-
-function showAuthError(msg){
-  authError.textContent = msg;
-  authError.classList.add("show");
-}
-
-async function handleAuthSubmit(){
-  const email = normEmail(authEmail.value);
-  const pw = String(authPass.value||"");
-
-  if(!email) return showAuthError("Informe um usuário válido.");
-  if(pw.length < 4) return showAuthError("Informe uma senha (mín. 4 caracteres).");
-
-  const u = findUser(email);
-  if(!u) return showAuthError("Usuário não encontrado.");
-  const h = await hashPassword(pw);
-  if(h !== u.passHash) return showAuthError("Senha incorreta.");
-
-  currentUser = { email: u.email, role: u.role };
-  setSession(u.email);
-  hideAuth();
-  applyAccessControl();
-  renderAll();
-  setView("dashboard");
-}
-
-
-/* Access control (UI) */
-function applyAccessControl(){
-  const viewer = !isAdmin();
-
-  // pill "editável" no dashboard
-  const editablePills = document.querySelectorAll('.cardHead .pill');
-  // sem ação direta aqui
-
-  // esconde navs adminOnly
-  document.querySelectorAll(".adminOnly").forEach(el=>{
-    if(viewer) el.classList.add("hidden");
-    else el.classList.remove("hidden");
+function guessBeats(text){
+  return words(text).map(w=>{
+    const bare = w.toLowerCase().replace(/[^a-z']/g,'');
+    return { w, level: WEAK.has(bare) ? 'weak' : 'strong' };
   });
+}
 
-  // desabilita inputs/botões admin
-  document.querySelectorAll("[data-admin='1']").forEach(el=>{
-    if(viewer){
-      // se for input/select/textarea/button
-      if("disabled" in el) el.disabled = true;
-      // esconder file inputs label? deixamos disabled
-      el.classList.add("disabledByRole");
-    } else {
-      if("disabled" in el) el.disabled = false;
-      el.classList.remove("disabledByRole");
+/* ============================ voz ============================ */
+let voices = [];
+function loadVoices(){
+  if(!('speechSynthesis' in window)) return;
+  voices = speechSynthesis.getVoices() || [];
+  const warn = document.getElementById('voice-warn');
+  if(voices.length && !voices.some(v=>/^en/i.test(v.lang))){
+    warn.hidden = false;
+    warn.textContent = 'Nenhuma voz em inglês instalada neste dispositivo — os vídeos ainda funcionam.';
+  } else { warn.hidden = true; }
+}
+if('speechSynthesis' in window){
+  loadVoices();
+  speechSynthesis.onvoiceschanged = loadVoices;
+} else {
+  const w = document.getElementById('voice-warn');
+  w.hidden = false; w.textContent = 'Este navegador não fala em voz alta — use os links de vídeo.';
+}
+function pickVoice(lang){
+  const exact = voices.filter(v=>v.lang.replace('_','-') === lang);
+  if(exact.length) return exact.find(v=>v.localService) || exact[0];
+  const fam = voices.filter(v=>/^en/i.test(v.lang));
+  return fam[0] || null;
+}
+
+let sweepTimer = null;
+function clearSweep(){
+  clearInterval(sweepTimer); sweepTimer = null;
+  document.querySelectorAll('.beat--on').forEach(b=>b.classList.remove('beat--on'));
+}
+function speak(p, rate){
+  if(!('speechSynthesis' in window)) return;
+  speechSynthesis.cancel(); clearSweep();
+  const u = new SpeechSynthesisUtterance(p.text);
+  u.lang = state.accent; u.rate = rate;
+  const v = pickVoice(state.accent); if(v) u.voice = v;
+
+  const strip = document.querySelectorAll(`[data-beats="${p.id}"] .beat`);
+  const n = strip.length;
+  let boundaryWorked = false;
+
+  u.onboundary = (e)=>{
+    if(e.name && e.name !== 'word') return;
+    boundaryWorked = true;
+    clearInterval(sweepTimer);
+    const before = p.text.slice(0, e.charIndex).trim();
+    const i = before ? before.split(/\s+/).length : 0;
+    strip.forEach((b,j)=>b.classList.toggle('beat--on', j === i));
+  };
+  u.onstart = ()=>{
+    if(!n) return;
+    let i = 0;
+    const step = 340 / rate;
+    sweepTimer = setInterval(()=>{
+      if(boundaryWorked){ clearInterval(sweepTimer); return; }
+      strip.forEach((b,j)=>b.classList.toggle('beat--on', j === i));
+      if(++i >= n) clearInterval(sweepTimer);
+    }, step);
+  };
+  u.onend = u.onerror = clearSweep;
+
+  speechSynthesis.speak(u);
+  p.plays = (p.plays||0) + 1;
+  save(); renderStats();
+}
+
+/* ============================ análise com IA ============================ */
+async function analyze(p, btn){
+  btn.classList.add('act--busy');
+  btn.textContent = 'analisando…';
+  const accent = state.accent === 'en-GB' ? 'britânico' : 'americano';
+  const prompt = `Você é professor de fonética inglesa para brasileiros. Analise a frase abaixo e responda SOMENTE com um objeto JSON válido, sem markdown, sem crases, sem texto antes ou depois.
+
+Frase: "${p.text}"
+Sotaque de referência: inglês ${accent}
+
+Formato exato:
+{"ipa":"transcrição IPA da frase inteira, em fala conectada, entre barras","translation":"tradução natural em português do Brasil","beats":[{"w":"palavra exatamente como aparece na frase","level":"strong ou weak"}],"tips":["dica curta","dica curta"],"context":"uma frase em português dizendo em que situação se usa isso"}
+
+Regras:
+- "beats" deve conter TODAS as palavras da frase, na mesma ordem e grafia. "strong" = palavra de conteúdo acentuada; "weak" = palavra funcional reduzida.
+- "tips": 2 ou 3 dicas curtas em português, focadas em erros típicos de brasileiro (th, schwa, -ed final, s final, vogal /ɪ/ vs /i/, ligação entre palavras, sílaba tônica, não colocar "i" no fim das palavras).
+- Nada além do JSON.`;
+
+  try{
+    const res = await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        model:'claude-sonnet-4-6',
+        max_tokens:1000,
+        messages:[{role:'user',content:prompt}]
+      })
+    });
+    const data = await res.json();
+    let txt = (data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('\n');
+    txt = txt.replace(/```json|```/g,'').trim();
+    const o = JSON.parse(txt);
+
+    p.ipa = o.ipa || '';
+    p.translation = o.translation || '';
+    p.tips = Array.isArray(o.tips) ? o.tips.slice(0,3) : [];
+    p.context = o.context || '';
+    if(Array.isArray(o.beats) && o.beats.length === words(p.text).length){
+      p.beats = o.beats.map((b,i)=>({ w: words(p.text)[i], level: b.level === 'weak' ? 'weak':'strong' }));
     }
-  });
-
-  // garantir que viewer fique apenas no Dashboard
-  if(viewer){
-    setView("dashboard");
+    p.analyzedAccent = state.accent;
+    save(); render();
+  }catch(e){
+    btn.classList.remove('act--busy');
+    btn.textContent = 'tentar de novo';
+    console.warn(e);
   }
-
-  // etiqueta de usuário na sidebar (aproveita sidePeriod pill já existente) — sem adicionar novos elementos
-  const side = document.getElementById("sidePeriod");
-  if(side){
-    // mantém o período, mas dá contexto no tooltip
-    side.title = currentUser ? `${currentUser.email} • ${isAdmin() ? "Administrador" : "Visualização"}` : "";
-  }
-
-  // Holidays checkboxes são renderizados dinamicamente
-  // (desabilitamos dentro do renderHolidays também)
 }
 
-/* Logout */
-function doLogout(){
-  clearSession();
-  currentUser = null;
-  showAuth(loadUsers().length ? "login" : "setup");
-}
-
-const months = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
-
-const CLIENT_STATUSES = [
-  "NEGOCIANDO",
-  "VENDIDO",
-  "EM CREDENCIAMENTO",
-  "PRE=PRODUÇÃO",
-  "PRODUÇÃO COM PENDENCIA",
-  "PRODUÇÃO",
-  "CANCELADO"
-];
-
-const pad2 = (n)=>String(n).padStart(2,"0");
-const fmtISO = (d)=>`${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`;
-const fmtYM  = (y,m)=>`${y}-${pad2(m+1)}`;
-const startOfMonth = (y,m)=>new Date(y,m,1);
-const endOfMonth = (y,m)=>new Date(y,m+1,0);
-const isWeekend = (d)=>{ const wd=d.getDay(); return wd===0||wd===6; };
-
-const moneyBR = (v)=>(Number(v)||0).toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
-const numBR = (v,d=0)=>(Number(v)||0).toLocaleString("pt-BR",{minimumFractionDigits:d,maximumFractionDigits:d});
-const pctBR = (v)=>(Number(v)||0).toLocaleString("pt-BR",{style:"percent",minimumFractionDigits:1,maximumFractionDigits:1});
-
-function easterSunday(year){
-  const a=year%19, b=Math.floor(year/100), c=year%100;
-  const d=Math.floor(b/4), e=b%4;
-  const f=Math.floor((b+8)/25);
-  const g=Math.floor((b-f+1)/3);
-  const h=(19*a+b-d-g+15)%30;
-  const i=Math.floor(c/4), k=c%4;
-  const l=(32+2*e+2*i-h-k)%7;
-  const m=Math.floor((a+11*h+22*l)/451);
-  const month=Math.floor((h+l-7*m+114)/31);
-  const day=((h+l-7*m+114)%31)+1;
-  return new Date(year,month-1,day);
-}
-const addDays=(dt,n)=>{ const d=new Date(dt); d.setDate(d.getDate()+n); return d; };
-
-function getBrazilHolidays(year){
-  const easter=easterSunday(year);
-  const fixed=[
-    {date:new Date(year,0,1),name:"Confraternização Universal",type:"Nacional",defaultOn:true},
-    {date:new Date(year,3,21),name:"Tiradentes",type:"Nacional",defaultOn:true},
-    {date:new Date(year,4,1),name:"Dia do Trabalho",type:"Nacional",defaultOn:true},
-    {date:new Date(year,8,7),name:"Independência do Brasil",type:"Nacional",defaultOn:true},
-    {date:new Date(year,9,12),name:"Nossa Senhora Aparecida",type:"Nacional",defaultOn:true},
-    {date:new Date(year,10,2),name:"Finados",type:"Nacional",defaultOn:true},
-    {date:new Date(year,10,15),name:"Proclamação da República",type:"Nacional",defaultOn:true},
-    {date:new Date(year,11,25),name:"Natal",type:"Nacional",defaultOn:true},
-  ];
-  const movable=[
-    {date:addDays(easter,-48),name:"Carnaval (segunda)",type:"Ponto facultativo (comum)",defaultOn:true},
-    {date:addDays(easter,-47),name:"Carnaval (terça)",type:"Ponto facultativo (comum)",defaultOn:true},
-    {date:addDays(easter,-46),name:"Quarta-feira de Cinzas",type:"Ponto facultativo",defaultOn:false},
-    {date:addDays(easter,-2),name:"Sexta-feira Santa",type:"Nacional (religioso)",defaultOn:true},
-    {date:addDays(easter,60),name:"Corpus Christi",type:"Ponto facultativo (comum)",defaultOn:true},
-    {date:new Date(year,10,20),name:"Consciência Negra",type:"Regional",defaultOn:false},
-  ];
-  return [...fixed,...movable].sort((a,b)=>a.date-b.date);
-}
-function businessDaysBetween(start,end,holidaySetISO){
-  let c=0; const cur=new Date(start);
-  while(cur<=end){
-    const iso=fmtISO(cur);
-    if(!isWeekend(cur) && !holidaySetISO.has(iso)) c++;
-    cur.setDate(cur.getDate()+1);
-  }
-  return c;
-}
-function escapeHtml(s){
-  return String(s).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;")
-    .replaceAll('"',"&quot;").replaceAll("'","&#39;");
-}
-function uid(){ return "c_" + Math.random().toString(16).slice(2) + "_" + Date.now().toString(16); }
-
-/* =========================
-   Paleta de cores
-========================= */
-function palette(){
+/* ============================ links de vídeo ============================ */
+function links(text){
+  const q = encodeURIComponent(text.replace(/["“”]/g,''));
+  const dial = state.accent === 'en-GB' ? 'uk' : 'us';
   return [
-    "#F97316","#22C55E","#EF4444","#0F172A",
-    "#3B82F6","#A855F7","#06B6D4","#F59E0B",
-    "#10B981","#E11D48","#84CC16","#6366F1",
-    "#14B8A6","#8B5CF6",
+    ['YouGlish', `https://youglish.com/pronounce/${q}/english/${dial}`, 'pessoas reais em vídeo'],
+    ['PlayPhrase', `https://www.playphrase.me/#/search?q=${q}`, 'cenas de filme'],
+    ['YouTube', `https://www.youtube.com/results?search_query=%22${q}%22`, 'busca aberta']
   ];
 }
-function colorsFor(n){
-  const p = palette();
-  return Array.from({length:n}, (_,i)=>p[i % p.length]);
-}
-function statusColors(){
-  return {
-    "NEGOCIANDO": "#F97316",
-    "VENDIDO": "#22C55E",
-    "EM CREDENCIAMENTO": "#3B82F6",
-    "PRE=PRODUÇÃO": "#A855F7",
-    "PRODUÇÃO COM PENDENCIA": "#F59E0B",
-    "PRODUÇÃO": "#06B6D4",
-    "CANCELADO": "#EF4444"
-  };
+
+/* ============================ render ============================ */
+function esc(s){ return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+function beatsHTML(p){
+  const bs = p.beats && p.beats.length ? p.beats : guessBeats(p.text);
+  const inner = bs.map(b=>{
+    const w = Math.max(16, Math.min(90, b.w.replace(/[^A-Za-z']/g,'').length * 11));
+    return `<span class="beat beat--${b.level}" style="width:${w}px" title="${esc(b.w)}">
+      ${b.level==='strong' ? '<span class="beat__stress"></span>' : ''}
+    </span>`;
+  }).join('');
+  const src = p.beats && p.beats.length ? 'ritmo conferido' : 'ritmo estimado';
+  return `<div class="beats" data-beats="${p.id}">${inner}</div>
+    <p class="beats__legend">Alto = sílaba forte · baixo = engolida — ${src}</p>`;
 }
 
-/* =========================
-   Estado (com migração suave)
-========================= */
-function defaultState(){
-  const now=new Date();
-  return {
-    theme:"dark",
-    ui:{ dashboardMode:"both" }, // NEW: monthly | annual | both
-    catalogs:{
-      teams:["Comercial","SMB","Enterprise"],
-      sellers:["Ana","Bruno","Carla"],
-      channels:["Indicação","Orgânico","Parceiro","Tráfego Pago"],
-      businessTypes:["CLINICA DE DEPILAÇÃO","CLINICA DE ESTETICA","ODONTOLOGIA"]
-    },
-    filters:{ year: now.getFullYear(), month: now.getMonth(), team:"Todos", seller:"Todos" },
-    clientUI:{ status:"TODOS", channel:"TODOS", businessType:"TODOS", monthScope:"ALL" },
-    clientSearch:"",
-    clientSort:"date_desc",
-    bookmarks: [],
-    holidaysOn:{},
-    segments:{}
-  };
+function cardHTML(p, train){
+  const l = links(p.text);
+  return `
+  ${train ? '' : `<button class="card__x" data-del="${p.id}" aria-label="Remover frase">×</button>`}
+  <p class="card__text">${esc(p.text)}</p>
+  ${p.note && !train ? `<p class="card__note">${esc(p.note)}</p>` : ''}
+  ${beatsHTML(p)}
+  ${p.ipa ? `<p class="ipa">${esc(p.ipa)}</p>` : ''}
+  ${p.translation ? `<p class="card__note">${esc(p.translation)}</p>` : ''}
+  ${p.tips && p.tips.length ? `<ul class="tips">${p.tips.map(t=>`<li>${esc(t)}</li>`).join('')}</ul>` : ''}
+  ${p.context ? `<p class="ctx">${esc(p.context)}</p>` : ''}
+  <div class="acts">
+    <button class="act act--main" data-say="${p.id}" data-rate="1">▶ Ouvir</button>
+    <button class="act" data-say="${p.id}" data-rate="0.6">▶ Devagar</button>
+    <button class="act" data-an="${p.id}">${p.ipa ? 'Refazer análise' : 'Ver ritmo e IPA'}</button>
+    <button class="act" data-known="${p.id}">${p.known ? '↺ Voltar a treinar' : '✓ Já domino'}</button>
+  </div>
+  <div class="watch">
+    <p class="watch__l">Ver gente falando</p>
+    <div class="acts" style="border:0;padding:0;margin:0">
+      ${l.map(([n,u,d])=>`<a class="act" href="${u}" target="_blank" rel="noopener">${n} <span class="act__k">${d}</span></a>`).join('')}
+    </div>
+  </div>`;
 }
-let state = loadState();
 
-function normalizeList(arr){
-  if(!Array.isArray(arr)) return [];
-  const seen=new Set();
-  const out=[];
-  for(const it of arr){
-    const v=(it??"").toString().trim();
-    if(!v) continue;
-    const key=v.toLowerCase();
-    if(seen.has(key)) continue;
-    seen.add(key);
-    out.push(v);
+function visible(){
+  return state.filter === 'lea' ? state.phrases.filter(p=>!p.known) : state.phrases;
+}
+
+function renderStats(){
+  document.getElementById('s-total').textContent = state.phrases.length;
+  document.getElementById('s-known').textContent = state.phrases.filter(p=>p.known).length;
+  document.getElementById('s-plays').textContent = state.phrases.reduce((a,p)=>a+(p.plays||0),0);
+}
+
+function render(){
+  renderStats();
+  const list = visible();
+
+  if(!state.phrases.length){
+    view.innerHTML = `<div class="empty">
+      <h2>Comece pela frase que você travou ontem</h2>
+      <p>Aquela que você quis dizer e não saiu. Ou uma que ouviu numa série e ficou na cabeça.</p>
+      <button class="btn btn--ghost" id="seed">Começar com 6 frases de exemplo</button>
+    </div>`;
+    document.getElementById('seed').onclick = seed;
+    return;
   }
-  return out;
-}
 
-function loadState(){
-  try{
-    const raw=localStorage.getItem(LS_KEY);
-    if(!raw) return defaultState();
-    const s=JSON.parse(raw);
-    const base=defaultState();
-
-    const merged = {
-      ...base, ...s,
-      ui:{...base.ui, ...(s.ui||{})},                 // NEW
-      catalogs:{...base.catalogs, ...(s.catalogs||{})},
-      filters:{...base.filters, ...(s.filters||{})},
-      clientUI:{...base.clientUI, ...(s.clientUI||{})},
-      bookmarks: Array.isArray(s.bookmarks) ? s.bookmarks : [],
-      holidaysOn: s.holidaysOn||{},
-      segments: s.segments||{}
-    };
-
-    merged.catalogs.teams = normalizeList(merged.catalogs.teams);
-    merged.catalogs.sellers = normalizeList(merged.catalogs.sellers);
-    merged.catalogs.channels = normalizeList(merged.catalogs.channels);
-
-    const defaultsBT = base.catalogs.businessTypes.slice();
-    const curBT = normalizeList(merged.catalogs.businessTypes);
-    merged.catalogs.businessTypes = curBT.length ? curBT : defaultsBT;
-
-    if(!merged.ui) merged.ui = {...base.ui};
-    if(!merged.ui.dashboardMode) merged.ui.dashboardMode = "both";
-
-    return merged;
-  }catch{
-    return defaultState();
+  if(state.mode === 'tra'){
+    if(!list.length){
+      view.innerHTML = `<div class="empty"><h2>Nada para treinar</h2><p>Todas as frases estão marcadas como dominadas. Troque o filtro ou adicione uma nova.</p></div>`;
+      return;
+    }
+    if(state.idx >= list.length) state.idx = 0;
+    const p = list[state.idx];
+    view.innerHTML = `<section class="card train">
+      <p class="train__pos">${state.idx+1} de ${list.length}</p>
+      ${cardHTML(p, true)}
+      <div class="train__nav">
+        <button class="act" data-nav="-1">← Anterior</button>
+        <button class="act" data-nav="1">Próxima →</button>
+        <button class="act" data-shuffle="1">↯ Embaralhar</button>
+      </div>
+    </section>`;
+    return;
   }
-}
-function saveState(){ localStorage.setItem(LS_KEY, JSON.stringify(state)); }
-function applyTheme(){ document.body.setAttribute("data-theme", state.theme); }
 
-function segKey(team,seller){ return `${team}||${seller}`; }
-function ensureSegment(){
-  const t = state.filters.team==="Todos" ? "AllTeams" : state.filters.team;
-  const s = state.filters.seller==="Todos" ? "AllSellers" : state.filters.seller;
-  const key = segKey(t,s);
-  if(!state.segments[key]){
-    state.segments[key] = {
-      annualTarget: 1200,
-      avgValue: 2500,
-      startActive: 0,
-      status:{ closed:0, inProd:0, canceled:0 },
-      monthly:{},
-      clientsByYM:{}
-    };
+  view.innerHTML = `<div class="list">${
+    list.map(p=>`<article class="card ${p.known?'card--known':''}">${cardHTML(p,false)}</article>`).join('')
+  }</div>`;
+}
+
+/* ============================ ações ============================ */
+function find(id){ return state.phrases.find(p=>p.id===id); }
+
+view.addEventListener('click', e=>{
+  const t = e.target.closest('[data-say],[data-an],[data-del],[data-known],[data-nav],[data-shuffle]');
+  if(!t) return;
+
+  if(t.dataset.say)   return speak(find(t.dataset.say), parseFloat(t.dataset.rate));
+  if(t.dataset.an)    return analyze(find(t.dataset.an), t);
+  if(t.dataset.del){
+    state.phrases = state.phrases.filter(p=>p.id !== t.dataset.del);
+    save(); render(); return;
   }
-  if(!state.segments[key].clientsByYM) state.segments[key].clientsByYM = {};
-  return { key, data: state.segments[key], team:t, seller:s };
-}
-
-/* Holidays */
-function ensureHolidaySwitches(year){
-  const hs=getBrazilHolidays(year);
-  for(const h of hs){
-    const iso=fmtISO(h.date);
-    if(state.holidaysOn[iso]===undefined) state.holidaysOn[iso]=!!h.defaultOn;
+  if(t.dataset.known){
+    const p = find(t.dataset.known); p.known = !p.known; save(); render(); return;
   }
-}
-function holidaySetForYear(year){
-  ensureHolidaySwitches(year);
-  const hs=getBrazilHolidays(year);
-  const set=new Set();
-  for(const h of hs){
-    const iso=fmtISO(h.date);
-    if(state.holidaysOn[iso]) set.add(iso);
+  if(t.dataset.nav){
+    const n = visible().length;
+    state.idx = (state.idx + parseInt(t.dataset.nav) + n) % n;
+    render(); return;
   }
-  return set;
-}
-
-/* Déficit rules */
-function deficitLevel(defPct){
-  if(defPct >= 0.21) return "bad";
-  if(defPct >= 0.20) return "warn";
-  return "good";
-}
-function deficitLabel(defPct){
-  const lvl=deficitLevel(defPct);
-  if(lvl==="bad") return "Déficit alto";
-  if(lvl==="warn") return "Atenção (20%)";
-  return "OK";
-}
-
-/* Compute */
-function computeForMonth(year, month, seg){
-  const holidaySet = holidaySetForYear(year);
-  const bdYear = businessDaysBetween(new Date(year,0,1), new Date(year,11,31), holidaySet);
-  const bdMonth = businessDaysBetween(startOfMonth(year,month), endOfMonth(year,month), holidaySet);
-
-  const annualTarget = Number(seg.data.annualTarget)||0;
-  const avgValue = Number(seg.data.avgValue)||0;
-
-  const dailyTarget = bdYear>0 ? annualTarget/bdYear : 0;
-  const monthlyTarget = Math.round(dailyTarget*bdMonth);
-
-  const ym = fmtYM(year,month);
-  const achieved = Number(seg.data.monthly[ym]||0);
-
-  const remaining = Math.max(0, monthlyTarget-achieved);
-  const pct = monthlyTarget>0 ? achieved/monthlyTarget : 0;
-
-  const defQty = Math.max(0, monthlyTarget-achieved);
-  const defPct = monthlyTarget>0 ? defQty/monthlyTarget : 0;
-
-  const startActive = Number(seg.data.startActive)||0;
-  const currentActive = startActive + achieved;
-
-  const valueMonth = monthlyTarget*avgValue;
-
-  const closed=Number(seg.data.status.closed)||0;
-  const canceled=Number(seg.data.status.canceled)||0;
-  const cancelRate = (closed+canceled)>0 ? canceled/(closed+canceled) : 0;
-
-  return { bdYear, bdMonth, dailyTarget, monthlyTarget, achieved, remaining, pct, defQty, defPct, currentActive, valueMonth, cancelRate, ym, avgValue };
-}
-function computeYearSeries(year, seg){
-  const labels = months.map((m)=>m.slice(0,3));
-  const targets=[], actuals=[], defQtys=[], defPcts=[];
-  for(let m=0;m<12;m++){
-    const c=computeForMonth(year,m,seg);
-    targets.push(c.monthlyTarget);
-    actuals.push(c.achieved);
-    defQtys.push(c.defQty);
-    defPcts.push(c.defPct);
+  if(t.dataset.shuffle){
+    state.phrases.sort(()=>Math.random()-0.5);
+    state.idx = 0; save(); render(); return;
   }
-  return { labels, targets, actuals, defQtys, defPcts };
+});
+
+function addPhrase(text, note){
+  text = text.trim(); if(!text) return;
+  state.phrases.unshift({
+    id: 'p'+Date.now()+Math.random().toString(36).slice(2,6),
+    text, note: (note||'').trim(), known:false, plays:0
+  });
+  save(); render();
 }
-function computeYearTotals(yearSeries){
-  const sum = (arr)=>arr.reduce((a,b)=>a+(Number(b)||0),0);
-  const targetY = sum(yearSeries.targets);
-  const achievedY = sum(yearSeries.actuals);
-  const remainingY = Math.max(0, targetY - achievedY);
-  const pctY = targetY>0 ? achievedY/targetY : 0;
-  const defPctY = targetY>0 ? remainingY/targetY : 0;
-  return { targetY, achievedY, remainingY, pctY, defPctY };
+const inText = document.getElementById('in-text');
+const inNote = document.getElementById('in-note');
+function submit(){
+  addPhrase(inText.value, inNote.value);
+  inText.value=''; inNote.value=''; inText.focus();
+}
+document.getElementById('add').onclick = submit;
+[inText,inNote].forEach(el=>el.addEventListener('keydown', e=>{ if(e.key==='Enter') submit(); }));
+
+function seed(){
+  [
+    ["I'll get back to you on that.","reunião de trabalho"],
+    ["It's not a big deal.","conversa do dia a dia"],
+    ["Let me think about it for a second.","ganhando tempo"],
+    ["I didn't catch that, could you say it again?","quando não entendeu"],
+    ["That's exactly what I was going to say.","concordando"],
+    ["I'm just gonna grab a coffee.","fala rápida, informal"]
+  ].reverse().forEach(([t,n])=>addPhrase(t,n));
 }
 
-/* =========================
-   UI hooks
-========================= */
-const $ = (id)=>document.getElementById(id);
-const navBtns = document.querySelectorAll(".nav button");
-const views = {
-  dashboard: $("view-dashboard"),
-  monthly: $("view-monthly"),
-  deficit: $("view-deficit"),
-  clients: $("view-clients"),
-  config: $("view-config"),
-  holidays: $("view-holidays"),
-  users: $("view-users")
+/* ---- segmentos ---- */
+function pair(aId,bId,onA,onB){
+  const a = document.getElementById(aId), b = document.getElementById(bId);
+  a.onclick = ()=>{ a.setAttribute('aria-pressed','true'); b.setAttribute('aria-pressed','false'); onA(); };
+  b.onclick = ()=>{ b.setAttribute('aria-pressed','true'); a.setAttribute('aria-pressed','false'); onB(); };
+}
+pair('m-col','m-tra', ()=>{state.mode='col';render();}, ()=>{state.mode='tra';state.idx=0;render();});
+pair('a-us','a-uk',  ()=>{state.accent='en-US';render();}, ()=>{state.accent='en-GB';render();});
+pair('f-all','f-lea',()=>{state.filter='all';state.idx=0;render();}, ()=>{state.filter='lea';state.idx=0;render();});
+
+/* ---- rodapé ---- */
+document.getElementById('export').onclick = ()=>{
+  const txt = state.phrases.map(p=>[p.text,p.ipa||'',p.translation||'',p.note||''].join(' | ')).join('\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([txt],{type:'text/plain'}));
+  a.download = 'minhas-frases.txt'; a.click();
+};
+document.getElementById('wipe').onclick = async ()=>{
+  state.phrases = []; state.idx = 0;
+  try{ await window.storage.delete(KEY); }catch(e){}
+  render();
 };
 
-const yearEl=$("year"), monthEl=$("month"), teamEl=$("team"), sellerEl=$("seller");
-const annualTargetEl=$("annualTarget"), avgValueEl=$("avgValue"), startActiveEl=$("startActive");
-const bdYearEl=$("bdYear"), dailyTargetEl=$("dailyTarget"), currentActiveEl=$("currentActive");
-const closedEl=$("closed"), inProdEl=$("inProd"), canceledEl=$("canceled"), cancelRateEl=$("cancelRate");
-
-const kpiMonthlyTargetEl=$("kpiMonthlyTarget"), kpiAchievedEl=$("kpiAchieved"),
-      kpiRemainingEl=$("kpiRemaining"), kpiPctEl=$("kpiPct"), kpiValueEl=$("kpiValue"),
-      kpiAvgValueEl=$("kpiAvgValue"), kpiBDMonthEl=$("kpiBDMonth"),
-      badgeDeficit=$("badgeDeficit"), kpiDefPctEl=$("kpiDefPct");
-
-const monthlyActualEl=$("monthlyActual"), monthlyTargetCalcEl=$("monthlyTargetCalc"), monthlyDefQtyEl=$("monthlyDefQty");
-const deficitBody=$("deficitBody");
-const holidayGrid=$("holidayGrid");
-
-const teamsInput=$("teamsInput"), sellersInput=$("sellersInput"), channelsInput=$("channelsInput");
-const businessTypesInput=$("businessTypesInput");
-const btnSaveCatalog=$("btnSaveCatalog"), btnSeedDemo=$("btnSeedDemo");
-
-const btnTheme=$("btnTheme"), btnToday=$("btnToday"), btnReset=$("btnReset"), btnExportJSON=$("btnExportJSON"), btnBackupAll=$("btnBackupAll"), fileBackupJSON=$("fileBackupJSON"), btnLogout=$("btnLogout");
-const btnExportCSV=$("btnExportCSV"), fileCSV=$("fileCSV");
-
-/* KPIs anuais */
-const kpiMonthLabel=$("kpiMonthLabel");
-const kpiYearLabel=$("kpiYearLabel");
-const kpiAnnualTargetEl=$("kpiAnnualTarget");
-const kpiAnnualAchievedEl=$("kpiAnnualAchieved");
-const kpiAnnualRemainingEl=$("kpiAnnualRemaining");
-const kpiAnnualPctEl=$("kpiAnnualPct");
-const kpiAnnualDefPctEl=$("kpiAnnualDefPct");
-const kpiAnnualValueEl=$("kpiAnnualValue");
-const kpiAnnualAvgValueEl=$("kpiAnnualAvgValue");
-const kpiBDYearTextEl=$("kpiBDYear");
-
-/* Toggle dashboard */
-const dashToggle=$("dashToggle");
-const dashMonthlySection=$("dashMonthlySection");
-const dashAnnualSection=$("dashAnnualSection");
-
-/* Clients */
-const clientDateEl = $("clientDate");
-const clientNameEl = $("clientName");
-const clientStatusEl = $("clientStatus");
-const clientChannelEl = $("clientChannel");
-const clientBusinessTypeEl = $("clientBusinessType");
-const clientQtyEl = $("clientQty");
-const clientNoteEl = $("clientNote");
-const btnAddClient = $("btnAddClient");
-const btnCancelEditClient = $("btnCancelEditClient");
-
-const clientMonthScopeEl = $("clientMonthScope");
-const clientSearchEl=$("clientSearch"), filterStatusEl=$("filterStatus"), filterChannelEl=$("filterChannel"),
-      filterBusinessTypeEl=$("filterBusinessType"),
-      clientSortEl=$("clientSort");
-
-const clientsBody=$("clientsBody");
-const clientsTotalQtyEl=$("clientsTotalQty"),
-      clientsNegotiatingEl=$("clientsNegotiating"),
-      clientsSoldEl=$("clientsSold"),
-      clientsCredEl=$("clientsCred"),
-      clientsPreProdEl=$("clientsPreProd"),
-      clientsProdEl=$("clientsProd");
-const clientsPill=$("clientsPill"), clientsPeriodMini=$("clientsPeriodMini");
-const clientsTotalLabel=$("clientsTotalLabel");
-
-/* slicers */
-const statusSlicers=$("statusSlicers");
-const channelSlicers=$("channelSlicers");
-const btnClearClientFilters=$("btnClearClientFilters");
-
-/* Bookmarks */
-const bmNameEl=$("bmName");
-const btnSaveBookmark=$("btnSaveBookmark");
-const btnClearBookmarks=$("btnClearBookmarks");
-const bmListEl=$("bmList");
-
-/* Clients charts */
-let funnelChart, channelChart, businessTypeChart;
-const btnExportClientsCSVMonth=$("btnExportClientsCSVMonth");
-const btnExportClientsCSVYear=$("btnExportClientsCSVYear");
-const fileClientsCSV=$("fileClientsCSV");
-
-/* Editing ref */
-let editingClientRef = null;
-
-/* View switching */
-function setView(name){
-  Object.values(views).forEach(v=>v.classList.remove("active"));
-  views[name].classList.add("active");
-  navBtns.forEach(b=>b.classList.toggle("active", b.dataset.nav===name));
-
-  const titles={
-    dashboard:["Dashboard","Lançamento mensal + déficit mês a mês + visão anual + clientes para apresentação."],
-    monthly:["Mensal","Lance apenas a quantidade total do mês selecionado."],
-    deficit:["Déficit","Comparação mês a mês e variação vs mês anterior."],
-    clients:["Clientes","Cadastro e edição (os gráficos ficam no Dashboard)."],
-    config:["Config","Cadastro de equipes, vendedores, canais e tipo de negócio."],
-    holidays:["Feriados","Controle dos dias úteis (BR)."],
-    users:["Usuários","Gerencie e-mails, senhas e perfis de acesso."]
-  };
-  $("mainTitle").textContent=titles[name][0];
-  $("mainSubtitle").textContent=titles[name][1];
-}
-
-/* Toggle mode apply */
-function applyDashboardMode(){
-  const mode = state.ui?.dashboardMode || "both";
-  if(dashMonthlySection) dashMonthlySection.classList.toggle("hidden", mode==="annual");
-  if(dashAnnualSection)  dashAnnualSection.classList.toggle("hidden", mode==="monthly");
-
-  if(dashToggle){
-    dashToggle.querySelectorAll(".tbtn").forEach(btn=>{
-      btn.classList.toggle("active", btn.dataset.mode === mode);
-    });
-  }
-}
-
-/* Render filters */
-function renderFilters(){
-  monthEl.innerHTML = months.map((m,i)=>`<option value="${i}">${m}</option>`).join("");
-  const teams=["Todos", ...state.catalogs.teams];
-  const sellers=["Todos", ...state.catalogs.sellers];
-  teamEl.innerHTML = teams.map(t=>`<option value="${escapeHtml(t)}">${escapeHtml(t)}</option>`).join("");
-  sellerEl.innerHTML = sellers.map(s=>`<option value="${escapeHtml(s)}">${escapeHtml(s)}</option>`).join("");
-
-  yearEl.value = state.filters.year;
-  monthEl.value = String(state.filters.month);
-  teamEl.value = state.filters.team;
-  sellerEl.value = state.filters.seller;
-
-  const period = `${months[state.filters.month]} ${state.filters.year}`;
-  $("periodLabel").textContent = `${period} • ${state.filters.team} • ${state.filters.seller}`;
-  $("sidePeriod").textContent = period;
-  $("kpiPill").textContent = `${state.filters.team} • ${state.filters.seller}`;
-  $("monthlyPill").textContent = `${period} • ${state.filters.team} • ${state.filters.seller}`;
-  $("deficitPill").textContent = `${state.filters.year} • ${state.filters.team} • ${state.filters.seller}`;
-  $("holidayPill").textContent = period;
-
-  if(kpiMonthLabel) kpiMonthLabel.textContent = period;
-  if(kpiYearLabel) kpiYearLabel.textContent = `${state.filters.year}`;
-
-  clientsPill.textContent = `${state.filters.year} • ${state.filters.team} • ${state.filters.seller}`;
-  clientsPeriodMini.textContent = `Ano: ${state.filters.year}`;
-}
-
-/* Render holidays */
-function fmtBR(d){ return `${pad2(d.getDate())}/${pad2(d.getMonth()+1)}/${d.getFullYear()}`; }
-function renderHolidays(){
-  const year=state.filters.year;
-  ensureHolidaySwitches(year);
-  const hs=getBrazilHolidays(year);
-  const onCount=hs.filter(h=>state.holidaysOn[fmtISO(h.date)]).length;
-  $("holidayCount").textContent = `${onCount}/${hs.length} ativos`;
-
-  holidayGrid.innerHTML = hs.map(h=>{
-    const iso=fmtISO(h.date);
-    const checked=!!state.holidaysOn[iso];
-    return `
-      <div class="holidayItem">
-        <div class="name">
-          <b title="${escapeHtml(h.name)}">${escapeHtml(h.name)}</b>
-          <span title="${escapeHtml(h.type)}">${fmtBR(h.date)} • ${escapeHtml(h.type)}</span>
-        </div>
-        <label class="toggle">
-          <input type="checkbox" data-holiday="${iso}" ${checked?"checked":""}/> incluir
-        </label>
-      </div>
-    `;
-  }).join("");
-
-  holidayGrid.querySelectorAll("input[data-holiday]").forEach(chk=>{
-    if(!isAdmin()){ chk.disabled = true; }
-
-    chk.addEventListener("change",(e)=>{
-      const iso=e.target.getAttribute("data-holiday");
-      state.holidaysOn[iso]=e.target.checked;
-      renderAll();
-    });
-  });
-}
-
-/* Charts */
-let pieChart, pieYearChart, lineChart, barYearChart, barStatus, deficitChart, momChart;
-let spkTarget, spkAch, spkPct, spkVal;
-
-function chartColors(){
-  const cs=getComputedStyle(document.body);
-  return { muted: cs.getPropertyValue("--muted").trim(), grid: cs.getPropertyValue("--grid").trim() };
-}
-
-function renderChartsMonthAndYear(cur, yearSeries){
-  const achieved=Math.max(0,cur.achieved);
-  const remaining=Math.max(0,cur.remaining);
-
-  // Pizza mensal
-  if(!pieChart){
-    pieChart = new Chart($("pieChart"),{
-      type:"doughnut",
-      data:{
-        labels:["Atingido","Falta"],
-        datasets:[{
-          data:[achieved,remaining],
-          backgroundColor:["#22C55E","#EF4444"],
-          borderWidth:2,
-          hoverOffset:6
-        }]
-      },
-      options:{ responsive:true, cutout:"68%",
-        plugins:{
-          legend:{ position:"bottom", labels:{ color: chartColors().muted, boxWidth:14 } },
-          tooltip:{ callbacks:{ label:(ctx)=>`${ctx.label}: ${numBR(ctx.raw,0)}` } }
-        }
-      }
-    });
-  } else {
-    pieChart.data.datasets[0].data=[achieved,remaining];
-    pieChart.data.datasets[0].backgroundColor=["#22C55E","#EF4444"];
-    pieChart.options.plugins.legend.labels.color=chartColors().muted;
-    pieChart.update();
-  }
-
-  // Linha anual (por mês)
-  if(!lineChart){
-    lineChart = new Chart($("lineChart"),{
-      type:"line",
-      data:{
-        labels: yearSeries.labels,
-        datasets:[
-          { label:"Real (mês)", data: yearSeries.actuals, tension:.35, pointRadius:2,
-            borderColor:"#22C55E", backgroundColor:"rgba(34,197,94,0.15)", fill:true },
-          { label:"Meta (mês)", data: yearSeries.targets, tension:.35, pointRadius:2,
-            borderColor:"#F97316", backgroundColor:"rgba(249,115,22,0.12)", fill:true }
-        ]
-      },
-      options:{
-        responsive:true,
-        plugins:{
-          legend:{ position:"bottom", labels:{ color: chartColors().muted } },
-          tooltip:{ callbacks:{ label:(ctx)=>`${ctx.dataset.label}: ${numBR(ctx.raw,0)}` } }
-        },
-        scales:{
-          x:{ ticks:{ color: chartColors().muted }, grid:{ color: chartColors().grid } },
-          y:{ ticks:{ color: chartColors().muted }, grid:{ color: chartColors().grid } }
-        }
-      }
-    });
-  } else {
-    lineChart.data.labels=yearSeries.labels;
-    lineChart.data.datasets[0].data=yearSeries.actuals;
-    lineChart.data.datasets[1].data=yearSeries.targets;
-    lineChart.data.datasets[0].borderColor="#22C55E";
-    lineChart.data.datasets[1].borderColor="#F97316";
-    lineChart.options.plugins.legend.labels.color=chartColors().muted;
-    lineChart.options.scales.x.ticks.color=chartColors().muted;
-    lineChart.options.scales.y.ticks.color=chartColors().muted;
-    lineChart.options.scales.x.grid.color=chartColors().grid;
-    lineChart.options.scales.y.grid.color=chartColors().grid;
-    lineChart.update();
-  }
-
-  // Barra anual (meta x real por mês)
-  if(!barYearChart){
-    barYearChart = new Chart($("barYearChart"),{
-      type:"bar",
-      data:{
-        labels: yearSeries.labels,
-        datasets:[
-          { label:"Real", data: yearSeries.actuals, backgroundColor:"#22C55E" },
-          { label:"Meta", data: yearSeries.targets, backgroundColor:"#F97316" }
-        ]
-      },
-      options:{
-        responsive:true,
-        plugins:{
-          legend:{ position:"bottom", labels:{ color: chartColors().muted } },
-          tooltip:{ callbacks:{ label:(ctx)=>`${ctx.dataset.label}: ${numBR(ctx.raw,0)}` } }
-        },
-        scales:{
-          x:{ ticks:{ color: chartColors().muted }, grid:{ color: chartColors().grid } },
-          y:{ ticks:{ color: chartColors().muted }, grid:{ color: chartColors().grid } }
-        }
-      }
-    });
-  } else {
-    barYearChart.data.labels = yearSeries.labels;
-    barYearChart.data.datasets[0].data = yearSeries.actuals;
-    barYearChart.data.datasets[1].data = yearSeries.targets;
-    barYearChart.data.datasets[0].backgroundColor = "#22C55E";
-    barYearChart.data.datasets[1].backgroundColor = "#F97316";
-    barYearChart.options.plugins.legend.labels.color=chartColors().muted;
-    barYearChart.options.scales.x.ticks.color=chartColors().muted;
-    barYearChart.options.scales.y.ticks.color=chartColors().muted;
-    barYearChart.options.scales.x.grid.color=chartColors().grid;
-    barYearChart.options.scales.y.grid.color=chartColors().grid;
-    barYearChart.update();
-  }
-
-  // Pizza anual
-  const tot = computeYearTotals(yearSeries);
-  const yAch = Math.max(0, tot.achievedY);
-  const yRem = Math.max(0, tot.remainingY);
-
-  if(!pieYearChart){
-    pieYearChart = new Chart($("pieYearChart"),{
-      type:"doughnut",
-      data:{
-        labels:["Atingido no ano","Falta no ano"],
-        datasets:[{
-          data:[yAch, yRem],
-          backgroundColor:["#22C55E","#EF4444"],
-          borderWidth:2,
-          hoverOffset:6
-        }]
-      },
-      options:{
-        responsive:true,
-        cutout:"68%",
-        plugins:{
-          legend:{ position:"bottom", labels:{ color: chartColors().muted, boxWidth:14 } },
-          tooltip:{ callbacks:{ label:(ctx)=>`${ctx.label}: ${numBR(ctx.raw,0)}` } }
-        }
-      }
-    });
-  } else {
-    pieYearChart.data.datasets[0].data=[yAch, yRem];
-    pieYearChart.data.datasets[0].backgroundColor=["#22C55E","#EF4444"];
-    pieYearChart.options.plugins.legend.labels.color=chartColors().muted;
-    pieYearChart.update();
-  }
-
-  // Status
-  const st=ensureSegment().data.status;
-  const statusVals=[Number(st.closed||0), Number(st.inProd||0), Number(st.canceled||0)];
-  if(!barStatus){
-    barStatus = new Chart($("barStatus"),{
-      type:"bar",
-      data:{
-        labels:["Fechados","Em produção","Cancelados"],
-        datasets:[{
-          label:"Quantidade",
-          data: statusVals,
-          backgroundColor:["#22C55E","#3B82F6","#EF4444"],
-          borderWidth:1
-        }]
-      },
-      options:{ responsive:true,
-        plugins:{ legend:{display:false}, tooltip:{ callbacks:{ label:(ctx)=>`Qtd: ${numBR(ctx.raw,0)}` } } },
-        scales:{
-          x:{ ticks:{ color: chartColors().muted }, grid:{ color: chartColors().grid } },
-          y:{ ticks:{ color: chartColors().muted }, grid:{ color: chartColors().grid } }
-        }
-      }
-    });
-  } else {
-    barStatus.data.datasets[0].data=statusVals;
-    barStatus.data.datasets[0].backgroundColor=["#22C55E","#3B82F6","#EF4444"];
-    barStatus.options.scales.x.ticks.color=chartColors().muted;
-    barStatus.options.scales.y.ticks.color=chartColors().muted;
-    barStatus.options.scales.x.grid.color=chartColors().grid;
-    barStatus.options.scales.y.grid.color=chartColors().grid;
-    barStatus.update();
-  }
-
-  // Sparks
-  const sparkOpts = ()=>({
-    responsive:true,
-    plugins:{ legend:{display:false}, tooltip:{enabled:false} },
-    scales:{ x:{display:false}, y:{display:false} },
-    elements:{ line:{ tension:.35 }, point:{ radius:0 } }
-  });
-  const maxT = Math.max(...yearSeries.targets, 1);
-  const tgtPct = yearSeries.targets.map(v=> v/maxT);
-  const actPct = yearSeries.actuals.map(v=> v/maxT);
-  const pctPct = yearSeries.actuals.map((v,i)=> yearSeries.targets[i]>0 ? v/yearSeries.targets[i] : 0);
-  const valSer = yearSeries.targets.map(v=> v*(Number(ensureSegment().data.avgValue)||0));
-
-  if(!spkTarget){
-    spkTarget = new Chart($("spkTarget"),{ type:"line", data:{ labels:yearSeries.labels, datasets:[{ data:tgtPct, borderColor:"#F97316" }] }, options:sparkOpts() });
-    spkAch    = new Chart($("spkAch"),   { type:"line", data:{ labels:yearSeries.labels, datasets:[{ data:actPct, borderColor:"#22C55E" }] }, options:sparkOpts() });
-    spkPct    = new Chart($("spkPct"),   { type:"line", data:{ labels:yearSeries.labels, datasets:[{ data:pctPct, borderColor:"#3B82F6" }] }, options:sparkOpts() });
-    spkVal    = new Chart($("spkVal"),   { type:"line", data:{ labels:yearSeries.labels, datasets:[{ data:valSer, borderColor:"#A855F7" }] }, options:sparkOpts() });
-  } else {
-    spkTarget.data.labels=yearSeries.labels; spkTarget.data.datasets[0].data=tgtPct; spkTarget.data.datasets[0].borderColor="#F97316"; spkTarget.update();
-    spkAch.data.labels=yearSeries.labels;    spkAch.data.datasets[0].data=actPct;    spkAch.data.datasets[0].borderColor="#22C55E";    spkAch.update();
-    spkPct.data.labels=yearSeries.labels;    spkPct.data.datasets[0].data=pctPct;    spkPct.data.datasets[0].borderColor="#3B82F6";    spkPct.update();
-    spkVal.data.labels=yearSeries.labels;    spkVal.data.datasets[0].data=valSer;    spkVal.data.datasets[0].borderColor="#A855F7";    spkVal.update();
-  }
-}
-
-function renderDeficitDash(year, seg){
-  const ys = computeYearSeries(year, seg);
-  const defPct = ys.defPcts.map(v=> v*100);
-
-  if(!deficitChart){
-    deficitChart = new Chart($("deficitChart"),{
-      type:"bar",
-      data:{
-        labels: ys.labels,
-        datasets:[{
-          label:"Déficit (%)",
-          data: defPct,
-          backgroundColor: colorsFor(defPct.length),
-          borderWidth:1
-        }]
-      },
-      options:{
-        responsive:true,
-        plugins:{
-          legend:{ position:"bottom", labels:{ color: chartColors().muted } },
-          tooltip:{ callbacks:{ label:(ctx)=>`Déficit: ${numBR(ctx.raw,1)}%` } }
-        },
-        scales:{
-          x:{ ticks:{ color: chartColors().muted }, grid:{ color: chartColors().grid } },
-          y:{ ticks:{ color: chartColors().muted }, grid:{ color: chartColors().grid } }
-        }
-      }
-    });
-  } else {
-    deficitChart.data.labels=ys.labels;
-    deficitChart.data.datasets[0].data=defPct;
-    deficitChart.data.datasets[0].backgroundColor = colorsFor(defPct.length);
-    deficitChart.options.plugins.legend.labels.color=chartColors().muted;
-    deficitChart.options.scales.x.ticks.color=chartColors().muted;
-    deficitChart.options.scales.y.ticks.color=chartColors().muted;
-    deficitChart.options.scales.x.grid.color=chartColors().grid;
-    deficitChart.options.scales.y.grid.color=chartColors().grid;
-    deficitChart.update();
-  }
-
-  const mom = ys.defQtys.map((v,i)=> i===0 ? v : (v - ys.defQtys[i-1]));
-  if(!momChart){
-    momChart = new Chart($("momChart"),{
-      type:"line",
-      data:{
-        labels: ys.labels,
-        datasets:[{
-          label:"Δ Déficit (Qtd) vs mês anterior",
-          data: mom,
-          tension:.35,
-          pointRadius:2,
-          borderColor:"#0F172A",
-          backgroundColor:"rgba(15,23,42,0.10)",
-          fill:true
-        }]
-      },
-      options:{
-        responsive:true,
-        plugins:{
-          legend:{ position:"bottom", labels:{ color: chartColors().muted } },
-          tooltip:{ callbacks:{ label:(ctx)=>`Δ: ${numBR(ctx.raw,0)}` } }
-        },
-        scales:{
-          x:{ ticks:{ color: chartColors().muted }, grid:{ color: chartColors().grid } },
-          y:{ ticks:{ color: chartColors().muted }, grid:{ color: chartColors().grid } }
-        }
-      }
-    });
-  } else {
-    momChart.data.labels=ys.labels;
-    momChart.data.datasets[0].data=mom;
-    momChart.data.datasets[0].borderColor="#0F172A";
-    momChart.options.plugins.legend.labels.color=chartColors().muted;
-    momChart.options.scales.x.ticks.color=chartColors().muted;
-    momChart.options.scales.y.ticks.color=chartColors().muted;
-    momChart.options.scales.x.grid.color=chartColors().grid;
-    momChart.options.scales.y.grid.color=chartColors().grid;
-    momChart.update();
-  }
-
-  const rows=[];
-  for(let i=0;i<12;i++){
-    const defQ=ys.defQtys[i];
-    const defP=ys.defPcts[i];
-    const lvl=deficitLevel(defP);
-    const cls = lvl==="bad" ? "defBad" : (lvl==="warn" ? "defWarn" : "");
-    const momDelta = i===0 ? defQ : (defQ - ys.defQtys[i-1]);
-    rows.push(`
-      <tr class="${cls}">
-        <td>${months[i].slice(0,3)}</td>
-        <td class="num">${numBR(ys.targets[i],0)}</td>
-        <td class="num">${numBR(ys.actuals[i],0)}</td>
-        <td class="num">${numBR(defQ,0)}</td>
-        <td class="num">${pctBR(defP)}</td>
-        <td class="num">${(i===0 ? "—" : (momDelta>=0?"+":"") + numBR(momDelta,0))}</td>
-      </tr>
-    `);
-  }
-  deficitBody.innerHTML = rows.join("");
-}
-
-/* KPIs */
-function renderKPIs(cur, seg, yearSeries){
-  annualTargetEl.value=seg.data.annualTarget;
-  avgValueEl.value=seg.data.avgValue;
-  startActiveEl.value=seg.data.startActive;
-
-  closedEl.value=seg.data.status.closed;
-  inProdEl.value=seg.data.status.inProd;
-  canceledEl.value=seg.data.status.canceled;
-
-  bdYearEl.value = `${cur.bdYear} dias úteis`;
-  dailyTargetEl.value = `${numBR(cur.dailyTarget,2)} contratos/dia útil`;
-  currentActiveEl.value = numBR(cur.currentActive,0);
-  const closed=Number(seg.data.status.closed)||0;
-  const canceled=Number(seg.data.status.canceled)||0;
-  const cancelRate = (closed+canceled)>0 ? canceled/(closed+canceled) : 0;
-  cancelRateEl.value = pctBR(cancelRate);
-
-  // mensal
-  kpiMonthlyTargetEl.textContent = numBR(cur.monthlyTarget,0);
-  kpiBDMonthEl.textContent = `${cur.bdMonth} dias úteis`;
-  kpiAchievedEl.textContent = numBR(cur.achieved,0);
-  kpiRemainingEl.textContent = `${numBR(cur.remaining,0)} falta`;
-  kpiPctEl.textContent = pctBR(cur.pct);
-  kpiValueEl.textContent = moneyBR(cur.valueMonth);
-  kpiAvgValueEl.textContent = moneyBR(cur.avgValue);
-  kpiDefPctEl.textContent = pctBR(cur.defPct);
-
-  const lvl = deficitLevel(cur.defPct);
-  badgeDeficit.classList.remove("good","warn","bad");
-  badgeDeficit.classList.add(lvl);
-  badgeDeficit.querySelector("span:last-child").textContent = deficitLabel(cur.defPct);
-
-  monthlyActualEl.value = Number(seg.data.monthly[cur.ym]||0);
-  monthlyTargetCalcEl.value = numBR(cur.monthlyTarget,0);
-  monthlyDefQtyEl.value = numBR(cur.defQty,0);
-
-  // anual
-  const tot = computeYearTotals(yearSeries);
-  const annualTarget = Number(seg.data.annualTarget||0);
-  const avgValue = Number(seg.data.avgValue||0);
-
-  kpiAnnualTargetEl.textContent = numBR(annualTarget,0);
-  kpiBDYearTextEl.textContent = `${numBR(cur.bdYear,0)}`;
-
-  kpiAnnualAchievedEl.textContent = numBR(tot.achievedY,0);
-  kpiAnnualRemainingEl.textContent = numBR(tot.remainingY,0);
-
-  kpiAnnualPctEl.textContent = pctBR(tot.pctY);
-  kpiAnnualDefPctEl.textContent = pctBR(tot.defPctY);
-
-  kpiAnnualValueEl.textContent = moneyBR(annualTarget * avgValue);
-  kpiAnnualAvgValueEl.textContent = moneyBR(avgValue);
-}
-
-/* =========================
-   CLIENTES (mantido)
-========================= */
-function renderClientSelectors(){
-  clientStatusEl.innerHTML = CLIENT_STATUSES.map(s=>`<option value="${escapeHtml(s)}">${escapeHtml(s)}</option>`).join("");
-
-  const ch = (state.catalogs.channels||[]).slice();
-  clientChannelEl.innerHTML = ch.length
-    ? ch.map(c=>`<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join("")
-    : `<option value="">(cadastre canais no Config)</option>`;
-
-  const bt = (state.catalogs.businessTypes||[]).slice();
-  clientBusinessTypeEl.innerHTML = bt.length
-    ? bt.map(t=>`<option value="${escapeHtml(t)}">${escapeHtml(t)}</option>`).join("")
-    : `<option value="">(cadastre tipos no Config)</option>`;
-
-  filterStatusEl.innerHTML =
-    `<option value="TODOS">Todos</option>` + CLIENT_STATUSES.map(s=>`<option value="${escapeHtml(s)}">${escapeHtml(s)}</option>`).join("");
-
-  filterChannelEl.innerHTML =
-    `<option value="TODOS">Todos</option>` + (state.catalogs.channels||[]).map(c=>`<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join("");
-
-  filterBusinessTypeEl.innerHTML =
-    `<option value="TODOS">Todos</option>` + (state.catalogs.businessTypes||[]).map(t=>`<option value="${escapeHtml(t)}">${escapeHtml(t)}</option>`).join("");
-
-  clientMonthScopeEl.innerHTML = `<option value="ALL">Ano todo</option>` + months.map((m,i)=>{
-    const ym = fmtYM(state.filters.year, i);
-    return `<option value="${ym}">${m} (${ym})</option>`;
-  }).join("");
-
-  filterStatusEl.value = state.clientUI.status || "TODOS";
-  filterChannelEl.value = state.clientUI.channel || "TODOS";
-  filterBusinessTypeEl.value = state.clientUI.businessType || "TODOS";
-  clientMonthScopeEl.value = state.clientUI.monthScope || "ALL";
-  clientSearchEl.value = state.clientSearch || "";
-  clientSortEl.value = state.clientSort || "date_desc";
-}
-
-function getAllClientsForYear(seg, year){
-  const out=[];
-  const byYM = seg.data.clientsByYM || {};
-  for(let m=0;m<12;m++){
-    const ym = fmtYM(year,m);
-    const list = Array.isArray(byYM[ym]) ? byYM[ym] : [];
-    for(const c of list){
-      out.push({ ...c, ym });
-    }
-  }
-  return out;
-}
-
-function enterEditClient(client, ym){
-  editingClientRef = { id: client.id, ym };
-
-  clientDateEl.value = (client.dateISO || fmtISO(new Date()));
-  clientNameEl.value = client.name || "";
-  clientStatusEl.value = client.status || "NEGOCIANDO";
-  clientChannelEl.value = client.channel || (state.catalogs.channels?.[0] || "");
-  clientBusinessTypeEl.value = client.businessType || (state.catalogs.businessTypes?.[0] || "");
-  clientQtyEl.value = Math.max(1, Math.trunc(Number(client.qty||1)));
-  clientNoteEl.value = client.note || "";
-
-  btnAddClient.textContent = "Salvar";
-  btnCancelEditClient.style.display = "inline-flex";
-}
-
-function exitEditClient(){
-  editingClientRef = null;
-
-  clientDateEl.value = fmtISO(new Date());
-  clientNameEl.value = "";
-  clientStatusEl.value = "NEGOCIANDO";
-  clientQtyEl.value = "1";
-  clientNoteEl.value = "";
-  clientBusinessTypeEl.value = (state.catalogs.businessTypes?.[0] || "");
-
-  btnAddClient.textContent = "Adicionar";
-  btnCancelEditClient.style.display = "none";
-}
-
-function addClient(){
-  const seg = ensureSegment();
-
-  const dateISO = (clientDateEl.value || "").trim() || fmtISO(new Date());
-  const name = (clientNameEl.value||"").trim();
-  const status = clientStatusEl.value;
-  const channel = clientChannelEl.value;
-  const businessType = clientBusinessTypeEl.value;
-  const qty = Math.max(1, Math.trunc(Number(clientQtyEl.value||1)));
-  const note = (clientNoteEl.value||"").trim();
-
-  if(!name){ alert("Informe o nome do cliente."); return; }
-  if(!channel){ alert("Cadastre um canal no Config e selecione um canal."); return; }
-  if(!businessType){ alert("Cadastre um Tipo de Negócio no Config e selecione um."); return; }
-
-  const newYM = (dateISO.slice(0,7));
-  if(!seg.data.clientsByYM) seg.data.clientsByYM = {};
-
-  if(editingClientRef){
-    const oldYM = editingClientRef.ym;
-    const id = editingClientRef.id;
-
-    if(!seg.data.clientsByYM[oldYM]) seg.data.clientsByYM[oldYM] = [];
-    const oldList = seg.data.clientsByYM[oldYM];
-    const idx = oldList.findIndex(x=>x.id===id);
-
-    if(idx < 0){
-      alert("Não encontrei este registro para editar (pode ter sido removido).");
-      exitEditClient();
-      return;
-    }
-
-    const updated = { ...oldList[idx], dateISO, name, status, channel, businessType, qty, note };
-
-    if(newYM !== oldYM){
-      oldList.splice(idx, 1);
-      seg.data.clientsByYM[oldYM] = oldList;
-
-      if(!seg.data.clientsByYM[newYM]) seg.data.clientsByYM[newYM] = [];
-      seg.data.clientsByYM[newYM].push(updated);
-
-      if(state.clientUI.monthScope === oldYM) state.clientUI.monthScope = newYM;
-    } else {
-      oldList[idx] = updated;
-      seg.data.clientsByYM[oldYM] = oldList;
-    }
-
-    exitEditClient();
-    renderAll();
-    return;
-  }
-
-  if(!seg.data.clientsByYM[newYM]) seg.data.clientsByYM[newYM] = [];
-  seg.data.clientsByYM[newYM].push({ id: uid(), dateISO, name, status, channel, businessType, qty, note });
-
-  if(state.clientUI.monthScope !== "ALL" && state.clientUI.monthScope !== newYM){
-    state.clientUI.monthScope = newYM;
-  }
-
-  exitEditClient();
-  renderAll();
-}
-
-function deleteClient(ref){
-  const seg = ensureSegment();
-  const list = (seg.data.clientsByYM?.[ref.ym]) ? seg.data.clientsByYM[ref.ym] : [];
-  const idx = list.findIndex(x=>x.id===ref.id);
-  if(idx>=0){
-    list.splice(idx,1);
-    seg.data.clientsByYM[ref.ym]=list;
-    if(editingClientRef && editingClientRef.id===ref.id) exitEditClient();
-    renderAll();
-  }
-}
-
-function setClientFilterStatus(v){
-  state.clientUI.status = v;
-  filterStatusEl.value = v;
-  renderAll();
-}
-function setClientFilterChannel(v){
-  state.clientUI.channel = v;
-  filterChannelEl.value = v;
-  renderAll();
-}
-function clearClientFilters(){
-  state.clientUI.status="TODOS";
-  state.clientUI.channel="TODOS";
-  state.clientUI.businessType="TODOS";
-  state.clientUI.monthScope="ALL";
-  state.clientSearch="";
-  state.clientSort="date_desc";
-  filterStatusEl.value="TODOS";
-  filterChannelEl.value="TODOS";
-  filterBusinessTypeEl.value="TODOS";
-  clientMonthScopeEl.value="ALL";
-  clientSearchEl.value="";
-  clientSortEl.value="date_desc";
-  exitEditClient();
-  renderAll();
-}
-
-function aggregate(list){
-  const totalQty = list.reduce((acc,x)=>acc + Number(x.qty||0), 0);
-
-  const sumByStatus = {};
-  for(const s of CLIENT_STATUSES) sumByStatus[s]=0;
-  for(const x of list){
-    const st = x.status || "NEGOCIANDO";
-    sumByStatus[st] = (sumByStatus[st]||0) + Number(x.qty||0);
-  }
-
-  const byChannel = {};
-  for(const x of list){
-    const k = x.channel || "—";
-    byChannel[k] = (byChannel[k]||0) + Number(x.qty||0);
-  }
-  const channelEntries = Object.entries(byChannel).sort((a,b)=>b[1]-a[1]);
-
-  const byBusinessType = {};
-  for(const x of list){
-    const k = (x.businessType || "—").trim() || "—";
-    byBusinessType[k] = (byBusinessType[k]||0) + Number(x.qty||0);
-  }
-  const businessTypeEntries = Object.entries(byBusinessType).sort((a,b)=>b[1]-a[1]);
-
-  return { totalQty, sumByStatus, channelEntries, businessTypeEntries };
-}
-
-function renderSlicers(sumByStatus, channelEntries, totalQty){
-  if(!statusSlicers || !channelSlicers) return;
-
-  // Status Slicer (unchanged)
-  statusSlicers.innerHTML = [
-    {k:"TODOS", label:"Todos"},
-    ...CLIENT_STATUSES.map(s=>({k:s,label:s}))
-  ].map(item=>{
-    const val = item.k==="TODOS" ? totalQty : Number(sumByStatus[item.k]||0);
-    const p = totalQty>0 ? val/totalQty : 0;
-    const active = (state.clientUI.status||"TODOS") === item.k;
-    return `
-      <div class="chipBtn ${active?"active":""}" data-slicer="status" data-value="${escapeHtml(item.k)}">
-        <span>${escapeHtml(item.label)}</span>
-        <span class="pct">${item.k==="TODOS" ? "" : pctBR(p)}</span>
-      </div>
-    `;
-  }).join("");
-
-  // Channel Slicer (modified)
-  const byCh = new Map(channelEntries);
-  const channelsWithValues = (state.catalogs.channels || []).map(ch => ({
-    name: ch,
-    value: byCh.get(ch) || 0
-  }));
-
-  // Sort channels by sales value, descending
-  channelsWithValues.sort((a, b) => b.value - a.value);
-  
-  const topSellerValue = channelsWithValues.length > 0 ? channelsWithValues[0].value : 0;
-
-  const channelChips = channelsWithValues.map(item => {
-    const p = totalQty > 0 ? item.value / totalQty : 0;
-    const active = (state.clientUI.channel || "TODOS") === item.name;
-    // Highlight if it's a top seller (value > 0 and matches the top value)
-    const isTopSeller = item.value > 0 && item.value === topSellerValue;
-    const specialClass = isTopSeller ? 'top-seller' : '';
-
-    return `
-      <div class="chipBtn ${active ? "active" : ""} ${specialClass}" data-slicer="channel" data-value="${escapeHtml(item.name)}">
-        <span>${escapeHtml(item.name)}</span>
-        <span class="pct">${pctBR(p)}</span>
-      </div>
-    `;
-  }).join("");
-
-  const todosActive = (state.clientUI.channel || "TODOS") === "TODOS";
-  channelSlicers.innerHTML = `
-    <div class="chipBtn ${todosActive ? "active" : ""}" data-slicer="channel" data-value="TODOS">
-      <span>Todos</span>
-    </div>
-    ${channelChips}
-  `;
-
-  // Event Listeners (unchanged)
-  statusSlicers.querySelectorAll(".chipBtn").forEach(el=>{
-    el.addEventListener("click",()=> setClientFilterStatus(el.getAttribute("data-value")));
-  });
-  channelSlicers.querySelectorAll(".chipBtn").forEach(el=>{
-    el.addEventListener("click",()=> setClientFilterChannel(el.getAttribute("data-value")));
-  });
-}
-
-function renderBusinessTypeChart(businessTypeEntries, totalQty){
-  const labels = businessTypeEntries.map(x=>x[0]);
-  const data = businessTypeEntries.map(x=>x[1]);
-
-  if(!businessTypeChart){
-    businessTypeChart = new Chart($("businessTypeChart"),{
-      type:"doughnut",
-      data:{
-        labels,
-        datasets:[{
-          data,
-          backgroundColor: colorsFor(data.length),
-          borderWidth: 2,
-          hoverOffset: 6
-        }]
-      },
-      options:{
-        responsive:true,
-        cutout:"62%",
-        plugins:{
-          legend:{ position:"bottom", labels:{ color: chartColors().muted, boxWidth:14 } },
-          tooltip:{
-            callbacks:{
-              label:(ctx)=>{
-                const v = Number(ctx.raw||0);
-                const p = totalQty>0 ? v/totalQty : 0;
-                return `${ctx.label}: ${numBR(v,0)} (${pctBR(p)})`;
-              }
-            }
-          }
-        }
-      }
-    });
-  } else {
-    businessTypeChart.data.labels = labels;
-    businessTypeChart.data.datasets[0].data = data;
-    businessTypeChart.data.datasets[0].backgroundColor = colorsFor(data.length);
-    businessTypeChart.options.plugins.legend.labels.color = chartColors().muted;
-    businessTypeChart.update();
-  }
-}
-
-function renderClientsCharts(sumByStatus, channelEntries, businessTypeEntries, totalQty){
-  const funnelLabels = CLIENT_STATUSES.slice();
-  const funnelData = funnelLabels.map(s=>Number(sumByStatus[s]||0));
-  const sc = statusColors();
-  const funnelBg = funnelLabels.map(s=> sc[s] || "#3B82F6");
-
-  const funnelClick = (evt, elements, chart)=>{
-    if(!elements || !elements.length) return;
-    const idx = elements[0].index;
-    const label = chart.data.labels[idx];
-    if(label) setClientFilterStatus(label);
-  };
-
-  if(!funnelChart){
-    funnelChart = new Chart($("funnelChart"),{
-      type:"bar",
-      data:{ labels: funnelLabels,
-        datasets:[{ label:"Quantidade", data: funnelData, backgroundColor: funnelBg, borderWidth:1 }]
-      },
-      options:{
-        indexAxis:"y",
-        responsive:true,
-        onClick: funnelClick,
-        plugins:{ legend:{ display:false }, tooltip:{ callbacks:{ label:(ctx)=>`Qtd: ${numBR(ctx.raw,0)}` } } },
-        scales:{
-          x:{ ticks:{ color: chartColors().muted }, grid:{ color: chartColors().grid } },
-          y:{ ticks:{ color: chartColors().muted }, grid:{ color: chartColors().grid } }
-        }
-      }
-    });
-  } else {
-    funnelChart.data.labels = funnelLabels;
-    funnelChart.data.datasets[0].data = funnelData;
-    funnelChart.data.datasets[0].backgroundColor = funnelBg;
-    funnelChart.options.onClick = funnelClick;
-    funnelChart.update();
-  }
-
-  const chLabels = channelEntries.map(x=>x[0]);
-  const chData = channelEntries.map(x=>x[1]);
-
-  const drilldownHandler = (evt, elements, chart)=>{
-    if(!elements || !elements.length) return;
-    const idx = elements[0].index;
-    const label = chart.data.labels[idx];
-    if(label) setClientFilterChannel(label);
-  };
-
-  if(!channelChart){
-    channelChart = new Chart($("channelChart"),{
-      type:"doughnut",
-      data:{ labels: chLabels,
-        datasets:[{ data: chData, backgroundColor: colorsFor(chData.length), borderWidth:2, hoverOffset:6 }]
-      },
-      options:{
-        responsive:true,
-        cutout:"62%",
-        onClick: drilldownHandler,
-        plugins:{
-          legend:{ position:"bottom", labels:{ color: chartColors().muted, boxWidth:14 } },
-          tooltip:{ callbacks:{ label:(ctx)=>`${ctx.label}: ${numBR(ctx.raw,0)} (${pctBR(totalQty>0? ctx.raw/totalQty : 0)})` } }
-        }
-      }
-    });
-  } else {
-    channelChart.data.labels = chLabels;
-    channelChart.data.datasets[0].data = chData;
-    channelChart.data.datasets[0].backgroundColor = colorsFor(chData.length);
-    channelChart.options.onClick = drilldownHandler;
-    channelChart.update();
-  }
-
-  renderBusinessTypeChart(businessTypeEntries, totalQty);
-}
-
-function getFilteredClientsYearList(seg){
-  const year = state.filters.year;
-  const scope = state.clientUI.monthScope || "ALL";
-
-  let list = getAllClientsForYear(seg, year);
-  if(scope !== "ALL") list = list.filter(x=>x.ym === scope);
-
-  const q = (state.clientSearch||"").trim().toLowerCase();
-  const fs = state.clientUI.status || "TODOS";
-  const fc = state.clientUI.channel || "TODOS";
-  const fb = state.clientUI.businessType || "TODOS";
-
-  if(q) list = list.filter(x => (x.name||"").toLowerCase().includes(q));
-  if(fs !== "TODOS") list = list.filter(x => x.status === fs);
-  if(fc !== "TODOS") list = list.filter(x => x.channel === fc);
-  if(fb !== "TODOS") list = list.filter(x => (x.businessType||"") === fb);
-
-  return list;
-}
-
-/* Bookmarks (mantido) */
-function currentBookmarkPayload(){
-  return {
-    clientUI: {...state.clientUI},
-    clientSearch: state.clientSearch || "",
-    clientSort: state.clientSort || "date_desc"
-  };
-}
-function renderBookmarks(){
-  if(!bmListEl) return;
-  const list = Array.isArray(state.bookmarks) ? state.bookmarks : [];
-  if(!list.length){
-    bmListEl.innerHTML = `<span style="color:var(--muted);font-weight:900;">Nenhum bookmark salvo.</span>`;
-    return;
-  }
-  bmListEl.innerHTML = list.map(b=>`
-    <div class="bmItem">
-      <button title="Aplicar bookmark" data-bm="${escapeHtml(b.id)}">${escapeHtml(b.name)}</button>
-      <button class="del" title="Excluir" data-delbm="${escapeHtml(b.id)}">✕</button>
-    </div>
-  `).join("");
-
-  bmListEl.querySelectorAll("button[data-bm]").forEach(btn=>{
-    btn.addEventListener("click",()=> applyBookmark(btn.getAttribute("data-bm")));
-  });
-  bmListEl.querySelectorAll("button[data-delbm]").forEach(btn=>{
-    btn.addEventListener("click",()=> deleteBookmark(btn.getAttribute("data-delbm")));
-  });
-}
-function saveBookmark(){
-  const name = (bmNameEl.value||"").trim();
-  if(!name){ alert("Informe um nome para o bookmark."); return; }
-
-  const payload = currentBookmarkPayload();
-  const i = state.bookmarks.findIndex(b=>b.name.toLowerCase()===name.toLowerCase());
-  const obj = { id: uid(), name, payload, createdAt: new Date().toISOString() };
-  if(i>=0) state.bookmarks[i] = {...state.bookmarks[i], ...obj, id: state.bookmarks[i].id};
-  else state.bookmarks.unshift(obj);
-
-  bmNameEl.value="";
-  renderAll();
-}
-function applyBookmark(id){
-  const b = state.bookmarks.find(x=>x.id===id);
-  if(!b) return;
-
-  state.clientUI = {...state.clientUI, ...(b.payload.clientUI||{})};
-  state.clientSearch = b.payload.clientSearch || "";
-  state.clientSort = b.payload.clientSort || "date_desc";
-
-  filterStatusEl.value = state.clientUI.status || "TODOS";
-  filterChannelEl.value = state.clientUI.channel || "TODOS";
-  filterBusinessTypeEl.value = state.clientUI.businessType || "TODOS";
-  clientMonthScopeEl.value = state.clientUI.monthScope || "ALL";
-  clientSearchEl.value = state.clientSearch || "";
-  clientSortEl.value = state.clientSort || "date_desc";
-
-  renderAll();
-}
-function deleteBookmark(id){
-  state.bookmarks = state.bookmarks.filter(x=>x.id!==id);
-  renderAll();
-}
-function clearBookmarks(){
-  if(confirm("Limpar todos os bookmarks?")){
-    state.bookmarks = [];
-    renderAll();
-  }
-}
-
-/* Render Clients */
-function renderClients(){
-  const seg = ensureSegment();
-  const year = state.filters.year;
-
-  const scope = state.clientUI.monthScope || "ALL";
-  let baseList = getAllClientsForYear(seg, year);
-  if(scope !== "ALL") baseList = baseList.filter(x=>x.ym===scope);
-
-  const q = (state.clientSearch||"").trim().toLowerCase();
-  const slicerBase = q ? baseList.filter(x => (x.name||"").toLowerCase().includes(q)) : baseList.slice();
-  const baseAgg = aggregate(slicerBase);
-
-  const list = getFilteredClientsYearList(seg);
-
-  const sort = state.clientSort || "date_desc";
-  list.sort((a,b)=>{
-    if(sort==="date_desc") return (b.dateISO||"").localeCompare(a.dateISO||"");
-    if(sort==="date_asc")  return (a.dateISO||"").localeCompare(b.dateISO||"");
-    if(sort==="name_asc")  return (a.name||"").localeCompare(b.name||"");
-    if(sort==="qty_desc")  return (Number(b.qty||0) - Number(a.qty||0));
-    return 0;
-  });
-
-  const agg = aggregate(list);
-
-  clientsTotalQtyEl.textContent = numBR(agg.totalQty,0);
-  clientsNegotiatingEl.textContent = numBR(agg.sumByStatus["NEGOCIANDO"]||0,0);
-  clientsSoldEl.textContent = numBR(agg.sumByStatus["VENDIDO"]||0,0);
-  clientsCredEl.textContent = numBR(agg.sumByStatus["EM CREDENCIAMENTO"]||0,0);
-  clientsPreProdEl.textContent = numBR(agg.sumByStatus["PRE=PRODUÇÃO"]||0,0);
-  clientsProdEl.textContent = numBR(agg.sumByStatus["PRODUÇÃO"]||0,0);
-  clientsTotalLabel.textContent = `Total: ${numBR(agg.totalQty,0)}`;
-
-  renderSlicers(baseAgg.sumByStatus, baseAgg.channelEntries, baseAgg.totalQty);
-
-  const rows = list.map(x=>{
-    const dt = x.dateISO ? x.dateISO.split("-").reverse().join("/") : "—";
-    return `
-      <tr>
-        <td>${escapeHtml(dt)}</td>
-        <td>${escapeHtml(x.name||"")}</td>
-        <td>${escapeHtml(x.status||"")}</td>
-        <td>${escapeHtml(x.channel||"")}</td>
-        <td>${escapeHtml(x.businessType||"")}</td>
-        <td class="num">${numBR(Number(x.qty||0),0)}</td>
-        <td>${escapeHtml(x.note||"")}</td>
-        <td>
-          <div style="display:flex;gap:8px;flex-wrap:wrap;">
-            <button class="btn small" data-edit="${escapeHtml(x.id)}" data-ym="${escapeHtml(x.ym)}">Editar</button>
-            <button class="btn small danger" data-del="${escapeHtml(x.id)}" data-ym="${escapeHtml(x.ym)}">Excluir</button>
-          </div>
-        </td>
-      </tr>
-    `;
-  }).join("");
-
-  clientsBody.innerHTML = rows || `<tr><td colspan="8" style="color:var(--muted);padding:14px;">Nenhum cliente encontrado para este filtro.</td></tr>`;
-
-  clientsBody.querySelectorAll("button[data-del]").forEach(btn=>{
-    btn.addEventListener("click",()=>{
-      const id = btn.getAttribute("data-del");
-      const ym = btn.getAttribute("data-ym");
-      if(confirm("Excluir este cliente?")) deleteClient({id, ym});
-    });
-  });
-
-  clientsBody.querySelectorAll("button[data-edit]").forEach(btn=>{
-    btn.addEventListener("click",()=>{
-      const id = btn.getAttribute("data-edit");
-      const ym = btn.getAttribute("data-ym");
-      const seg = ensureSegment();
-      const list = (seg.data.clientsByYM?.[ym]) ? seg.data.clientsByYM[ym] : [];
-      const c = list.find(x=>x.id===id);
-      if(!c) return;
-      enterEditClient(c, ym);
-    });
-  });
-
-  renderClientsCharts(agg.sumByStatus, agg.channelEntries, agg.businessTypeEntries, agg.totalQty);
-  renderBookmarks();
-}
-
-/* =========================
-   CSV/JSON/DEMO (mantidos)
-========================= */
-function exportMonthlyCSV(){
-  const seg=ensureSegment();
-  const y=state.filters.year;
-  const rows=["year_month,actual"];
-  for(let m=0;m<12;m++){
-    const ym=fmtYM(y,m);
-    rows.push(`${ym},${Number(seg.data.monthly[ym]||0)}`);
-  }
-  const blob=new Blob([rows.join("\n")],{type:"text/csv;charset=utf-8"});
-  const a=document.createElement("a");
-  a.href=URL.createObjectURL(blob);
-  a.download=`mensal_${state.filters.team}_${state.filters.seller}_${y}.csv`.replaceAll(" ","_");
-  a.click();
-  URL.revokeObjectURL(a.href);
-}
-function parseCSV(text){
-  const lines=text.split(/\r?\n/).filter(l=>l.trim().length);
-  if(!lines.length) return [];
-  const hdr=lines[0].split(",").map(s=>s.trim().toLowerCase());
-  const idxYM=hdr.indexOf("year_month");
-  const idxA=hdr.indexOf("actual");
-  if(idxYM<0 || idxA<0) return [];
-  const out=[];
-  for(let i=1;i<lines.length;i++){
-    const [ym,act] = lines[i].split(",");
-    if(ym && /^\d{4}-\d{2}$/.test(ym.trim())){
-      out.push({ ym: ym.trim(), actual: Number(act||0) });
-    }
-  }
-  return out;
-}
-async function importMonthlyCSV(file){
-  const txt=await file.text();
-  const rows=parseCSV(txt);
-  if(!rows.length){ alert("CSV inválido. Esperado cabeçalho: year_month,actual"); return; }
-  const seg=ensureSegment();
-  for(const r of rows){
-    seg.data.monthly[r.ym]=Number(r.actual||0);
-  }
-  renderAll();
-}
-
-function csvEscape(v){
-  const s = String(v??"");
-  if(/[,"\n\r]/.test(s)) return `"${s.replaceAll('"','""')}"`;
-  return s;
-}
-function exportClientsCSVMonth(){ /* mantido */
-  const seg=ensureSegment();
-  const scope = state.clientUI.monthScope || "ALL";
-  const ym = (scope==="ALL") ? fmtYM(state.filters.year, state.filters.month) : scope;
-  const list = (seg.data.clientsByYM?.[ym]) ? seg.data.clientsByYM[ym] : [];
-
-  const team = (state.filters.team==="Todos" ? "AllTeams" : state.filters.team);
-  const seller = (state.filters.seller==="Todos" ? "AllSellers" : state.filters.seller);
-
-  const rows = ["year_month,team,seller,dateISO,name,status,channel,businessType,qty,note"];
-  for(const c of list){
-    rows.push([ym,team,seller,c.dateISO||"",c.name||"",c.status||"",c.channel||"",c.businessType||"",Number(c.qty||0),c.note||""].map(csvEscape).join(","));
-  }
-  const blob=new Blob([rows.join("\n")],{type:"text/csv;charset=utf-8"});
-  const a=document.createElement("a");
-  a.href=URL.createObjectURL(blob);
-  a.download=`clientes_${team}_${seller}_${ym}.csv`.replaceAll(" ","_");
-  a.click();
-  URL.revokeObjectURL(a.href);
-}
-function exportClientsCSVYear(){ /* mantido */
-  const seg=ensureSegment();
-  const y = state.filters.year;
-
-  const team = (state.filters.team==="Todos" ? "AllTeams" : state.filters.team);
-  const seller = (state.filters.seller==="Todos" ? "AllSellers" : state.filters.seller);
-
-  const rows = ["year_month,team,seller,dateISO,name,status,channel,businessType,qty,note"];
-  for(let m=0;m<12;m++){
-    const ym=fmtYM(y,m);
-    const list = (seg.data.clientsByYM?.[ym]) ? seg.data.clientsByYM[ym] : [];
-    for(const c of list){
-      rows.push([ym,team,seller,c.dateISO||"",c.name||"",c.status||"",c.channel||"",c.businessType||"",Number(c.qty||0),c.note||""].map(csvEscape).join(","));
-    }
-  }
-  const blob=new Blob([rows.join("\n")],{type:"text/csv;charset=utf-8"});
-  const a=document.createElement("a");
-  a.href=URL.createObjectURL(blob);
-  a.download=`clientes_${team}_${seller}_${y}_ANO_TODO.csv`.replaceAll(" ","_");
-  a.click();
-  URL.revokeObjectURL(a.href);
-}
-async function importClientsCSV(file){ /* mantido */
-  const txt=await file.text();
-  const lines = txt.split(/\r?\n/).filter(l=>l.trim().length);
-  if(!lines.length){ alert("CSV vazio."); return; }
-
-  const parseLine = (line)=>{
-    const out=[]; let cur=""; let inQ=false;
-    for(let i=0;i<line.length;i++){
-      const ch=line[i];
-      if(inQ){
-        if(ch === '"'){
-          if(line[i+1]==='"'){ cur+='"'; i++; }
-          else inQ=false;
-        } else cur+=ch;
-      } else {
-        if(ch === '"') inQ=true;
-        else if(ch === ','){ out.push(cur); cur=""; }
-        else cur+=ch;
-      }
-    }
-    out.push(cur);
-    return out;
-  };
-
-  const hdr = parseLine(lines[0]).map(s=>s.trim().toLowerCase());
-  const need = ["year_month","team","seller","dateiso","name","status","channel","qty","note"];
-  for(const k of need){
-    if(!hdr.includes(k)){
-      alert("CSV inválido. Esperado cabeçalho: year_month,team,seller,dateISO,name,status,channel,(businessType opcional),qty,note");
-      return;
-    }
-  }
-  const hasBT = hdr.includes("businesstype");
-  const idx = Object.fromEntries(need.map(k=>[k, hdr.indexOf(k)]));
-  const idxBT = hasBT ? hdr.indexOf("businesstype") : -1;
-
-  let count=0;
-  for(let i=1;i<lines.length;i++){
-    const cols=parseLine(lines[i]);
-    const ym = (cols[idx.year_month]||"").trim();
-    if(!/^\d{4}-\d{2}$/.test(ym)) continue;
-
-    const team = (cols[idx.team]||"").trim() || "AllTeams";
-    const seller = (cols[idx.seller]||"").trim() || "AllSellers";
-
-    if(!state.segments[`${team}||${seller}`]){
-      state.segments[`${team}||${seller}`] = {
-        annualTarget: 1200, avgValue: 2500, startActive: 0,
-        status:{ closed:0, inProd:0, canceled:0 },
-        monthly:{}, clientsByYM:{}
-      };
-    }
-    const seg = state.segments[`${team}||${seller}`];
-    if(!seg.clientsByYM) seg.clientsByYM = {};
-    if(!seg.clientsByYM[ym]) seg.clientsByYM[ym] = [];
-
-    let status = (cols[idx.status]||"").trim();
-    if(!CLIENT_STATUSES.includes(status)) status = "NEGOCIANDO";
-
-    const businessType = hasBT ? (cols[idxBT]||"").trim() : "";
-
-    seg.clientsByYM[ym].push({
-      id: uid(),
-      dateISO: (cols[idx.dateiso]||"").trim() || `${ym}-01`,
-      name: (cols[idx.name]||"").trim() || "(sem nome)",
-      status,
-      channel: (cols[idx.channel]||"").trim() || (state.catalogs.channels?.[0]||"Indicação"),
-      businessType: businessType || (state.catalogs.businessTypes?.[0]||""),
-      qty: Math.max(1, Math.trunc(Number(cols[idx.qty]||1))),
-      note: (cols[idx.note]||"").trim()
-    });
-    count++;
-  }
-
-  renderAll();
-  alert(`Importação concluída: ${count} linhas.`);
-}
-
-function exportJSON(){
-  const blob = new Blob([JSON.stringify(state,null,2)], {type:"application/json"});
-  const a=document.createElement("a");
-  a.href=URL.createObjectURL(blob);
-  a.download=`dashboard_meta_contratos_v2_12_0.json`;
-  a.click();
-  URL.revokeObjectURL(a.href);
-}
-
-/* =========================
-   BACKUP COMPLETO (dashboard + usuários + sessão)
-   - Exporta: LS_KEY, LS_USERS_KEY, LS_SESSION_KEY
-   - Importa: substitui os dados no navegador (localStorage) e recarrega
-========================= */
-function buildFullBackupPayload(){
-  const safeParse = (raw)=>{
-    try{ return JSON.parse(raw); }catch{ return raw; }
-  };
-
-  return {
-    app: "metaContratosDashboard",
-    version: 1,
-    createdAt: new Date().toISOString(),
-    keys: {
-      [LS_KEY]: safeParse(localStorage.getItem(LS_KEY)),
-      [LS_USERS_KEY]: safeParse(localStorage.getItem(LS_USERS_KEY)),
-      [LS_SESSION_KEY]: safeParse(localStorage.getItem(LS_SESSION_KEY)),
-    }
-  };
-}
-
-function exportFullBackup(){
-  if(!isAdmin()) return alert("Apenas administradores podem gerar backup completo.");
-  const payload = buildFullBackupPayload();
-
-  const ymd = new Date().toISOString().slice(0,10);
-  const blob = new Blob([JSON.stringify(payload,null,2)], {type:"application/json"});
-  const a=document.createElement("a");
-  a.href=URL.createObjectURL(blob);
-  a.download=`backup_dashboard_meta_contratos_${ymd}.json`;
-  a.click();
-  URL.revokeObjectURL(a.href);
-}
-
-async function importFullBackupFromFile(file){
-  if(!isAdmin()) return alert("Apenas administradores podem restaurar backup completo.");
-  if(!file) return;
-
-  let payload;
-  try{
-    const txt = await file.text();
-    payload = JSON.parse(txt);
-  }catch{
-    alert("Arquivo inválido. Selecione um .json de backup.");
-    return;
-  }
-
-  // validação mínima
-  if(!payload || payload.app!=="metaContratosDashboard" || !payload.keys){
-    alert("Backup não reconhecido (formato inesperado).");
-    return;
-  }
-
-  const keys = payload.keys || {};
-  const hasMain = Object.prototype.hasOwnProperty.call(keys, LS_KEY);
-  if(!hasMain){
-    alert(`Backup incompleto: não encontrei o bloco "${LS_KEY}".`);
-    return;
-  }
-
-  const warn = "Restaurar este backup vai SUBSTITUIR os dados deste navegador (dashboard/usuários/sessão).";
-  if(!confirm(warn + "\n\nContinuar?")) return;
-
-  try{
-    // escreve exatamente como string no localStorage (para manter compatibilidade)
-    const write = (k, v)=>{
-      if(v === undefined) return;
-      if(v === null) localStorage.removeItem(k);
-      else localStorage.setItem(k, typeof v === "string" ? v : JSON.stringify(v));
-    };
-
-    write(LS_KEY, keys[LS_KEY]);
-    write(LS_USERS_KEY, keys[LS_USERS_KEY]);
-    write(LS_SESSION_KEY, keys[LS_SESSION_KEY]);
-
-    alert("Backup restaurado com sucesso! A página será recarregada.");
-    window.location.reload();
-  }catch(err){
-    console.error(err);
-    alert("Não foi possível restaurar o backup (erro ao gravar no navegador).");
-  }
-}
-
-
-function seedDemo(){
-  const seg=ensureSegment();
-  const y=state.filters.year;
-  seg.data.annualTarget=1800;
-  seg.data.avgValue=3200;
-  seg.data.startActive=50;
-  seg.data.status.closed=210;
-  seg.data.status.inProd=90;
-  seg.data.status.canceled=18;
-
-  for(let m=0;m<12;m++){
-    const ym=fmtYM(y,m);
-    const base = 80 + (m*3);
-    seg.data.monthly[ym] = (m%4===0) ? base-18 : base;
-  }
-
-  const ch = state.catalogs.channels;
-  const bt = state.catalogs.businessTypes;
-  const mk = (dateISO, name, status, channel, businessType, qty, note) =>
-    ({id:uid(), dateISO, name, status, channel, businessType, qty, note});
-
-  seg.data.clientsByYM[fmtYM(y,0)] = [
-    mk(`${fmtYM(y,0)}-05`, "Cliente Janeiro", "VENDIDO", ch[2]||"Parceiro", bt[2]||"ODONTOLOGIA", 2, "Fechado"),
-    mk(`${fmtYM(y,0)}-18`, "Cliente Mix", "NEGOCIANDO", ch[0]||"Indicação", bt[0]||"CLINICA DE DEPILAÇÃO", 1, "Retornar"),
-  ];
-  seg.data.clientsByYM[fmtYM(y,1)] = [
-    mk(`${fmtYM(y,1)}-03`, "Cliente Fevereiro", "EM CREDENCIAMENTO", ch[1]||"Orgânico", bt[1]||"CLINICA DE ESTETICA", 3, "Docs pendentes"),
-  ];
-}
-
-
-/* =========================
-   USUÁRIOS (admin)
-========================= */
-const usersPill = document.getElementById("usersPill");
-const usersCountEl = document.getElementById("usersCount");
-const usersBody = document.getElementById("usersBody");
-const newUserEmailEl = document.getElementById("newUserEmail");
-const newUserRoleEl = document.getElementById("newUserRole");
-const newUserPassEl = document.getElementById("newUserPass");
-const btnCreateUser = document.getElementById("btnCreateUser");
-
-function roleLabel(r){
-  return r === "admin" ? "Administrador" : "Visualização";
-}
-
-function renderUsers(){
-  if(!usersBody) return;
-  const users = loadUsers().sort((a,b)=> (a.email||"").localeCompare(b.email||""));
-  if(usersCountEl) usersCountEl.textContent = `${users.length} usuário(s)`;
-  if(usersPill) usersPill.textContent = isAdmin() ? "admin" : "viewer";
-
-  const rows = users.map(u=>{
-    const created = (u.createdAt||"").slice(0,10).split("-").reverse().join("/") || "—";
-    const isSelf = currentUser?.email === u.email;
-    const disableDel = (isSelf && u.role==="admin");
-    return `
-      <tr>
-        <td>${escapeHtml(u.email||"")}${isSelf ? ' <span class="badge good" style="margin-left:8px;"><span class="d"></span><span>você</span></span>' : ''}</td>
-        <td>${escapeHtml(roleLabel(u.role))}</td>
-        <td>${escapeHtml(created)}</td>
-        <td>
-          <div style="display:flex;gap:8px;flex-wrap:wrap;">
-            <button class="btn small" data-u-role="${escapeHtml(u.email)}" ${!isAdmin() ? "disabled" : ""} data-admin="1">Trocar perfil</button>
-            <button class="btn small" data-u-pass="${escapeHtml(u.email)}" ${!isAdmin() ? "disabled" : ""} data-admin="1">Redefinir senha</button>
-            <button class="btn small danger" data-u-del="${escapeHtml(u.email)}" ${(!isAdmin()||disableDel) ? "disabled" : ""} data-admin="1">Excluir</button>
-          </div>
-        </td>
-      </tr>
-    `;
-  }).join("");
-
-  usersBody.innerHTML = rows || `<tr><td colspan="4" style="color:var(--muted);padding:14px;">Nenhum usuário cadastrado.</td></tr>`;
-
-  usersBody.querySelectorAll("button[data-u-role]").forEach(btn=>{
-    btn.addEventListener("click", async ()=>{
-      if(!isAdmin()) return;
-      const email = btn.getAttribute("data-u-role");
-      const users = loadUsers();
-      const u = users.find(x=>x.email===email);
-      if(!u) return;
-      const next = (u.role === "admin") ? "viewer" : "admin";
-      if(u.email === currentUser.email && u.role==="admin" && next==="viewer"){
-        if(!confirm("Você está prestes a remover seu próprio acesso de administrador. Continuar?")) return;
-      }
-      u.role = next;
-      saveUsers(users);
-      if(u.email === currentUser.email){
-        currentUser.role = next;
-        setSession(currentUser.email);
-        applyAccessControl();
-      }
-      renderUsers();
-      alert(`Perfil atualizado: ${u.email} → ${roleLabel(next)}`);
-    });
-  });
-
-  usersBody.querySelectorAll("button[data-u-pass]").forEach(btn=>{
-    btn.addEventListener("click", async ()=>{
-      if(!isAdmin()) return;
-      const email = btn.getAttribute("data-u-pass");
-      const newPw = prompt(`Defina a nova senha para ${email}:`);
-      if(!newPw) return;
-      if(String(newPw).length < 4) return alert("Senha muito curta (mín. 4 caracteres).");
-      const users = loadUsers();
-      const u = users.find(x=>x.email===email);
-      if(!u) return;
-      u.passHash = await hashPassword(String(newPw));
-      saveUsers(users);
-      alert("Senha atualizada.");
-    });
-  });
-
-  usersBody.querySelectorAll("button[data-u-del]").forEach(btn=>{
-    btn.addEventListener("click", ()=>{
-      if(!isAdmin()) return;
-      const email = btn.getAttribute("data-u-del");
-      if(email === currentUser?.email) return alert("Você não pode excluir seu próprio usuário logado.");
-      if(confirm(`Excluir o usuário ${email}?`)){
-        let users = loadUsers();
-        users = users.filter(x=>x.email!==email);
-        saveUsers(users);
-        renderUsers();
-      }
-    });
-  });
-}
-
-async function createUser(){
-  if(!isAdmin()) return;
-  const email = normEmail(newUserEmailEl.value);
-  const role = (newUserRoleEl.value === "admin") ? "admin" : "viewer";
-  const pw = String(newUserPassEl.value||"");
-
-  if(!email) return alert("Informe um e-mail válido.");
-  if(pw.length < 4) return alert("Senha muito curta (mín. 4 caracteres).");
-
-  const users = loadUsers();
-  if(users.find(u=>u.email===email)) return alert("Este e-mail já existe.");
-
-  users.push({ email, role, passHash: await hashPassword(pw), createdAt: new Date().toISOString() });
-  saveUsers(users);
-
-  newUserEmailEl.value="";
-  newUserPassEl.value="";
-  newUserRoleEl.value="viewer";
-
-  renderUsers();
-  alert("Usuário criado!");
-}
-
-
-/* Render all */
-function renderAll(){
-  applyTheme();
-  renderFilters();
-  renderHolidays();
-  renderClientSelectors();
-
-  if(clientDateEl && !clientDateEl.value) clientDateEl.value = fmtISO(new Date());
-
-  const seg=ensureSegment();
-  const year=state.filters.year;
-  const month=state.filters.month;
-  const cur=computeForMonth(year,month,seg);
-  const yearSeries=computeYearSeries(year,seg);
-
-  renderKPIs(cur, seg, yearSeries);
-  renderChartsMonthAndYear(cur, yearSeries);
-  renderDeficitDash(year, seg);
-  renderClients();
-  renderUsers();
-
-  applyDashboardMode(); // NEW: aplica o toggle
-  saveState();
-}
-
-/* =========================
-   Events
-========================= */
-navBtns.forEach(b=>b.addEventListener("click",()=>setView(b.dataset.nav)));
-
-// Auth events
-btnAuthSubmit.addEventListener("click", handleAuthSubmit);
-authPass.addEventListener("keydown",(e)=>{ if(e.key==="Enter") handleAuthSubmit(); });
-authEmail.addEventListener("keydown",(e)=>{ if(e.key==="Enter") handleAuthSubmit(); });
-if(authPass2) authPass2.addEventListener("keydown",(e)=>{ if(e.key==="Enter") handleAuthSubmit(); });
-
-yearEl.addEventListener("input",()=>{
-  const y = Math.max(2020, Math.min(2035, Math.trunc(Number(yearEl.value||new Date().getFullYear()))));
-  state.filters.year=y;
-  if(state.clientUI.monthScope !== "ALL") state.clientUI.monthScope = "ALL";
-  exitEditClient();
-  renderAll();
-});
-monthEl.addEventListener("change",()=>{ state.filters.month=Number(monthEl.value); renderAll(); });
-teamEl.addEventListener("change",()=>{ state.filters.team=teamEl.value; exitEditClient(); renderAll(); });
-sellerEl.addEventListener("change",()=>{ state.filters.seller=sellerEl.value; exitEditClient(); renderAll(); });
-
-annualTargetEl.addEventListener("input",()=>{ const seg=ensureSegment(); seg.data.annualTarget=Math.max(0,Number(annualTargetEl.value||0)); renderAll(); });
-avgValueEl.addEventListener("input",()=>{ const seg=ensureSegment(); seg.data.avgValue=Math.max(0,Number(avgValueEl.value||0)); renderAll(); });
-startActiveEl.addEventListener("input",()=>{ const seg=ensureSegment(); seg.data.startActive=Math.max(0,Number(startActiveEl.value||0)); renderAll(); });
-
-closedEl.addEventListener("input",()=>{ const seg=ensureSegment(); seg.data.status.closed=Math.max(0,Number(closedEl.value||0)); renderAll(); });
-inProdEl.addEventListener("input",()=>{ const seg=ensureSegment(); seg.data.status.inProd=Math.max(0,Number(inProdEl.value||0)); renderAll(); });
-canceledEl.addEventListener("input",()=>{ const seg=ensureSegment(); seg.data.status.canceled=Math.max(0,Number(canceledEl.value||0)); renderAll(); });
-
-monthlyActualEl.addEventListener("input",()=>{
-  const seg=ensureSegment();
-  const ym=fmtYM(state.filters.year, state.filters.month);
-  seg.data.monthly[ym]=Math.max(0, Number(monthlyActualEl.value||0));
-  renderAll();
+/* ---- teclado global: espaço ouve a frase do treino ---- */
+document.addEventListener('keydown', e=>{
+  if(e.target.tagName === 'INPUT') return;
+  if(state.mode !== 'tra') return;
+  const list = visible(); if(!list.length) return;
+  if(e.code === 'Space'){ e.preventDefault(); speak(list[state.idx], 1); }
+  if(e.code === 'ArrowRight'){ state.idx = (state.idx+1)%list.length; render(); }
+  if(e.code === 'ArrowLeft'){ state.idx = (state.idx-1+list.length)%list.length; render(); }
 });
 
-btnTheme.addEventListener("click",()=>{ state.theme = (state.theme==="dark") ? "light" : "dark"; renderAll(); });
-btnLogout.addEventListener("click", doLogout);
-btnToday.addEventListener("click",()=>{
-  const now=new Date();
-  state.filters.year=now.getFullYear();
-  state.filters.month=now.getMonth();
-  renderAll();
-  setView("monthly");
-});
-btnReset.addEventListener("click",()=>{
-  if(confirm("Tem certeza? Isso apaga tudo salvo neste navegador.")){
-    localStorage.removeItem(LS_KEY);
-    state = defaultState();
-    teamsInput.value = state.catalogs.teams.join(", ");
-    sellersInput.value = state.catalogs.sellers.join(", ");
-    channelsInput.value = state.catalogs.channels.join(", ");
-    businessTypesInput.value = state.catalogs.businessTypes.join(", ");
-    editingClientRef = null;
-    renderAll();
-    setView("dashboard");
-  }
-});
-btnExportJSON.addEventListener("click", exportJSON);
-btnBackupAll.addEventListener("click", exportFullBackup);
-if(fileBackupJSON){
-  fileBackupJSON.addEventListener("change", async (e)=>{
-    const f = e.target.files?.[0];
-    e.target.value = "";
-    if(!f) return;
-    await importFullBackupFromFile(f);
-  });
-}
-
-btnExportCSV.addEventListener("click", exportMonthlyCSV);
-fileCSV.addEventListener("change", async (e)=>{
-  const f=e.target.files?.[0]; if(!f) return;
-  await importMonthlyCSV(f);
-  e.target.value="";
-});
-
-btnSaveCatalog.addEventListener("click",()=>{
-  const teams=normalizeList((teamsInput.value||"").split(","));
-  const sellers=normalizeList((sellersInput.value||"").split(","));
-  const channels=normalizeList((channelsInput.value||"").split(","));
-  const businessTypes=normalizeList((businessTypesInput.value||"").split(","));
-
-  if(teams.length) state.catalogs.teams=teams;
-  if(sellers.length) state.catalogs.sellers=sellers;
-  if(channels.length) state.catalogs.channels=channels;
-  if(businessTypes.length) state.catalogs.businessTypes=businessTypes;
-
-  if(!["Todos", ...state.catalogs.teams].includes(state.filters.team)) state.filters.team="Todos";
-  if(!["Todos", ...state.catalogs.sellers].includes(state.filters.seller)) state.filters.seller="Todos";
-
-  renderAll();
-  alert("Cadastros salvos!");
-});
-btnSeedDemo.addEventListener("click",()=>{ seedDemo(); renderAll(); alert("Dados demo criados!"); });
-
-// Users (admin)
-if(btnCreateUser) btnCreateUser.addEventListener("click", createUser);
-if(newUserPassEl) newUserPassEl.addEventListener("keydown",(e)=>{ if(e.key==="Enter") createUser(); });
-
-// Clients
-btnAddClient.addEventListener("click", addClient);
-btnCancelEditClient.addEventListener("click", exitEditClient);
-clientNameEl.addEventListener("keydown",(e)=>{ if(e.key==="Enter") addClient(); });
-
-clientMonthScopeEl.addEventListener("change", ()=>{
-  state.clientUI.monthScope = clientMonthScopeEl.value;
-  exitEditClient();
-  renderAll();
-});
-clientSearchEl.addEventListener("input", ()=>{
-  state.clientSearch = clientSearchEl.value || "";
-  renderAll();
-});
-filterStatusEl.addEventListener("change", ()=>{ state.clientUI.status = filterStatusEl.value; renderAll(); });
-filterChannelEl.addEventListener("change", ()=>{ state.clientUI.channel = filterChannelEl.value; renderAll(); });
-filterBusinessTypeEl.addEventListener("change", ()=>{ state.clientUI.businessType = filterBusinessTypeEl.value; renderAll(); });
-clientSortEl.addEventListener("change", ()=>{
-  state.clientSort = clientSortEl.value || "date_desc";
-  renderAll();
-});
-
-btnExportClientsCSVMonth.addEventListener("click", exportClientsCSVMonth);
-btnExportClientsCSVYear.addEventListener("click", exportClientsCSVYear);
-fileClientsCSV.addEventListener("change", async (e)=>{
-  const f=e.target.files?.[0]; if(!f) return;
-  await importClientsCSV(f);
-  e.target.value="";
-});
-
-btnClearClientFilters.addEventListener("click", clearClientFilters);
-
-// Bookmarks
-btnSaveBookmark.addEventListener("click", saveBookmark);
-bmNameEl.addEventListener("keydown",(e)=>{ if(e.key==="Enter") saveBookmark(); });
-btnClearBookmarks.addEventListener("click", clearBookmarks);
-
-/* Toggle dashboard events */
-if(dashToggle){
-  dashToggle.querySelectorAll(".tbtn").forEach(btn=>{
-    btn.addEventListener("click", ()=>{
-      state.ui.dashboardMode = btn.dataset.mode;
-      applyDashboardMode();
-      saveState();
-    });
-  });
-}
-
-/* Init */
-(function init(){
-  // pré-carrega campos
-  teamsInput.value = state.catalogs.teams.join(", ");
-  sellersInput.value = state.catalogs.sellers.join(", ");
-  channelsInput.value = (state.catalogs.channels||[]).join(", ");
-  businessTypesInput.value = (state.catalogs.businessTypes||[]).join(", ");
-  if(clientDateEl) clientDateEl.value = fmtISO(new Date());
-
-  // garante que sempre existirá pelo menos 1 usuário admin (sem tela de "criar admin")
-  ensureDefaultUsers();
-
-  // tenta sessão existente
-  const sess = loadSession();
-  if(sess){
-    currentUser = sess;
-    applyAccessControl();
-    renderAll();
-    setView("dashboard");
-    return;
-  }
-
-  // sempre pede login
-  showAuth();
-})();
+/* ---- início ---- */
+(async ()=>{ await load(); render(); })();
 </script>
-<script type="module" src="/index.tsx"></script>
-
-
-</body>
-</html>
