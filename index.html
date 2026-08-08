@@ -180,6 +180,16 @@ a{color:inherit}
 .train__pos{font-family:var(--font-mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#7d918a;text-align:center;margin:0 0 20px}
 .train__nav{display:flex;gap:8px;justify-content:center;margin-top:20px}
 
+.vid{margin:14px 0 0;border:2px solid var(--ink);background:var(--ground)}
+.vid__bar{display:flex;align-items:center;gap:10px;justify-content:space-between;padding:9px 11px;border-bottom:2px solid var(--ink);font-family:var(--font-mono);font-size:11px;letter-spacing:.04em}
+.vid__l{display:flex;align-items:center;gap:8px}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--signal);animation:blink 1s ease-in-out infinite;flex:0 0 auto}
+@keyframes blink{0%,100%{opacity:.25;transform:scale(.8)}50%{opacity:1;transform:scale(1.15)}}
+.vid__f{width:100%;height:min(70vh,460px);border:0;display:block;background:var(--card)}
+.vid__note{font-size:12px;color:var(--ink-soft);padding:9px 11px;margin:0;border-top:1px solid var(--line);line-height:1.45}
+.train .vid{border-color:#3c4f48}
+.train .vid__bar{border-bottom-color:#3c4f48;color:var(--ground)}
+.train .vid__note{color:#9fb0a8;border-top-color:#2b3d37}
 .msg{font-size:13px;color:var(--signal);margin:10px 0 0;font-family:var(--font-mono)}
 .foot{margin-top:40px;padding-top:18px;border-top:1px solid var(--line);font-size:13px;color:var(--ink-soft);display:flex;gap:16px;flex-wrap:wrap;align-items:center}
 .foot button{text-decoration:underline;font-size:13px}
@@ -674,7 +684,7 @@ const store = {
 
 /* ---------------------------- estado ---------------------------- */
 const state = { phrases:[], log:[], cache:{}, mmEmail:'', logo:'ritmo', kit:null, mode:'col', accent:'en-US',
-                filter:'all', idx:0, sugg:[], showLogo:false, showCfg:false, tag:'todos', editing:null,
+                filter:'all', idx:0, sugg:[], showLogo:false, showCfg:false, tag:'todos', editing:null, video:null,
                 tStatus:'', tSrc:'', tBusy:false };
 const view=document.getElementById('view'), composeEl=document.getElementById('compose'),
       logoEl=document.getElementById('logopick');
@@ -693,7 +703,24 @@ function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;'
 function norm(s){ return String(s).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9\s]/g,' ').replace(/\s+/g,' ').trim(); }
 function words(t){ return String(t).trim().split(/\s+/).filter(Boolean); }
 function beatsOf(t){ return words(t).map(w=>({w, level: WEAK.has(w.toLowerCase().replace(/[^a-z']/g,''))?'weak':'strong'})); }
-function coreOf(t){ const w=words(String(t).replace(/[.?!,]/g,'')); return w.length<=5?w.join(' '):w.slice(0,4).join(' '); }
+const CORE_SKIP = new Set(("i i'm im you he she it we they a an the is are am was were be do does did can could would will shall please sorry hi hello hey excuse me my your of to and but so just really very okay ok yeah").split(' '));
+
+/* trecho curto e buscável: frases longas não acham vídeo no YouGlish */
+function coreOf(t){
+  const c = String(t).replace(/["“”.?!,;:]/g,'').trim();
+  const w = c.split(/\s+/).filter(Boolean);
+  if(w.length <= 4) return c;
+  let ini = 0;
+  while(ini < w.length-3 && CORE_SKIP.has(w[ini].toLowerCase())) ini++;
+  return w.slice(ini, ini+4).join(' ');
+}
+
+/* palavra mais distintiva da frase — plano B quando a frase inteira não retorna vídeo */
+function keyWord(t){
+  const w = String(t).toLowerCase().replace(/[^a-z'\s]/g,' ').split(/\s+/).filter(Boolean);
+  const cand = w.filter(x => x.length > 3 && !CORE_SKIP.has(x) && !WEAK.has(x));
+  return cand.sort((a,b)=>b.length-a.length)[0] || w[w.length-1] || '';
+}
 function find(id){ return state.phrases.find(p=>p.id===id); }
 function uid(){ return 'p'+Date.now().toString(36)+Math.random().toString(36).slice(2,6); }
 function today(){ return new Date().toISOString().slice(0,10); }
@@ -781,6 +808,18 @@ const PROVIDERS = [
     } }
 ];
 
+/* tradutores automáticos devolvem lixo: tags <g id="1">, entidades HTML, aspas sobrando */
+function cleanMT(s){
+  return String(s||'')
+    .replace(/<[^>]*>/g,'')
+    .replace(/&quot;/g,'"').replace(/&#39;/g,"'").replace(/&apos;/g,"'")
+    .replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&nbsp;/g,' ')
+    .replace(/\s+/g,' ')
+    .replace(/\s+([.,!?;:])/g,'$1')
+    .replace(/^["“”'`\s]+|["“”'`\s]+$/g,'')
+    .trim();
+}
+
 function withTimeout(p, ms){
   return Promise.race([p, new Promise((_,rej)=>setTimeout(()=>rej(new Error('tempo esgotado')), ms))]);
 }
@@ -805,7 +844,7 @@ async function translateOnline(text){
   for(const p of PROVIDERS){
     try{
       const out = await withTimeout(p.run(text, tgt), 8000);
-      const en = String(out).trim();
+      const en = cleanMT(out);
       if(en){
         state.cache[key] = { en, src:p.label, t:Date.now() };
         logEvent('translate', text + ' → ' + en);
@@ -823,6 +862,8 @@ async function load(){
   if(v){ try{ const d=JSON.parse(v);
     state.phrases=d.phrases||[]; state.log=d.log||[]; state.logo=d.logo||'ritmo'; state.kit=d.kit||null;
     state.cache=d.cache||{}; state.mmEmail=d.mmEmail||'';
+    state.phrases.forEach(p=>{ const c=cleanMT(p.text);
+      if(c && c!==p.text){ p.text=c; p.core=coreOf(c); p.beats=beatsOf(c); } });
   }catch(e){} }
 }
 let saveTimer;
@@ -971,7 +1012,6 @@ function cardHTML(p, train){
       <p class="compose__hint">Escreva do jeito que um nativo diria. A pronúncia e os links de vídeo são recalculados na hora.</p>`;
   }
   const marks = soundMarks(p.text);
-  const core = p.core || coreOf(p.text);
   return `
   ${train?'':`<button class="card__x" data-del="${p.id}" aria-label="Remover">×</button>`}
   ${p.source && p.source!==p.text ? `<p class="card__source">Em português: <b>${esc(p.source)}</b></p>`:''}
@@ -987,14 +1027,63 @@ function cardHTML(p, train){
     ${train?'':`<button class="act" data-edit="${p.id}">✎ Editar</button>`}
     <button class="act" data-known="${p.id}">${p.known?'↺ Voltar a treinar':'✓ Já domino'}</button>
   </div>
+  ${videoBlock(p)}`;
+}
+
+/* --------- busca de vídeo: termos alternativos + player embutido --------- */
+function videoTerms(p){
+  const core = p.core || coreOf(p.text);
+  const kw   = keyWord(p.text);
+  const full = String(p.text).replace(/["“”.?!,;:]/g,'').trim();
+  const out  = [];
+  const push = (label, term) => {
+    term = String(term||'').trim();
+    if(term && !out.some(o=>o.term.toLowerCase()===term.toLowerCase())) out.push({label, term});
+  };
+  push('frase inteira', full);
+  push('trecho curto', core);
+  push('só “'+kw+'”', kw);
+  return out;
+}
+
+function videoBlock(p){
+  const terms = videoTerms(p);
+  const aberto = state.video && state.video.id === p.id;
+  const termo  = aberto ? state.video.term : terms[0].term;
+  return `
   <div class="block">
-    <p class="block__l">Ver gente falando <span class="core">buscando por “${esc(core)}”</span></p>
-    <div class="acts acts--bare">
-      <a class="act" href="${ygURL(core)}" target="_blank" rel="noopener">YouGlish <span class="act__k">pessoas reais</span></a>
-      <a class="act" href="${ppURL(core)}" target="_blank" rel="noopener">PlayPhrase <span class="act__k">cenas de filme</span></a>
-      <a class="act" href="${ytURL(p.text)}" target="_blank" rel="noopener">YouTube <span class="act__k">busca aberta</span></a>
+    <p class="block__l">Ver gente falando</p>
+    <div class="chips" style="margin:0 0 10px">
+      ${terms.map(t=>`<button class="chip" data-vterm="${esc(t.term)}" data-vid="${p.id}"
+        aria-pressed="${termo.toLowerCase()===t.term.toLowerCase()}">${esc(t.label)}</button>`).join('')}
     </div>
+    <div class="acts acts--bare">
+      <button class="act act--main" data-vopen="${p.id}" data-vterm2="${esc(termo)}">▷ Assistir aqui</button>
+      <a class="act" href="${ygURL(termo)}" target="_blank" rel="noopener">YouGlish <span class="act__k">nova aba</span></a>
+      <a class="act" href="${ppURL(termo)}" target="_blank" rel="noopener">PlayPhrase <span class="act__k">filmes</span></a>
+      <a class="act" href="${ytURL(termo)}" target="_blank" rel="noopener">YouTube <span class="act__k">busca aberta</span></a>
+    </div>
+    ${aberto ? `
+    <div class="vid">
+      <div class="vid__bar">
+        <span class="vid__l" id="vid-msg"><span class="dot"></span> Aguarde, buscando vídeos com “${esc(termo)}”…</span>
+        <button class="mini" data-vclose="1">fechar</button>
+      </div>
+      <iframe class="vid__f" id="vid-frame" src="${ygURL(termo)}" title="Vídeos com a frase" allow="autoplay; fullscreen"></iframe>
+      <p class="vid__note">Se o quadro ficar em branco, o site não permite ser embutido no seu navegador —
+        <a href="${ygURL(termo)}" target="_blank" rel="noopener">abra em uma aba nova</a>.
+        Frase longa costuma não ter resultado: tente “trecho curto” ou a palavra sozinha.</p>
+    </div>` : ''}
   </div>`;
+}
+
+/* liga o aviso de espera ao carregamento do player */
+function wireVideo(){
+  const f = document.getElementById('vid-frame'), m = document.getElementById('vid-msg');
+  if(!f || !m) return;
+  let pronto = false;
+  f.addEventListener('load', ()=>{ pronto = true; m.innerHTML = 'Vídeos carregados. Se não aparecer nada, tente outro termo acima.'; });
+  setTimeout(()=>{ if(!pronto) m.innerHTML = 'Está demorando. Se continuar vazio, abra em uma aba nova pelo link abaixo.'; }, 9000);
 }
 
 function isSaved(en){ return state.phrases.some(p=>(p.text||'').trim().toLowerCase()===String(en).trim().toLowerCase()); }
@@ -1200,6 +1289,7 @@ function render(){
   }
   view.innerHTML=`<div class="list">${list.map(p=>
     `<article class="card ${p.known?'card--known':''}">${cardHTML(p,false)}</article>`).join('')}</div>`;
+  wireVideo();
 }
 
 /* ---------------------------- ações ---------------------------- */
@@ -1212,8 +1302,13 @@ function keep(en, pt, core, note){
 }
 
 view.addEventListener('click', e=>{
-  const t=e.target.closest('[data-say],[data-sayraw],[data-del],[data-known],[data-nav],[data-shuffle],[data-keep],[data-keepall],[data-openkit],[data-backkits],[data-edit],[data-editsave],[data-editcancel]');
+  const t=e.target.closest('[data-say],[data-sayraw],[data-del],[data-known],[data-nav],[data-shuffle],[data-keep],[data-keepall],[data-openkit],[data-backkits],[data-edit],[data-editsave],[data-editcancel],[data-vterm],[data-vopen],[data-vclose]');
   if(!t) return;
+  if(t.dataset.vterm){ state.video={id:t.dataset.vid, term:t.dataset.vterm, open:!!(state.video&&state.video.open)};
+    if(!state.video.open) state.video={id:t.dataset.vid, term:t.dataset.vterm, open:false};
+    render(); return; }
+  if(t.dataset.vopen){ state.video={id:t.dataset.vopen, term:t.dataset.vterm2, open:true}; render(); return; }
+  if(t.dataset.vclose){ state.video=null; render(); return; }
   if(t.dataset.edit){ state.editing=t.dataset.edit; render();
     const i=document.getElementById('ed-in'); if(i){ i.focus(); i.select(); } return; }
   if(t.dataset.editcancel){ state.editing=null; render(); return; }
