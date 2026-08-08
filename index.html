@@ -674,7 +674,7 @@ const store = {
 
 /* ---------------------------- estado ---------------------------- */
 const state = { phrases:[], log:[], cache:{}, mmEmail:'', logo:'ritmo', kit:null, mode:'col', accent:'en-US',
-                filter:'all', idx:0, sugg:[], showLogo:false, showCfg:false, tag:'todos',
+                filter:'all', idx:0, sugg:[], showLogo:false, showCfg:false, tag:'todos', editing:null,
                 tStatus:'', tSrc:'', tBusy:false };
 const view=document.getElementById('view'), composeEl=document.getElementById('compose'),
       logoEl=document.getElementById('logopick');
@@ -961,6 +961,15 @@ function beatsHTML(p){
 }
 
 function cardHTML(p, train){
+  if(state.editing === p.id){
+    return `<p class="card__source">Corrigindo a frase em inglês</p>
+      <div class="compose__row" style="margin-top:10px">
+        <input class="field" id="ed-in" value="${esc(p.text)}" autocomplete="off">
+        <button class="btn" data-editsave="${p.id}">Salvar</button>
+        <button class="btn btn--ghost" data-editcancel="1">Cancelar</button>
+      </div>
+      <p class="compose__hint">Escreva do jeito que um nativo diria. A pronúncia e os links de vídeo são recalculados na hora.</p>`;
+  }
   const marks = soundMarks(p.text);
   const core = p.core || coreOf(p.text);
   return `
@@ -975,6 +984,7 @@ function cardHTML(p, train){
   <div class="acts">
     <button class="act act--main" data-say="${p.id}" data-rate="1">▶ Ouvir</button>
     <button class="act" data-say="${p.id}" data-rate="0.6">▶ Devagar</button>
+    ${train?'':`<button class="act" data-edit="${p.id}">✎ Editar</button>`}
     <button class="act" data-known="${p.id}">${p.known?'↺ Voltar a treinar':'✓ Já domino'}</button>
   </div>
   <div class="block">
@@ -1066,11 +1076,14 @@ function renderCompose(){
     <p class="compose__hint">Primeiro ele procura no banco embutido. Se não achar, busca a tradução online e guarda no seu aparelho — da segunda vez em diante já sai na hora, sem internet.</p>
     ${state.tStatus?`<p class="msg ${/não|erro|nenhum/i.test(state.tStatus)?'msg--bad':''}">${esc(state.tStatus)}</p>`:''}
     <div id="sugg"></div>`;
-  const pt=document.getElementById('in-pt'), en=document.getElementById('in-en');
+  const pt=document.getElementById('in-pt'), en=document.getElementById('in-en'), bt=document.getElementById('add');
+  const sync=()=>{ if(!state.tBusy) bt.textContent = en.value.trim() ? 'Salvar frase' : 'Traduzir'; };
   pt.addEventListener('input', ()=>{ state.sugg=search(pt.value); state.tStatus=''; renderSugg(); });
   pt.addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); go(); } });
+  en.addEventListener('input', sync);
   en.addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); saveTyped(); } });
-  document.getElementById('add').onclick=go;
+  bt.onclick=go;
+  sync();
   renderSugg();
 }
 
@@ -1095,9 +1108,13 @@ async function go(){
   document.getElementById('in-pt').value = src;
   try{
     const r = await translateOnline(src);
-    state.tBusy=false; state.tStatus='Traduzido por '+r.src+'. Confira e salve.';
-    renderCompose();
-    const e2=document.getElementById('in-en'); e2.value=r.en; e2.focus(); e2.select();
+    state.tBusy=false;
+    const novo = keep(r.en, src, coreOf(r.en), 'traduzido por '+r.src);
+    state.tStatus = novo
+      ? 'Traduzido por '+r.src+' e salvo. Se não soar natural, use ✎ Editar no cartão.'
+      : 'Essa frase já estava na sua coleção.';
+    state.sugg=[]; save(); render();
+    const f=document.getElementById('in-pt'); if(f){ f.value=''; f.focus(); }
   }catch(err){
     state.tBusy=false;
     state.tStatus='Nenhum serviço de tradução respondeu ('+String(err.message).slice(0,90)+'). Escreva o inglês no campo ao lado.';
@@ -1195,8 +1212,16 @@ function keep(en, pt, core, note){
 }
 
 view.addEventListener('click', e=>{
-  const t=e.target.closest('[data-say],[data-sayraw],[data-del],[data-known],[data-nav],[data-shuffle],[data-keep],[data-keepall],[data-openkit],[data-backkits]');
+  const t=e.target.closest('[data-say],[data-sayraw],[data-del],[data-known],[data-nav],[data-shuffle],[data-keep],[data-keepall],[data-openkit],[data-backkits],[data-edit],[data-editsave],[data-editcancel]');
   if(!t) return;
+  if(t.dataset.edit){ state.editing=t.dataset.edit; render();
+    const i=document.getElementById('ed-in'); if(i){ i.focus(); i.select(); } return; }
+  if(t.dataset.editcancel){ state.editing=null; render(); return; }
+  if(t.dataset.editsave){
+    const p=find(t.dataset.editsave), v=document.getElementById('ed-in').value.trim();
+    if(p && v){ p.text=v; p.core=coreOf(v); p.beats=beatsOf(v); p.note='corrigida por você'; logEvent('edit', v); }
+    state.editing=null; save(); render(); return;
+  }
   if(t.dataset.say)      return speakPhrase(find(t.dataset.say), parseFloat(t.dataset.rate));
   if(t.dataset.sayraw)   return say(t.dataset.sayraw, 1, null);
   if(t.dataset.openkit){ state.kit=t.dataset.openkit; save(); render(); window.scrollTo({top:0,behavior:'smooth'}); return; }
@@ -1219,8 +1244,8 @@ function group(ids,fns){
   };});
 }
 group(['m-col','m-sit','m-tra','m-his'],[
-  ()=>{state.mode='col';render();},
-  ()=>{state.mode='sit';render();},
+  ()=>{state.mode='col';state.editing=null;render();},
+  ()=>{state.mode='sit';state.editing=null;render();},
   ()=>{state.mode='tra';state.idx=0;render();},
   ()=>{state.mode='his';render();}]);
 group(['a-us','a-uk'],[()=>{state.accent='en-US';render();},()=>{state.accent='en-GB';render();}]);
@@ -1239,6 +1264,9 @@ document.getElementById('wipe').onclick=async()=>{
   await store.del(KEY); render();
 };
 document.addEventListener('keydown', e=>{
+  if(e.target.id==='ed-in' && e.key==='Enter'){
+    const b=document.querySelector('[data-editsave]'); if(b) b.click(); return;
+  }
   if(e.target.tagName==='INPUT'||state.mode!=='tra') return;
   const list=visible(); if(!list.length) return;
   if(e.code==='Space'){ e.preventDefault(); speakPhrase(list[state.idx],1); }
