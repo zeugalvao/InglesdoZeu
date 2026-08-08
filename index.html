@@ -185,6 +185,14 @@ a{color:inherit}
 .vid__l{display:flex;align-items:center;gap:8px}
 .dot{width:9px;height:9px;border-radius:50%;background:var(--signal);animation:blink 1s ease-in-out infinite;flex:0 0 auto}
 @keyframes blink{0%,100%{opacity:.25;transform:scale(.8)}50%{opacity:1;transform:scale(1.15)}}
+.auto{padding:11px 12px;border-bottom:1px solid var(--line);background:rgba(27,60,245,.05)}
+.auto__row{display:flex;flex-wrap:wrap;gap:7px;align-items:center}
+.auto__l{font-family:var(--font-mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft);margin-left:6px}
+.chip--sm{padding:4px 9px;font-size:12px;font-family:var(--font-mono)}
+.auto__st{font-family:var(--font-mono);font-size:11px;color:var(--signal);margin:9px 0 0;letter-spacing:.04em}
+.handoff{padding:26px 20px;text-align:center;border-top:2px solid var(--ink);background:var(--ground)}
+.handoff__t{font-family:var(--font-display);font-weight:600;font-size:19px;margin:0 0 8px;letter-spacing:-.01em}
+.handoff__d{font-size:14px;color:var(--ink-soft);margin:0 auto 16px;max-width:52ch}
 .vid__box{min-height:260px;background:var(--card);display:block}
 .vid__box iframe{width:100%!important;border:0;display:block}
 .vid__fail{padding:34px 22px;text-align:center}
@@ -689,6 +697,7 @@ const store = {
 /* ---------------------------- estado ---------------------------- */
 const state = { phrases:[], log:[], cache:{}, mmEmail:'', logo:'ritmo', kit:null, mode:'col', accent:'en-US',
                 filter:'all', idx:0, sugg:[], showLogo:false, showCfg:false, tag:'todos', editing:null, video:null,
+                auto:{on:true, reps:3, tail:10, rep:1, track:1, total:0, fim:false, timer:null},
                 tStatus:'', tSrc:'', tBusy:false };
 const view=document.getElementById('view'), composeEl=document.getElementById('compose'),
       logoEl=document.getElementById('logopick');
@@ -866,6 +875,7 @@ async function load(){
   if(v){ try{ const d=JSON.parse(v);
     state.phrases=d.phrases||[]; state.log=d.log||[]; state.logo=d.logo||'ritmo'; state.kit=d.kit||null;
     state.cache=d.cache||{}; state.mmEmail=d.mmEmail||'';
+    if(d.auto) Object.assign(state.auto, {on:d.auto.on!==false, reps:d.auto.reps||3, tail:typeof d.auto.tail==='number'?d.auto.tail:10});
     state.phrases.forEach(p=>{ const c=cleanMT(p.text);
       if(c && c!==p.text){ p.text=c; p.core=coreOf(c); p.beats=beatsOf(c); } });
   }catch(e){} }
@@ -875,7 +885,8 @@ function save(){
   clearTimeout(saveTimer);
   saveTimer=setTimeout(()=>store.set(KEY, JSON.stringify({
     phrases:state.phrases, log:state.log.slice(-800), logo:state.logo, kit:state.kit,
-    cache:state.cache, mmEmail:state.mmEmail
+    cache:state.cache, mmEmail:state.mmEmail,
+    auto:{on:state.auto.on, reps:state.auto.reps, tail:state.auto.tail}
   })),250);
 }
 function logEvent(kind, text){
@@ -1073,13 +1084,25 @@ function videoBlock(p){
         <span class="vid__l" id="vid-msg"><span class="dot"></span> Aguarde, buscando vídeos com “${esc(termo)}”…</span>
         <button class="mini" data-vclose="1">fechar</button>
       </div>
+      <div class="auto" id="auto-panel">
+        <div class="auto__row">
+          <button class="chip" id="auto-toggle" aria-pressed="${state.auto.on}">${state.auto.on?'⏸ automático ligado':'▶ ligar automático'}</button>
+          <span class="auto__l">repetir cada vídeo</span>
+          <span id="auto-reps">${[1,2,3,5].map(n=>`<button class="chip chip--sm" data-reps="${n}" aria-pressed="${state.auto.reps===n}">${n}×</button>`).join('')}</span>
+          <span class="auto__l">seguir mais</span>
+          <span id="auto-tail">${[0,5,10].map(n=>`<button class="chip chip--sm" data-tail="${n}" aria-pressed="${state.auto.tail===n}">${n}s</button>`).join('')}</span>
+        </div>
+        <p class="auto__st" id="auto-status">Ligue o automático para repetir e avançar sozinho.</p>
+      </div>
       <div class="vid__box" id="yg-box"></div>
-      <p class="vid__note" id="vid-note">Se nada aparecer, o site pode estar bloqueando a incorporação — use os botões acima para abrir em uma aba nova.</p>
+      <div id="vid-next"></div>
+      <p class="vid__note" id="vid-note">O YouGlish já começa no instante exato em que a frase é dita — ele não toca o vídeo inteiro.</p>
     </div>` : ''}
   </div>`;
 }
 
 /* ---- player do YouGlish: script oficial de incorporação ---- */
+let ygWidget = null;
 let ygState = 'idle';   // idle | carregando | pronto | falhou
 function loadYG(cb){
   let respondido = false;
@@ -1122,6 +1145,57 @@ function wireVideo(){
   const box = document.getElementById('yg-box');
   if(!box) return;
 
+  const A = state.auto;
+  A.rep = 1; A.track = 1; A.total = 0; A.fim = false;
+  clearTimeout(A.timer);
+
+  const msg    = ()=>document.getElementById('vid-msg');
+  const status = ()=>document.getElementById('auto-status');
+
+  function pintaStatus(){
+    const s = status(); if(!s) return;
+    if(!A.on){ s.textContent = 'Automático desligado — use os controles do player.'; return; }
+    if(A.fim){ return; }
+    s.textContent = `vídeo ${A.track}${A.total?' de '+A.total:''} · repetição ${A.rep} de ${A.reps}`
+      + (A.tail ? ` · seguindo ${A.tail}s depois da frase` : '');
+  }
+
+  function acabou(){
+    A.fim = true; clearTimeout(A.timer);
+    const s = status(); if(s) s.textContent = `Fim dos ${A.total||''} vídeos do YouGlish.`;
+    const n = document.getElementById('vid-next');
+    if(n) n.innerHTML = `<div class="handoff">
+      <p class="handoff__t">Acabaram os vídeos do YouGlish com “${esc(termo)}”</p>
+      <p class="handoff__d">Os outros dois sites não permitem que o app controle a reprodução deles, então a passagem é manual: abrem em aba nova e você segue por lá.</p>
+      <div class="acts acts--bare" style="justify-content:center">
+        <a class="act act--main" href="${ppURL(termo)}" target="_blank" rel="noopener">Continuar no PlayPhrase ↗</a>
+        <a class="act" href="${ytURL(termo)}" target="_blank" rel="noopener">Depois no YouTube ↗</a>
+        <button class="act" id="auto-restart">↺ Recomeçar do primeiro</button>
+      </div></div>`;
+    const r = document.getElementById('auto-restart');
+    if(r) r.onclick = ()=>{ state.video = {id:state.video.id, term:termo, open:true}; render(); };
+  }
+
+  /* o ciclo: terminou a frase → segura N segundos → repete ou avança */
+  function aoTerminarFrase(w){
+    if(!A.on || A.fim) return;
+    clearTimeout(A.timer);
+    A.timer = setTimeout(()=>{
+      if(A.rep < A.reps){
+        A.rep++;
+        try{ if(typeof w.replay === 'function') w.replay(); else w.fetch(termo,'english',dial()); }
+        catch(e){ /* segue */ }
+      } else {
+        A.rep = 1;
+        if(A.total && A.track >= A.total) return acabou();
+        A.track++;
+        try{ if(typeof w.next === 'function') w.next(); else return acabou(); }
+        catch(e){ return acabou(); }
+      }
+      pintaStatus();
+    }, Math.max(300, A.tail * 1000));
+  }
+
   loadYG(ok=>{
     if(!ok || !window.YG){ videoFalhou('o script do YouGlish não carregou', termo); return; }
     let respondeu = false;
@@ -1132,22 +1206,52 @@ function wireVideo(){
         events: {
           onFetchDone: e => {
             respondeu = true;
-            const msg = document.getElementById('vid-msg');
-            if(!msg) return;
-            const n = e && typeof e.totalResult === 'number' ? e.totalResult : null;
-            msg.innerHTML = n === 0
-              ? 'Nenhum vídeo com “'+esc(termo)+'”. Tente um termo mais curto acima.'
-              : (n ? n+' vídeos encontrados. Seta para baixo pula de falante.' : 'Vídeos prontos.');
+            A.total = (e && typeof e.totalResult === 'number') ? e.totalResult : 0;
+            const m = msg(); if(m){
+              m.innerHTML = A.total === 0
+                ? 'Nenhum vídeo com “'+esc(termo)+'”. Tente um termo mais curto acima.'
+                : A.total + ' vídeos encontrados.';
+            }
+            if(A.total === 0) acabou(); else pintaStatus();
           },
+          onVideoChange: e => {
+            if(e && typeof e.trackNumber === 'number') A.track = e.trackNumber + 1;
+            A.rep = 1; pintaStatus();
+          },
+          onCaptionConsumed: () => aoTerminarFrase(w),
           onError: () => videoFalhou('o player retornou um erro', termo)
         }
       });
-      w.fetch(termo, 'english', state.accent === 'en-GB' ? 'uk' : 'us');
+      ygWidget = w;
+      w.fetch(termo, 'english', dial());
       setTimeout(()=>{ if(!respondeu && !box.querySelector('iframe,div,video'))
         videoFalhou('o player não respondeu a tempo', termo); }, 9000);
     }catch(err){
       videoFalhou('o player não inicializou', termo);
+      return;
     }
+
+    /* controles — atualizam sem redesenhar a página, senão o player morre */
+    const t = document.getElementById('auto-toggle');
+    if(t) t.onclick = ()=>{
+      A.on = !A.on; t.setAttribute('aria-pressed', A.on);
+      t.textContent = A.on ? '⏸ automático ligado' : '▶ ligar automático';
+      if(!A.on) clearTimeout(A.timer);
+      save(); pintaStatus();
+    };
+    document.querySelectorAll('#auto-reps [data-reps]').forEach(b=> b.onclick = ()=>{
+      A.reps = +b.dataset.reps; A.rep = 1;
+      document.querySelectorAll('#auto-reps [data-reps]').forEach(o=>
+        o.setAttribute('aria-pressed', +o.dataset.reps === A.reps));
+      save(); pintaStatus();
+    });
+    document.querySelectorAll('#auto-tail [data-tail]').forEach(b=> b.onclick = ()=>{
+      A.tail = +b.dataset.tail;
+      document.querySelectorAll('#auto-tail [data-tail]').forEach(o=>
+        o.setAttribute('aria-pressed', +o.dataset.tail === A.tail));
+      save(); pintaStatus();
+    });
+    pintaStatus();
   });
 }
 
@@ -1374,7 +1478,7 @@ view.addEventListener('click', e=>{
     if(!state.video.open) state.video={id:t.dataset.vid, term:t.dataset.vterm, open:false};
     render(); return; }
   if(t.dataset.vopen){ state.video={id:t.dataset.vopen, term:t.dataset.vterm2, open:true}; render(); return; }
-  if(t.dataset.vclose){ state.video=null; render(); return; }
+  if(t.dataset.vclose){ clearTimeout(state.auto.timer); ygWidget=null; state.video=null; render(); return; }
   if(t.dataset.edit){ state.editing=t.dataset.edit; render();
     const i=document.getElementById('ed-in'); if(i){ i.focus(); i.select(); } return; }
   if(t.dataset.editcancel){ state.editing=null; render(); return; }
