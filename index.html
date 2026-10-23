@@ -205,6 +205,202 @@ a{color:inherit}
 .msg{font-size:13px;color:var(--signal);margin:10px 0 0;font-family:var(--font-mono)}
 .foot{margin-top:40px;padding-top:18px;border-top:1px solid var(--line);font-size:13px;color:var(--ink-soft);display:flex;gap:16px;flex-wrap:wrap;align-items:center}
 .foot button{text-decoration:underline;font-size:13px}
+
+/* ===== MÉTODO DIÁRIO ===== */
+.eyebrow{font-family:var(--font-mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);margin:0 0 6px}
+.today{background:var(--ink);color:var(--ground);padding:26px 22px 20px;margin-top:18px}
+.today .eyebrow{color:#9fb0a8}
+.today__t{font-family:var(--font-display);font-weight:700;font-size:clamp(26px,6vw,42px);line-height:1.02;letter-spacing:-.03em;margin:0}
+.today__t em{font-style:normal;color:var(--chalk)}
+.today__d{margin:8px 0 0;color:#9fb0a8;font-size:14px;max-width:62ch}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:18px;margin:22px 0 0}
+.kpi__n{display:block;font-family:var(--font-display);font-weight:700;font-size:30px;line-height:1;letter-spacing:-.02em}
+.kpi__n small{font-size:16px;color:#9fb0a8;font-weight:600}
+.kpi__l{display:block;font-family:var(--font-mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#9fb0a8;margin-top:6px}
+.prog{height:8px;background:#2b3d37;margin:20px 0 0;position:relative}
+.prog span{position:absolute;left:0;top:0;bottom:0;background:var(--chalk)}
+.prog--day{height:5px;margin-top:14px}
+.prog--day span{background:#8FA2FF}
+.prog__l{display:flex;justify-content:space-between;font-family:var(--font-mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#7d918a;margin-top:6px}
+.today__ctl{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:20px;padding-top:16px;border-top:1px solid #2b3d37}
+.today .seg{border-color:#3c4f48}
+.today .seg button[aria-pressed="true"]{background:var(--ground);color:var(--ink)}
+.today .act{background:transparent;border-color:#3c4f48;color:var(--ground)}
+.today .act:hover{background:var(--ground);color:var(--ink);border-color:var(--ground)}
+.notice{margin-top:18px;background:var(--chalk);color:var(--ink);padding:12px 14px;font-size:14px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;justify-content:space-between}
+.today .notice .act{color:var(--ink);border-color:var(--ink)}
+
+.mis-list{display:flex;flex-direction:column;gap:8px;margin-top:16px}
+.mis{background:var(--card);border:2px solid var(--ink);display:grid;grid-template-columns:auto 1fr;scroll-margin-top:12px}
+.mis__chk{width:54px;border-right:2px solid var(--ink);font-size:20px;font-weight:700;display:grid;place-items:center;min-height:58px}
+.mis__chk:hover{background:var(--ground)}
+.mis--done .mis__chk{background:var(--signal);color:#fff}
+.mis--done .mis__t{text-decoration:line-through;text-decoration-thickness:2px;color:var(--ink-soft)}
+.mis__head{display:flex;align-items:center;gap:6px 14px;padding:12px 16px;text-align:left;flex-wrap:wrap;width:100%}
+.mis__head:hover{background:var(--ground)}
+.mis__slot{font-family:var(--font-mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--signal);width:118px;flex:0 0 auto}
+.mis__t{font-family:var(--font-display);font-weight:600;font-size:18px;letter-spacing:-.01em;flex:1 1 170px}
+.mis__min{font-family:var(--font-mono);font-size:12px;color:var(--ink-soft)}
+.mis__chev{font-family:var(--font-mono);font-size:18px;width:18px;text-align:center}
+.mis__body{grid-column:1/-1;border-top:2px solid var(--ink);padding:18px 18px 16px;min-width:0}
+.mis__why{margin:0 0 16px;font-size:14px;color:var(--ink-soft);border-left:3px solid var(--chalk);padding-left:12px;max-width:66ch}
+
+.drill{border:2px solid var(--ink);background:var(--ground);padding:20px}
+.drill__pos{font-family:var(--font-mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft);margin:0 0 10px}
+.drill__ask{font-size:14px;color:var(--ink-soft);margin:0 0 4px}
+.drill__q{font-family:var(--font-display);font-weight:600;font-size:clamp(22px,4.6vw,30px);line-height:1.25;letter-spacing:-.02em;margin:0;word-break:break-word}
+.drill__a{margin-top:18px;padding-top:16px;border-top:1px dashed var(--ink-soft)}
+.grades{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:16px}
+.grades--2{grid-template-columns:repeat(2,1fr)}
+.grade{border:2px solid var(--ink);padding:11px 6px;font-weight:600;font-size:14px;display:flex;flex-direction:column;align-items:center;gap:2px;background:var(--card)}
+.grade small{font-family:var(--font-mono);font-size:10px;font-weight:400;color:var(--ink-soft)}
+.grade:hover{background:var(--ink);color:var(--card)}
+.grade:hover small{color:inherit}
+.grade--bad{border-color:var(--alert);color:var(--alert)}
+.grade--bad:hover{background:var(--alert);color:#fff;border-color:var(--alert)}
+.fab__frame{margin:0 0 16px;padding-bottom:14px;border-bottom:1px solid var(--line)}
+.fab__en{font-family:var(--font-mono);font-size:16px;margin:0;color:var(--signal);font-weight:600}
+.fab__pt{font-size:13px;color:var(--ink-soft);margin:2px 0 0}
+.fab__tip{font-size:13px;margin:8px 0 0;background:rgba(237,222,63,.45);padding:7px 10px;max-width:64ch}
+
+.sc{margin-top:10px}
+.sc:empty{display:none}
+.sc__l{font-family:var(--font-mono);font-size:11px;letter-spacing:.04em;color:var(--ink-soft);margin:0}
+.sc__v{font-family:var(--font-display);font-weight:700;font-size:19px;margin:0 0 6px}
+.sc__w{display:inline-block;padding:1px 6px;margin:2px 3px 2px 0;font-size:15px}
+.sc__w--ok{background:rgba(27,60,245,.12);color:var(--signal)}
+.sc__w--no{background:rgba(216,52,42,.12);color:var(--alert);text-decoration:line-through}
+.sc__said{font-size:15px;margin:4px 0 0}
+.act--live{background:var(--alert)!important;border-color:var(--alert)!important;color:#fff!important}
+.rec{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:12px}
+.rec audio{height:36px;max-width:100%}
+.rec__t{font-family:var(--font-mono);font-size:12px;color:var(--alert)}
+.frames{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 0}
+.frame{border:1.5px dashed var(--ink);padding:6px 10px;font-family:var(--font-mono);font-size:13px;background:var(--card)}
+.frame:hover{background:var(--ink);color:var(--card);border-style:solid}
+.ex{margin-top:10px;font-size:14px}
+.ex summary{cursor:pointer;font-weight:600;font-size:13px}
+.ex p{margin:8px 0 0;padding:10px 12px;background:var(--card);border-left:3px solid var(--signal)}
+.q{padding:16px 0;border-bottom:1px dotted var(--line)}
+.q:last-child{border-bottom:0}
+.q__en{font-family:var(--font-display);font-weight:600;font-size:20px;margin:0;letter-spacing:-.01em;display:flex;gap:10px;align-items:center}
+.q__pt{font-size:13px;color:var(--ink-soft);margin:4px 0 0 40px}
+.steps{margin:0 0 14px;padding-left:20px;font-size:14px;max-width:66ch}
+.steps li{margin:4px 0}
+.esc--hide .row__en,.esc--hide .row__pt{filter:blur(6px);user-select:none}
+.row--on{background:rgba(237,222,63,.45)}
+
+.place .eyebrow{color:var(--signal)}
+.cando{display:flex;gap:12px;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px dotted var(--line);flex-wrap:wrap}
+.cando__t{flex:1 1 280px;font-size:15px}
+.cando__lv{font-family:var(--font-mono);font-size:10px;letter-spacing:.08em;color:var(--signal);margin-right:8px;text-transform:uppercase}
+.yn{display:flex;border:2px solid var(--ink)}
+.yn button{padding:6px 14px;font-size:13px;font-weight:600}
+.yn button+button{border-left:2px solid var(--ink)}
+.yn button[aria-pressed="true"]{background:var(--ink);color:var(--ground)}
+
+.sec__t{font-family:var(--font-display);font-weight:700;font-size:22px;letter-spacing:-.02em;margin:30px 0 4px}
+.sec__d{font-size:14px;color:var(--ink-soft);margin:0 0 6px;max-width:62ch}
+.units{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin-top:12px}
+.unit{border:2px solid var(--line);background:var(--ground);padding:14px;display:flex;flex-direction:column;gap:7px;align-items:flex-start}
+.unit .act{margin-top:auto}
+.unit--on{border-color:var(--signal);box-shadow:inset 0 0 0 2px var(--signal)}
+.unit__en{font-family:var(--font-mono);font-weight:600;font-size:14px;color:var(--signal)}
+.unit__pt{font-size:13px;color:var(--ink-soft)}
+.unit__bar{height:5px;background:var(--line);position:relative;width:100%}
+.unit__bar span{position:absolute;left:0;top:0;bottom:0;background:var(--signal)}
+.srs{display:flex;gap:8px;align-items:flex-end;margin-top:6px}
+.srs__c{display:flex;flex-direction:column;align-items:center;gap:3px;font-family:var(--font-mono);font-size:12px;width:44px}
+.srs__c small{font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft)}
+.srs__b{width:100%;background:var(--signal)}
+.srs__c:nth-child(n+5) .srs__b{background:var(--ink)}
+@media (max-width:560px){
+  .mis__slot{width:100%}
+  .grades{grid-template-columns:repeat(2,1fr)}
+  .mis__chk{width:46px}
+  .today{padding:22px 16px 18px}
+}
+
+
+/* ===== CONTA, NUVEM E GAMIFICAÇÃO ===== */
+:root[data-tema="oceano"]{--signal:#0A6E80;--chalk:#8FE3D6;--ground:#E1EAEA}
+:root[data-tema="vinho"]{--signal:#8C1D40;--chalk:#F6C1CF;--ground:#ECE4E4}
+:root[data-tema="ouro"]{--signal:#9A5B00;--chalk:#F4C653;--ground:#EDE8DC}
+.acct{margin-top:14px}
+.acct__b{display:inline-flex;align-items:center;gap:9px;border:1.5px solid var(--line);background:var(--card);padding:7px 12px;font-size:13px;text-align:left;max-width:100%}
+.acct__b:hover{border-color:var(--ink)}
+.acct__dot{flex:0 0 auto;width:9px;height:9px;border-radius:50%;background:var(--line)}
+.acct__dot--ok{background:#1E9E5A}.acct__dot--wait{background:var(--chalk);animation:blink 1s infinite}.acct__dot--bad{background:var(--alert)}
+
+.gbar{display:grid;grid-template-columns:auto 1fr auto auto;gap:14px 18px;align-items:center;border:2px solid var(--ink);background:var(--card);padding:14px 16px;margin-top:18px}
+.gbar__rank{display:flex;align-items:center;gap:10px}
+.gbar__ic{font-size:30px;line-height:1}
+.gbar__n{font-family:var(--font-display);font-weight:700;font-size:19px;margin:0;letter-spacing:-.01em;white-space:nowrap}
+.gbar__row{display:flex;justify-content:space-between;gap:10px;font-size:13px;margin-bottom:6px;flex-wrap:wrap}
+.gbar__row span{color:var(--ink-soft)}
+.gbar__bar{height:10px;background:var(--line);position:relative}
+.gbar__bar span{position:absolute;left:0;top:0;bottom:0;background:var(--signal);transition:width .4s ease}
+.gbar__st{display:flex;gap:12px;font-family:var(--font-mono);font-size:13px;white-space:nowrap}
+@media (max-width:700px){.gbar{grid-template-columns:1fr auto}.gbar__xp{grid-column:1/-1;order:3}.gbar .act{grid-column:1/-1;order:4;justify-content:center}}
+
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:var(--ink);color:var(--ground);padding:10px 16px;font-family:var(--font-mono);font-size:13px;z-index:60;box-shadow:0 8px 24px rgba(0,0,0,.18);pointer-events:none;max-width:90vw}
+.toast--on{animation:toastin .35s ease}
+@keyframes toastin{from{opacity:0;transform:translate(-50%,10px)}to{opacity:1;transform:translate(-50%,0)}}
+.celeb,.certbox{position:fixed;inset:0;background:rgba(16,33,28,.62);display:grid;place-items:center;z-index:70;padding:16px;overflow:auto}
+.celeb[hidden],.certbox[hidden]{display:none}
+.celeb__box{background:var(--card);border:2px solid var(--ink);max-width:440px;width:100%;padding:28px 22px 22px;animation:pop .4s cubic-bezier(.2,1.4,.4,1)}
+@keyframes pop{from{transform:scale(.85);opacity:0}to{transform:scale(1);opacity:1}}
+.celeb__ic{font-size:60px;text-align:center;line-height:1.1;margin-bottom:8px}
+.celeb__t{font-family:var(--font-display);font-weight:800;font-size:28px;letter-spacing:-.03em;text-align:center;margin:0}
+.celeb__d{text-align:center;color:var(--ink-soft);font-size:15px;margin:10px 0 0}
+.celeb__r{text-align:center;font-family:var(--font-mono);font-size:13px;background:var(--chalk);padding:8px 10px;margin:16px 0 0}
+.celeb__list{margin-top:14px;display:flex;flex-direction:column;gap:8px;max-height:40vh;overflow:auto}
+.celeb__it{display:flex;gap:10px;align-items:flex-start;font-size:14px}
+.celeb__it span:first-child{font-size:22px}
+.celeb__it small{color:var(--ink-soft)}
+
+.rank--lock{opacity:.5}
+.badges{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-top:14px}
+.badge{border:2px solid var(--ink);background:var(--ground);padding:14px 12px;display:flex;flex-direction:column;gap:4px;font-size:14px}
+.badge small{font-size:12px;color:var(--ink-soft);line-height:1.35}
+.badge__ic{font-size:28px;line-height:1.1}
+.badge__dt{font-family:var(--font-mono);font-size:10px!important;margin-top:auto}
+.badge--lock{border-color:var(--line);opacity:.55}
+.chip:disabled{opacity:.5;cursor:not-allowed}
+
+.cert{background:#FFFDF6;color:#10211C;border:3px double #10211C;padding:36px 30px;max-width:640px;width:100%;text-align:center;position:relative}
+.cert--ouro{border-color:#B8860B;box-shadow:inset 0 0 0 6px #F4E3A8}
+.cert__mark{width:54px;height:54px;margin:0 auto 12px}
+.cert__mark svg{width:100%;height:100%}
+.cert__lead{margin:14px 0 0;font-size:14px;color:#51635C}
+.cert__nome{font-family:var(--font-display);font-weight:800;font-size:clamp(28px,6vw,42px);letter-spacing:-.03em;margin:4px 0 12px}
+.cert__txt{font-size:15px;max-width:48ch;margin:0 auto;line-height:1.55}
+.cert__data{font-family:var(--font-mono);font-size:13px;margin:18px 0 0}
+.cert__selo{display:inline-block;margin:12px 0 0;font-family:var(--font-mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;background:#F4C653;padding:5px 10px}
+.cert__nota{font-size:11px;color:#51635C;margin:18px 0 0}
+.certbox__in{width:100%;max-width:660px;display:flex;flex-direction:column;align-items:center}
+.certbox .act{background:var(--card)}
+@media print{
+  body *{visibility:hidden!important}
+  #cert,#cert *{visibility:visible!important}
+  #cert{position:fixed;left:0;top:0;width:100%;max-width:none;border-width:3px}
+}
+
+.sql{width:100%;min-height:160px;margin-top:10px;font-family:var(--font-mono);font-size:11.5px;line-height:1.45;border:2px solid var(--ink);background:#0F1D19;color:#D9E4DD;padding:12px;resize:vertical}
+.stu__top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+.stu__st{font-family:var(--font-mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;background:#1E9E5A;color:#fff;padding:4px 8px;white-space:nowrap}
+.stu--off .stu__st{background:var(--alert)}
+.stu--off{opacity:.75}
+.stu__kpi{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:12px;margin-top:16px}
+.stu__kpi span{display:flex;flex-direction:column}
+.stu__kpi b{font-family:var(--font-display);font-size:18px}
+.stu__kpi small{font-family:var(--font-mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft)}
+.tl{display:flex;gap:10px;align-items:baseline;padding:7px 0;border-bottom:1px dotted var(--line);font-size:14px}
+.tl__ic{flex:0 0 auto}
+.tl__b{flex:1}
+.tl__xp{font-family:var(--font-mono);font-size:11px;color:var(--signal)}
+.tl__t{font-family:var(--font-mono);font-size:11px;color:var(--ink-soft);white-space:nowrap}
+
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 
@@ -213,6 +409,7 @@ a{color:inherit}
     <div class="brand__mark" id="brand-mark"></div>
     <div><div class="brand__w">Inglês do <em>Zeu</em></div><div class="brand__tag">pronúncia sem enrolação</div></div>
   </div>
+  <div class="acct" id="acct"></div>
 
   <header class="top">
     <h1 class="top__title">Fale o que<br>você <em>precisa</em><br>falar.</h1>
@@ -222,6 +419,8 @@ a{color:inherit}
       <div><div class="stat__n" id="s-known">0</div><div class="stat__l">dominadas</div></div>
       <div><div class="stat__n" id="s-plays">0</div><div class="stat__l">repetições</div></div>
       <div><div class="stat__n" id="s-streak">0</div><div class="stat__l">dias seguidos</div></div>
+      <div><div class="stat__n" id="s-level">—</div><div class="stat__l">nível</div></div>
+      <div><div class="stat__n" id="s-xp">0</div><div class="stat__l">XP</div></div>
     </div>
   </header>
 
@@ -230,10 +429,14 @@ a{color:inherit}
 
   <div class="bar">
     <div class="seg" role="group" aria-label="Modo">
-      <button id="m-col" aria-pressed="true">Coleção</button>
+      <button id="m-hoje" aria-pressed="true">Hoje</button>
+      <button id="m-tri" aria-pressed="false">Trilha</button>
+      <button id="m-rev" aria-pressed="false">Revisão</button>
+      <button id="m-col" aria-pressed="false">Coleção</button>
       <button id="m-sit" aria-pressed="false">Situações</button>
       <button id="m-tra" aria-pressed="false">Treino</button>
       <button id="m-his" aria-pressed="false">Histórico</button>
+      <button id="m-con" aria-pressed="false">Conquistas</button>
     </div>
     <div class="seg" role="group" aria-label="Sotaque">
       <button id="a-us" aria-pressed="true">EUA</button>
@@ -250,13 +453,17 @@ a{color:inherit}
   <main id="view"></main>
 
   <div class="foot">
-    <span>Suas frases ficam no aparelho. Só a tradução consulta a internet.</span>
+    <span>Suas frases ficam no aparelho. Com a nuvem ligada, também ficam salvas na sua conta.</span>
+    <button data-acct="1">Nuvem e conta</button>
     <button id="cfg-btn">Tradução</button>
     <button id="logo-btn">Trocar logo</button>
     <button id="export">Baixar minhas frases</button>
     <button id="wipe">Apagar tudo</button>
   </div>
 </div>
+<div id="toast" class="toast" hidden role="status" aria-live="polite"></div>
+<div id="celeb" class="celeb" hidden></div>
+<div id="certbox" class="certbox" hidden></div>
 
 <script>
 /* ==================================================================
@@ -585,7 +792,118 @@ const KITS = [
     {en:"How's the family?", pt:'Como está a família?'},
     {en:"Same here.", pt:'Comigo é igual.'},
     {en:"No way, seriously?", pt:'Não acredito, sério?'},
-    {en:"Take care!", pt:'Se cuida!'}]}
+    {en:"Take care!", pt:'Se cuida!'}]},
+
+{ id:'trabalho', lvl:'A2', tag:'No trabalho', title:'Falar de você e do seu trabalho',
+  brief:'É a conversa que mais aparece: na entrevista, no primeiro dia, no networking. Frases curtas no presente simples já resolvem. Não tente traduzir seu cargo palavra por palavra — diga o que você faz.',
+  steps:[
+    {step:'Quem você é', lines:[
+      {en:"Hi, I'm Zeu. Nice to meet you.", pt:'Oi, sou o Zeu. Prazer.', core:'nice to meet you'},
+      {en:"I'm from Brazil.", pt:'Sou do Brasil.', core:"I'm from"},
+      {en:"I live in a small city.", pt:'Moro numa cidade pequena.', core:'I live in a'}]},
+    {step:'O que você faz', lines:[
+      {en:"I work in sales.", pt:'Trabalho com vendas.', core:'I work in'},
+      {en:"I help companies find new customers.", pt:'Ajudo empresas a achar clientes novos.', core:'I help companies'},
+      {en:"I've been doing this for five years.", pt:'Faço isso há cinco anos.', core:"I've been doing this"}]},
+    {step:'O que você quer', lines:[
+      {en:"What I like most is talking to people.", pt:'O que eu mais gosto é falar com pessoas.', core:'what I like most'},
+      {en:"I'm learning English for work.", pt:'Estou aprendendo inglês para o trabalho.', core:"I'm learning English"},
+      {en:"My goal is to work for a bigger company.", pt:'Meu objetivo é trabalhar numa empresa maior.', core:'my goal is to'}]}],
+  hear:[
+    {en:"So, what do you do?", pt:'Então, o que você faz?'},
+    {en:"How long have you been doing that?", pt:'Há quanto tempo você faz isso?'},
+    {en:"Where are you based?", pt:'Você mora ou trabalha onde?'},
+    {en:"That sounds interesting.", pt:'Parece interessante.'},
+    {en:"What brings you here?", pt:'O que te traz aqui?'}]},
+
+{ id:'call', lvl:'B1', tag:'No trabalho', title:'Ligação e videochamada',
+  brief:'Em chamada você não tem gestos para ajudar, então peça para repetir sem medo — nativos fazem isso o tempo todo. Confirmar se todos ouvem no começo e resumir o combinado no fim evita metade dos mal-entendidos.',
+  steps:[
+    {step:'Começando', lines:[
+      {en:"Can you hear me okay?", pt:'Você está me ouvindo bem?', core:'can you hear me'},
+      {en:"Sorry, I'm having some connection issues.", pt:'Desculpa, estou com problema de conexão.', core:'connection issues'},
+      {en:"Let me share my screen.", pt:'Deixa eu compartilhar minha tela.', core:'share my screen'}]},
+    {step:'No meio', lines:[
+      {en:"Sorry, you cut out for a second.", pt:'Desculpa, você cortou por um segundo.', core:'you cut out'},
+      {en:"Could you repeat the last part?", pt:'Pode repetir a última parte?', core:'repeat the last part'},
+      {en:"Just to make sure I understood, you need it by Friday?", pt:'Só para ter certeza que entendi, você precisa até sexta?', core:'make sure I understood'}]},
+    {step:'Fechando', lines:[
+      {en:"So, to sum up, we agreed on three things.", pt:'Então, resumindo, combinamos três coisas.', core:'to sum up'},
+      {en:"I'll follow up by email.", pt:'Vou mandar um e-mail de acompanhamento.', core:"I'll follow up"},
+      {en:"Thanks, everyone. Talk soon.", pt:'Obrigado, pessoal. Até mais.', core:'talk soon'}]}],
+  hear:[
+    {en:"You're on mute.", pt:'Você está no mudo.'},
+    {en:"Can you see my screen?", pt:'Está vendo minha tela?'},
+    {en:"You froze for a second.", pt:'Você congelou por um segundo.'},
+    {en:"Let's give it a couple more minutes.", pt:'Vamos esperar mais uns minutos.'},
+    {en:"I have a hard stop at three.", pt:'Tenho que sair às três em ponto.'}]},
+
+{ id:'salario', lvl:'B2', tag:'No trabalho', title:'Negociar salário e proposta',
+  brief:'Quem fala o primeiro número costuma ancorar a conversa. Se perguntarem sua pretensão, responda com uma faixa baseada em pesquisa de mercado. Agradeça a proposta antes de negociar — negociar não é ingratidão, é esperado.',
+  steps:[
+    {step:'Ganhando tempo', lines:[
+      {en:"Thank you, I'm really excited about this offer.", pt:'Obrigado, estou muito animado com essa proposta.', core:'excited about this offer'},
+      {en:"Could I have a couple of days to think it over?", pt:'Posso ter uns dias para pensar?', core:'think it over'},
+      {en:"Could you walk me through the full package?", pt:'Pode me detalhar o pacote completo?', core:'the full package'}]},
+    {step:'Pedindo mais', lines:[
+      {en:"Based on my research, I was expecting something closer to ten thousand.", pt:'Pela minha pesquisa, eu esperava algo mais perto de dez mil.', core:'something closer to'},
+      {en:"Is there any flexibility on the base salary?", pt:'Tem alguma flexibilidade no salário base?', core:'any flexibility on'},
+      {en:"If we can meet there, I'm ready to sign.", pt:'Se a gente chegar nisso, eu assino.', core:"I'm ready to sign"}]},
+    {step:'Alternativas', lines:[
+      {en:"If the salary is fixed, could we talk about bonuses?", pt:'Se o salário é fixo, podemos falar de bônus?', core:'could we talk about'},
+      {en:"Would remote days be an option?", pt:'Dias remotos seriam uma opção?', core:'be an option'},
+      {en:"Could we review it after six months?", pt:'Podemos revisar depois de seis meses?', core:'review it after'}]}],
+  hear:[
+    {en:"What are your salary expectations?", pt:'Qual sua pretensão salarial?'},
+    {en:"That's at the top of our range.", pt:'Isso está no topo da nossa faixa.'},
+    {en:"Let me check with the team.", pt:'Deixa eu ver com o time.'},
+    {en:"We can't move on salary, but we can offer more vacation.", pt:'Não dá para mexer no salário, mas podemos dar mais férias.'},
+    {en:"We'd love to have you on board.", pt:'Adoraríamos ter você no time.'}]},
+
+{ id:'opiniao', lvl:'B2', tag:'No trabalho', title:'Dar opinião, discordar e convencer',
+  brief:'Discordar de forma direta é aceito, desde que você reconheça o ponto do outro antes. A estrutura que funciona: concordar com uma parte, apresentar o dado, sugerir o próximo passo.',
+  steps:[
+    {step:'Opinando', lines:[
+      {en:"In my opinion, we should focus on existing clients.", pt:'Na minha opinião, devíamos focar nos clientes atuais.', core:'in my opinion'},
+      {en:"The way I see it, price is the main issue.", pt:'Do jeito que eu vejo, o preço é o problema principal.', core:'the way I see it'},
+      {en:"I'm fairly confident this will work.", pt:'Tenho bastante confiança de que isso vai funcionar.', core:"I'm fairly confident"}]},
+    {step:'Discordando', lines:[
+      {en:"I see your point, but the numbers say otherwise.", pt:'Entendo seu ponto, mas os números dizem o contrário.', core:'I see your point'},
+      {en:"I'm not sure I agree with that.", pt:'Não sei se concordo com isso.', core:"I'm not sure I agree"},
+      {en:"Can I offer a different perspective?", pt:'Posso dar outra perspectiva?', core:'a different perspective'}]},
+    {step:'Convencendo', lines:[
+      {en:"Let me give you an example.", pt:'Deixa eu dar um exemplo.', core:'let me give you an example'},
+      {en:"What if we tried it for one month?", pt:'E se a gente testasse por um mês?', core:'what if we tried'},
+      {en:"Can we agree on a next step?", pt:'Podemos combinar um próximo passo?', core:'agree on a next step'}]}],
+  hear:[
+    {en:"I hear you, but...", pt:'Te entendo, mas...'},
+    {en:"That's a fair point.", pt:'É um ponto justo.'},
+    {en:"Where's the data on that?", pt:'Onde estão os dados disso?'},
+    {en:"Let me play devil's advocate.", pt:'Deixa eu fazer o advogado do diabo.'},
+    {en:"I'm on the fence.", pt:'Estou em cima do muro.'}]},
+
+{ id:'lideranca', lvl:'C1', tag:'No trabalho', title:'Conduzir reunião e dar feedback',
+  brief:'Liderar em inglês é menos sobre vocabulário difícil e mais sobre controle da conversa: abrir com o objetivo, dar a palavra, cortar desvios com educação e fechar com responsáveis e prazos. Feedback segue o padrão situação, impacto, pedido.',
+  steps:[
+    {step:'Conduzindo', lines:[
+      {en:"The goal of today's meeting is to make a decision on pricing.", pt:'O objetivo da reunião de hoje é decidir o preço.', core:"the goal of today's meeting"},
+      {en:"Ana, I'd love to hear your take on this.", pt:'Ana, queria ouvir sua visão sobre isso.', core:'hear your take'},
+      {en:"Let's park that for now and come back to it.", pt:'Vamos deixar isso de lado por ora e voltar depois.', core:"let's park that"}]},
+    {step:'Dando feedback', lines:[
+      {en:"Can I share some feedback on yesterday's call?", pt:'Posso dar um feedback sobre a chamada de ontem?', core:'share some feedback'},
+      {en:"When the report was late, the client got frustrated.", pt:'Quando o relatório atrasou, o cliente ficou frustrado.', core:'the client got frustrated'},
+      {en:"Going forward, could you flag delays earlier?", pt:'Daqui pra frente, pode avisar atrasos mais cedo?', core:'going forward'}]},
+    {step:'Fechando', lines:[
+      {en:"So who's taking ownership of this?", pt:'Então quem fica responsável por isso?', core:'taking ownership'},
+      {en:"Let's aim to have it done by Thursday.", pt:'Vamos mirar em ter isso pronto até quinta.', core:"let's aim to"},
+      {en:"Great discussion, everyone. Thanks.", pt:'Ótima discussão, pessoal. Obrigado.', core:'great discussion'}]}],
+  hear:[
+    {en:"Could you clarify what you mean by that?", pt:'Pode esclarecer o que quer dizer com isso?'},
+    {en:"I'll take that as an action item.", pt:'Vou pegar isso como tarefa.'},
+    {en:"That's not really my call.", pt:'Essa decisão não é bem minha.'},
+    {en:"Fair enough.", pt:'Justo.'},
+    {en:"Let's touch base next week.", pt:'Vamos conversar semana que vem.'}]}
+
 ];
 
 /* ---------------------------- MOTOR FONÉTICO (regras, sem IA) ---------------------------- */
@@ -678,7 +996,7 @@ function soundMarks(text, max){
 
 /* ---------------------------- armazenamento local ---------------------------- */
 const IN_CLAUDE = typeof window.storage === 'object' && window.storage !== null;
-const KEY='zeu:v1';
+let KEY='zeu:v1';
 const store = {
   async get(k){
     if(IN_CLAUDE){ try{ const r=await window.storage.get(k); return r?r.value:null; }catch(e){ return null; } }
@@ -695,7 +1013,7 @@ const store = {
 };
 
 /* ---------------------------- estado ---------------------------- */
-const state = { phrases:[], log:[], cache:{}, mmEmail:'', logo:'ritmo', kit:null, mode:'col', accent:'en-US',
+const state = { profile:null, days:{}, fabDone:{}, phrases:[], log:[], cache:{}, mmEmail:'', logo:'ritmo', kit:null, mode:'hoje', accent:'en-US',
                 filter:'all', idx:0, sugg:[], showLogo:false, showCfg:false, tag:'todos', editing:null, video:null,
                 auto:{on:true, reps:3, tail:10, rep:1, track:1, total:0, fim:false, timer:null},
                 tStatus:'', tSrc:'', tBusy:false };
@@ -736,7 +1054,8 @@ function keyWord(t){
 }
 function find(id){ return state.phrases.find(p=>p.id===id); }
 function uid(){ return 'p'+Date.now().toString(36)+Math.random().toString(36).slice(2,6); }
-function today(){ return new Date().toISOString().slice(0,10); }
+function isoLocal(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+function today(){ return isoLocal(new Date()); }
 
 function markedHTML(text){
   const marks = soundMarks(text);
@@ -875,6 +1194,9 @@ async function load(){
   if(v){ try{ const d=JSON.parse(v);
     state.phrases=d.phrases||[]; state.log=d.log||[]; state.logo=d.logo||'ritmo'; state.kit=d.kit||null;
     state.cache=d.cache||{}; state.mmEmail=d.mmEmail||'';
+    state.profile=d.profile||null; state.days=d.days||{}; state.fabDone=d.fabDone||{};
+    state.game=Object.assign(newGame(), d.game||{}); state.savedAt=d.savedAt||0;
+    state.phrases.forEach(p=>{ if(typeof p.stage!=='number'){ p.stage=p.known?4:0; p.due=p.known?addDays(SRS_INT[4]):today(); } });
     if(d.auto) Object.assign(state.auto, {on:d.auto.on!==false, reps:d.auto.reps||3, tail:typeof d.auto.tail==='number'?d.auto.tail:10});
     state.phrases.forEach(p=>{ const c=cleanMT(p.text);
       if(c && c!==p.text){ p.text=c; p.core=coreOf(c); p.beats=beatsOf(c); } });
@@ -885,9 +1207,10 @@ function save(){
   clearTimeout(saveTimer);
   saveTimer=setTimeout(()=>store.set(KEY, JSON.stringify({
     phrases:state.phrases, log:state.log.slice(-800), logo:state.logo, kit:state.kit,
-    cache:state.cache, mmEmail:state.mmEmail,
+    cache:state.cache, mmEmail:state.mmEmail, profile:state.profile, days:state.days, fabDone:state.fabDone,
+    game:state.game, savedAt:(state.savedAt=Date.now()),
     auto:{on:state.auto.on, reps:state.auto.reps, tail:state.auto.tail}
-  })),250);
+  })).then(()=>{ if(typeof cloudSchedule==='function') cloudSchedule(); }),250);
 }
 function logEvent(kind, text){
   state.log.push({ t:Date.now(), d:today(), kind, text:String(text).slice(0,80) });
@@ -897,7 +1220,7 @@ function streak(){
   const days = new Set(state.log.map(e=>e.d));
   let n=0; const d=new Date();
   for(;;){
-    const key=d.toISOString().slice(0,10);
+    const key=isoLocal(d);
     if(days.has(key)){ n++; d.setDate(d.getDate()-1); }
     else if(n===0 && key===today()){ d.setDate(d.getDate()-1); }
     else break;
@@ -1287,7 +1610,7 @@ function kitHTML(k){
 
 function histHTML(){
   const N=30, base=new Date(), days=[];
-  for(let i=N-1;i>=0;i--){ const d=new Date(base); d.setDate(d.getDate()-i); days.push(d.toISOString().slice(0,10)); }
+  for(let i=N-1;i>=0;i--){ const d=new Date(base); d.setDate(d.getDate()-i); days.push(isoLocal(d)); }
   const counts={}; state.log.forEach(e=>{ counts[e.d]=(counts[e.d]||0)+1; });
   const max=Math.max(1,...days.map(d=>counts[d]||0));
   const top=[...state.phrases].sort((a,b)=>(b.plays||0)-(a.plays||0)).filter(p=>p.plays).slice(0,8);
@@ -1320,11 +1643,12 @@ function renderStats(){
   document.getElementById('s-known').textContent=state.phrases.filter(p=>p.known).length;
   document.getElementById('s-plays').textContent=state.phrases.reduce((a,p)=>a+(p.plays||0),0);
   document.getElementById('s-streak').textContent=streak();
+  document.getElementById('s-level').textContent=state.profile?state.profile.level:'—';
 }
 
 function renderCompose(){
   document.getElementById('filt').style.display = state.mode==='col'?'':'none';
-  if(state.mode==='sit' || state.mode==='his'){ composeEl.innerHTML=''; return; }
+  if(['sit','his','hoje','tri','rev','con','conta','prof'].includes(state.mode)){ composeEl.innerHTML=''; return; }
   composeEl.innerHTML=`
     <div class="compose__row">
       <input class="field" id="in-pt" placeholder="Escreva em português: “eu quero pedir a conta”" autocomplete="off">
@@ -1424,6 +1748,7 @@ function renderKits(){
 
 function render(){
   renderBrand(); renderStats(); renderLogoPick(); renderCompose();
+  if(['hoje','tri','rev','con','conta','prof'].includes(state.mode)){ renderMetodo(); return; }
 
   if(state.mode==='his'){ view.innerHTML=histHTML(); return; }
 
@@ -1466,7 +1791,7 @@ function render(){
 function keep(en, pt, core, note){
   if(!en || isSaved(en)) return false;
   state.phrases.unshift({ id:uid(), text:en.trim(), source:(pt||'').trim(), core:core||coreOf(en),
-    note:note||'', beats:beatsOf(en), known:false, plays:0, added:Date.now() });
+    note:note||'', beats:beatsOf(en), known:false, plays:0, added:Date.now(), stage:0, due:today() });
   logEvent('add', en);
   return true;
 }
@@ -1492,7 +1817,7 @@ view.addEventListener('click', e=>{
   if(t.dataset.openkit){ state.kit=t.dataset.openkit; save(); render(); window.scrollTo({top:0,behavior:'smooth'}); return; }
   if(t.dataset.backkits){ state.kit=null; save(); render(); return; }
   if(t.dataset.del){ state.phrases=state.phrases.filter(p=>p.id!==t.dataset.del); save(); render(); return; }
-  if(t.dataset.known){ const p=find(t.dataset.known); p.known=!p.known; save(); render(); return; }
+  if(t.dataset.known){ const p=find(t.dataset.known); p.known=!p.known; p.stage=p.known?4:0; p.due=p.known?addDays(SRS_INT[4]):today(); save(); render(); return; }
   if(t.dataset.keep){ keep(t.dataset.keep, t.dataset.pt, t.dataset.core, 'banco de situações'); save(); render(); return; }
   if(t.dataset.keepall){
     const k=KITS.find(x=>x.id===t.dataset.keepall); if(!k) return;
@@ -1508,11 +1833,16 @@ function group(ids,fns){
     ids.forEach(o=>document.getElementById(o).setAttribute('aria-pressed', o===id?'true':'false')); fns[i]();
   };});
 }
-group(['m-col','m-sit','m-tra','m-his'],[
+const MODE_BTNS=['m-hoje','m-tri','m-rev','m-col','m-sit','m-tra','m-his','m-con'];
+group(MODE_BTNS,[
+  ()=>{state.mode='hoje';render();},
+  ()=>{state.mode='tri';render();},
+  ()=>{state.mode='rev';state.rv=null;render();},
   ()=>{state.mode='col';state.editing=null;render();},
   ()=>{state.mode='sit';state.editing=null;render();},
   ()=>{state.mode='tra';state.idx=0;render();},
-  ()=>{state.mode='his';render();}]);
+  ()=>{state.mode='his';render();},
+  ()=>{state.mode='con';render();}]);
 group(['a-us','a-uk'],[()=>{state.accent='en-US';render();},()=>{state.accent='en-GB';render();}]);
 group(['f-all','f-lea'],[()=>{state.filter='all';state.idx=0;render();},()=>{state.filter='lea';state.idx=0;render();}]);
 
@@ -1525,7 +1855,7 @@ document.getElementById('export').onclick=()=>{
   a.download='ingles-do-zeu.txt'; a.click();
 };
 document.getElementById('wipe').onclick=async()=>{
-  state.phrases=[]; state.log=[]; state.cache={}; state.kit=null; state.idx=0;
+  state.phrases=[]; state.log=[]; state.cache={}; state.kit=null; state.idx=0; state.profile=null; state.days={}; state.fabDone={}; state.rv=null; state.fab=null; state.game=newGame();
   await store.del(KEY); render();
 };
 document.addEventListener('keydown', e=>{
@@ -1539,5 +1869,1542 @@ document.addEventListener('keydown', e=>{
   if(e.code==='ArrowLeft'){ state.idx=(state.idx-1+list.length)%list.length; render(); }
 });
 
-(async()=>{ await load(); render(); })();
+</script>
+<script>
+/* ==================================================================
+   MÉTODO DIÁRIO — dados
+   ================================================================== */
+const LVLS=['A1','A2','B1','B2','C1'];
+const CUM={A1:100,A2:200,B1:375,B2:550,C1:750};
+const LVL_NAME={A1:'Iniciante',A2:'Básico',B1:'Intermediário',B2:'Intermediário superior',C1:'Avançado'};
+const SRS_INT=[0,1,3,7,21,60];
+const KIT_LVL={fastfood:'A2',conta:'A2',rua:'A2',hotel:'A2',imigra:'A2',compras:'A2',social:'A2',uber:'B1',entrevista:'B1',daily:'B1',palestra:'B2',vendas:'B2'};
+KITS.forEach(k=>{ if(!k.lvl) k.lvl=KIT_LVL[k.id]||'B1'; });
+
+/* o que a pessoa consegue fazer em cada nível (descrições no estilo do CEFR) */
+const CANDO=[
+  {lvl:'A1', t:'Entendo palavras e frases bem simples quando falam devagar.'},
+  {lvl:'A1', t:'Consigo me apresentar com frases decoradas: nome, cidade, profissão.'},
+  {lvl:'A2', t:'Entendo frases do dia a dia sobre trabalho, compras e família.'},
+  {lvl:'A2', t:'Consigo montar sozinho frases simples, como "I work in sales and I like my job".'},
+  {lvl:'B1', t:'Entendo o essencial de um vídeo sobre tema conhecido, com legenda em inglês.'},
+  {lvl:'B1', t:'Consigo contar o que fiz ontem e explicar por quê, mesmo errando.'},
+  {lvl:'B2', t:'Acompanho uma reunião de trabalho em inglês e consigo participar.'},
+  {lvl:'B2', t:'Consigo defender uma opinião e argumentar sem travar.'},
+  {lvl:'C1', t:'Entendo séries e podcasts sem legenda quase sempre.'},
+  {lvl:'C1', t:'Falo com fluência numa entrevista, sem preparar as frases antes.'}
+];
+
+/* ---------------- FÁBRICA DE FRASES: estruturas com troca ---------------- */
+const PATTERNS=[
+/* A2 */
+{id:'want', lvl:'A2', en:'I want to ___.', pt:'Eu quero ___.', tip:'Depois de "want to" o verbo vem puro: sem -ing, sem -s.', slots:[
+  {en:'learn English', pt:'aprender inglês'},{en:'get a better job', pt:'conseguir um emprego melhor'},
+  {en:'travel abroad', pt:'viajar para fora'},{en:'talk to my manager', pt:'falar com meu gerente'},
+  {en:'finish this today', pt:'terminar isso hoje'}]},
+{id:'need', lvl:'A2', en:'I need to ___.', pt:'Eu preciso ___.', tip:'"Need to" funciona igual ao "want to": verbo puro depois.', slots:[
+  {en:'call a client', pt:'ligar para um cliente'},{en:'send an email', pt:'mandar um e-mail'},
+  {en:'leave early today', pt:'sair mais cedo hoje'},{en:'check the numbers', pt:'conferir os números'},
+  {en:'practice more', pt:'praticar mais'}]},
+{id:'can', lvl:'A2', en:'Can I ___?', pt:'Posso ___?', tip:'Para pedir permissão: "Can I" + verbo. Sem "to".', slots:[
+  {en:'ask a question', pt:'fazer uma pergunta'},{en:'help you', pt:'te ajudar'},
+  {en:'call you later', pt:'te ligar mais tarde'},{en:'see the report', pt:'ver o relatório'},
+  {en:'work from home tomorrow', pt:'trabalhar de casa amanhã'}]},
+{id:'work', lvl:'A2', en:'I work ___.', pt:'Eu trabalho ___.', tip:'"in" para área (in sales), "at" para empresa (at a bank), "with" para pessoas ou coisas.', slots:[
+  {en:'in sales', pt:'com vendas'},{en:'at a small company', pt:'numa empresa pequena'},
+  {en:'from home', pt:'de casa'},{en:'with customers', pt:'com clientes'},
+  {en:'on weekends', pt:'nos fins de semana'}]},
+{id:'usually', lvl:'A2', en:'I usually ___.', pt:'Eu normalmente ___.', tip:'Rotina usa o presente simples. "Usually" vem antes do verbo.', slots:[
+  {en:'wake up at six', pt:'acordo às seis'},{en:'work until five', pt:'trabalho até as cinco'},
+  {en:'have coffee in the morning', pt:'tomo café de manhã'},{en:'study English at night', pt:'estudo inglês à noite'},
+  {en:'drive to work', pt:'vou de carro para o trabalho'}]},
+{id:'yesterday', lvl:'A2', en:'Yesterday I ___.', pt:'Ontem eu ___.', tip:'Passado regular termina em -ed (worked, talked). Alguns são irregulares: go → went, see → saw.', slots:[
+  {en:'worked late', pt:'trabalhei até tarde'},{en:'talked to a client', pt:'falei com um cliente'},
+  {en:'finished the project', pt:'terminei o projeto'},{en:'went to the bank', pt:'fui ao banco'},
+  {en:'watched a movie in English', pt:'assisti um filme em inglês'}]},
+{id:'going', lvl:'A2', en:"I'm going to ___.", pt:'Eu vou ___.', tip:'Plano para o futuro: "I\'m going to" + verbo puro. Na fala vira "gonna".', slots:[
+  {en:'call him tomorrow', pt:'ligar para ele amanhã'},{en:'study tonight', pt:'estudar hoje à noite'},
+  {en:'apply for the job', pt:'me candidatar à vaga'},{en:'send it this afternoon', pt:'mandar isso hoje à tarde'},
+  {en:'talk to the team', pt:'falar com o time'}]},
+{id:'because', lvl:'A2', en:'I like my job because ___.', pt:'Eu gosto do meu trabalho porque ___.', tip:'Depois de "because" vem uma frase completa, com sujeito: "because I help people".', slots:[
+  {en:'I help people', pt:'eu ajudo pessoas'},{en:'I learn every day', pt:'eu aprendo todo dia'},
+  {en:'the team is great', pt:'o time é ótimo'},{en:"it's never boring", pt:'nunca é chato'},
+  {en:'I talk to customers', pt:'eu falo com clientes'}]},
+{id:'doyou', lvl:'A2', en:'Do you ___?', pt:'Você ___?', tip:'Pergunta no presente começa com "Do you". O verbo fica puro.', slots:[
+  {en:'work here', pt:'trabalha aqui'},{en:'speak Portuguese', pt:'fala português'},
+  {en:'have a minute', pt:'tem um minuto'},{en:'need any help', pt:'precisa de ajuda'},
+  {en:'know where the meeting is', pt:'sabe onde é a reunião'}]},
+{id:'problem', lvl:'A2', en:'There is a problem with ___.', pt:'Tem um problema com ___.', tip:'"There is" = "tem / existe". Nunca diga "have a problem" para coisas.', slots:[
+  {en:'the system', pt:'o sistema'},{en:'my order', pt:'meu pedido'},
+  {en:'the invoice', pt:'a nota fiscal'},{en:'the schedule', pt:'a agenda'},
+  {en:'the payment', pt:'o pagamento'}]},
+/* B1 */
+{id:'forYears', lvl:'B1', en:"I've worked in sales for ___.", pt:'Trabalho com vendas há ___.', tip:'"Há X anos" em inglês é present perfect + "for". Nunca "I work since".', slots:[
+  {en:'two years', pt:'dois anos'},{en:'five years', pt:'cinco anos'},{en:'a long time', pt:'muito tempo'},
+  {en:'six months', pt:'seis meses'},{en:'over ten years', pt:'mais de dez anos'}]},
+{id:'responsible', lvl:'B1', en:"I'm responsible for ___.", pt:'Eu sou responsável por ___.', tip:'Depois de "for", se vier verbo, ele leva -ing: "for training".', slots:[
+  {en:'the sales team', pt:'o time de vendas'},{en:'new clients', pt:'clientes novos'},
+  {en:'the monthly report', pt:'o relatório mensal'},{en:'training new people', pt:'treinar pessoas novas'},
+  {en:'customer support', pt:'o suporte ao cliente'}]},
+{id:'could', lvl:'B1', en:'Could you ___?', pt:'Você poderia ___?', tip:'"Could you" é o pedido educado padrão no trabalho.', slots:[
+  {en:'send me the file', pt:'me mandar o arquivo'},{en:'explain that again', pt:'explicar isso de novo'},
+  {en:'speak a little slower', pt:'falar um pouco mais devagar'},{en:'share your screen', pt:'compartilhar sua tela'},
+  {en:'give me more details', pt:'me dar mais detalhes'}]},
+{id:'should', lvl:'B1', en:'I think we should ___.', pt:'Acho que a gente deveria ___.', tip:'Sugestão com "should" + verbo puro. Soa propositivo, não mandão.', slots:[
+  {en:'wait until Monday', pt:'esperar até segunda'},{en:'talk to the client first', pt:'falar com o cliente primeiro'},
+  {en:'change the plan', pt:'mudar o plano'},{en:'try something new', pt:'tentar algo novo'},
+  {en:'cut costs', pt:'cortar custos'}]},
+{id:'reason', lvl:'B1', en:'The reason I applied is that ___.', pt:'O motivo de eu me candidatar é que ___.', tip:'Resposta pronta para "Why do you want this job?".', slots:[
+  {en:'I want to grow', pt:'eu quero crescer'},{en:'I like your products', pt:'eu gosto dos produtos de vocês'},
+  {en:'I have the right experience', pt:'eu tenho a experiência certa'},{en:'I want new challenges', pt:'eu quero novos desafios'},
+  {en:'this role fits my goals', pt:'essa vaga combina com meus objetivos'}]},
+{id:'ifwe', lvl:'B1', en:'If we finish early, ___.', pt:'Se a gente terminar cedo, ___.', tip:'Condição real: "if" + presente, e o resultado com "will" ou "can".', slots:[
+  {en:'we can go home', pt:'a gente pode ir pra casa'},{en:"I'll call you", pt:'eu te ligo'},
+  {en:"we'll start the next task", pt:'a gente começa a próxima tarefa'},{en:"I'll send the report", pt:'eu mando o relatório'},
+  {en:'we can review it together', pt:'a gente pode revisar juntos'}]},
+{id:'notsure', lvl:'B1', en:"I'm not sure ___.", pt:'Não tenho certeza ___.', tip:'Pergunta indireta: a ordem volta ao normal. "if that\'s right", não "if is that right".', slots:[
+  {en:"if that's right", pt:'se isso está certo'},{en:'what you mean', pt:'do que você quer dizer'},
+  {en:'when it starts', pt:'de quando começa'},{en:"who's in charge", pt:'de quem é o responsável'},
+  {en:'how to do this', pt:'de como fazer isso'}]},
+{id:'depends', lvl:'B1', en:'It depends on ___.', pt:'Depende ___.', tip:'Em inglês é sempre "depends ON", nunca "depends of".', slots:[
+  {en:'the budget', pt:'do orçamento'},{en:'the client', pt:'do cliente'},{en:'the deadline', pt:'do prazo'},
+  {en:'the team', pt:'do time'},{en:'the results', pt:'dos resultados'}]},
+/* B2 */
+{id:'trying', lvl:'B2', en:"What I'm trying to say is that ___.", pt:'O que eu estou tentando dizer é que ___.', tip:'Ganha tempo e reorganiza a ideia quando você trava no meio.', slots:[
+  {en:'we need more time', pt:'a gente precisa de mais tempo'},{en:'the plan is too risky', pt:'o plano é arriscado demais'},
+  {en:"the numbers don't add up", pt:'os números não fecham'},{en:"we're on the right track", pt:'a gente está no caminho certo'},
+  {en:'this is a priority', pt:'isso é prioridade'}]},
+{id:'point', lvl:'B2', en:'I see your point, but ___.', pt:'Entendo seu ponto, mas ___.', tip:'Reconhecer antes de discordar. É o jeito profissional de dizer "não".', slots:[
+  {en:'the timeline is too tight', pt:'o prazo está apertado demais'},{en:'the data says otherwise', pt:'os dados dizem o contrário'},
+  {en:'we tried that last year', pt:'a gente tentou isso ano passado'},{en:"it's not in the budget", pt:'não está no orçamento'},
+  {en:"the client won't accept it", pt:'o cliente não vai aceitar'}]},
+{id:'experience', lvl:'B2', en:'Based on my experience, ___.', pt:'Com base na minha experiência, ___.', tip:'Dá peso à opinião sem soar arrogante.', slots:[
+  {en:'this approach works', pt:'essa abordagem funciona'},{en:'clients prefer short calls', pt:'clientes preferem ligações curtas'},
+  {en:'small tests are safer', pt:'testes pequenos são mais seguros'},{en:'training pays off', pt:'treinamento compensa'},
+  {en:'follow-ups close deals', pt:'follow-ups fecham negócios'}]},
+{id:'increased', lvl:'B2', en:'We increased ___ by twenty percent.', pt:'Aumentamos ___ em vinte por cento.', tip:'Resultado com número: "increase X by Y". Em entrevista, número vale mais que adjetivo.', slots:[
+  {en:'sales', pt:'as vendas'},{en:'revenue', pt:'a receita'},{en:'customer retention', pt:'a retenção de clientes'},
+  {en:'our conversion rate', pt:'nossa taxa de conversão'},{en:'the average ticket', pt:'o ticket médio'}]},
+{id:'open', lvl:'B2', en:"I'd be open to ___.", pt:'Eu estaria aberto a ___.', tip:'Negociação: mostra flexibilidade sem aceitar de cara.', slots:[
+  {en:'a hybrid schedule', pt:'um horário híbrido'},{en:'a lower base with commission', pt:'um fixo menor com comissão'},
+  {en:'starting next month', pt:'começar mês que vem'},{en:'a trial period', pt:'um período de experiência'},
+  {en:'discussing the details', pt:'discutir os detalhes'}]},
+{id:'possible', lvl:'B2', en:'Would it be possible to ___?', pt:'Seria possível ___?', tip:'O pedido mais educado que existe. Use para coisas difíceis.', slots:[
+  {en:'move the meeting', pt:'mudar a reunião'},{en:'extend the deadline', pt:'estender o prazo'},
+  {en:'review the salary', pt:'revisar o salário'},{en:'work remotely on Fridays', pt:'trabalhar remoto às sextas'},
+  {en:'see the contract first', pt:'ver o contrato antes'}]},
+/* C1 */
+{id:'fair', lvl:'C1', en:'To be fair, ___.', pt:'Para ser justo, ___.', tip:'Concede um ponto e mostra equilíbrio na análise.', slots:[
+  {en:'they had a point', pt:'eles tinham razão em parte'},{en:"we didn't give them enough time", pt:'a gente não deu tempo suficiente'},
+  {en:'the market changed fast', pt:'o mercado mudou rápido'},{en:'nobody saw it coming', pt:'ninguém previu isso'},
+  {en:'it could have been worse', pt:'poderia ter sido pior'}]},
+{id:'bottom', lvl:'C1', en:'The bottom line is that ___.', pt:'No fim das contas, ___.', tip:'Fecha a discussão com a conclusão principal.', slots:[
+  {en:'we need a decision today', pt:'a gente precisa de uma decisão hoje'},{en:"it's not profitable", pt:'não dá lucro'},
+  {en:'the client is happy', pt:'o cliente está satisfeito'},{en:'we have to cut scope', pt:'a gente tem que cortar escopo'},
+  {en:'it worked', pt:'funcionou'}]},
+{id:'hadknown', lvl:'C1', en:'Had we known earlier, ___.', pt:'Se a gente soubesse antes, ___.', tip:'Condicional do passado com inversão: formal e muito usado em análise.', slots:[
+  {en:'we would have changed the plan', pt:'teríamos mudado o plano'},{en:'we could have saved money', pt:'poderíamos ter economizado'},
+  {en:"we'd have hired sooner", pt:'teríamos contratado antes'},{en:"we wouldn't have signed", pt:'não teríamos assinado'},
+  {en:'things would be different now', pt:'tudo seria diferente agora'}]},
+{id:'workon', lvl:'C1', en:"One thing I'd like you to work on is ___.", pt:'Uma coisa que eu queria que você trabalhasse é ___.', tip:'Feedback de líder: direto e respeitoso. Depois de "on", verbo com -ing.', slots:[
+  {en:'being more concise', pt:'ser mais objetivo'},{en:'meeting deadlines', pt:'cumprir prazos'},
+  {en:'asking for help earlier', pt:'pedir ajuda mais cedo'},{en:'documenting your work', pt:'documentar seu trabalho'},
+  {en:'speaking up in meetings', pt:'se posicionar nas reuniões'}]}
+];
+
+/* ---------------- MICRODESAFIOS: perguntas reais, por nível ---------------- */
+const MICRO={
+A2:[
+  {q:'What do you do?', pt:'O que você faz?', f:['I work in ___.',"I'm a ___."], ex:'I work in sales. I sell products to small companies.'},
+  {q:'Where do you live?', pt:'Onde você mora?', f:['I live in ___.',"It's a ___ city."], ex:"I live in a small city in Brazil. It's quiet and hot."},
+  {q:'What did you do yesterday?', pt:'O que você fez ontem?', f:['Yesterday I ___.','Then I ___.'], ex:'Yesterday I worked all day. Then I watched a movie with my family.'},
+  {q:'What are you going to do this weekend?', pt:'O que você vai fazer neste fim de semana?', f:["I'm going to ___.",'Maybe I will ___.'], ex:"I'm going to rest. Maybe I will visit my parents."},
+  {q:'Why are you learning English?', pt:'Por que você está aprendendo inglês?', f:['I want to ___.','I need English for ___.'], ex:'I want to get a better job. I need English for meetings.'},
+  {q:'What do you like about your job?', pt:'Do que você gosta no seu trabalho?', f:['I like my job because ___.'], ex:'I like my job because I talk to people every day.'},
+  {q:'What is a normal day for you?', pt:'Como é um dia normal seu?', f:['I usually ___.','After work I ___.'], ex:'I usually wake up at six and start work at eight. After work I study English.'}],
+B1:[
+  {q:'Tell me about yourself.', pt:'Me fale sobre você.', f:["I've worked in ___ for ___.","Right now I'm ___.","I'm looking for ___."], ex:"I've worked in sales for six years. Right now I manage small clients, and I'm looking for a role where I can grow."},
+  {q:'What does a normal day at work look like?', pt:'Como é um dia normal no trabalho?', f:['I usually start by ___.','Most of my time goes to ___.'], ex:'I usually start by checking my emails. Most of my time goes to calls with clients.'},
+  {q:'Tell me about a problem you solved at work.', pt:'Conte um problema que você resolveu no trabalho.', f:['There was a problem with ___.','So I decided to ___.','In the end, ___.'], ex:'There was a problem with late deliveries. So I decided to call the supplier every Monday. In the end, the delays stopped.'},
+  {q:'Why do you want this job?', pt:'Por que você quer esta vaga?', f:['The reason I applied is that ___.','I think I can help with ___.'], ex:'The reason I applied is that I want to work with bigger clients. I think I can help with new sales.'},
+  {q:'What are your strengths?', pt:'Quais são seus pontos fortes?', f:["I'm good at ___.",'For example, ___.'], ex:"I'm good at building relationships. For example, most of my clients have been with me for years."},
+  {q:'Can you describe your last project?', pt:'Pode descrever seu último projeto?', f:['I was responsible for ___.','The result was ___.'], ex:'I was responsible for opening a new region. The result was thirty new clients in six months.'}],
+B2:[
+  {q:"What's your biggest weakness?", pt:'Qual seu maior ponto fraco?', f:['I used to ___, but now I ___.'], ex:'I used to take on too much, but now I prioritize and say no when I need to.'},
+  {q:'Tell me about a time you disagreed with your manager.', pt:'Conte uma vez que você discordou do seu gestor.', f:['I saw it differently because ___.','We agreed to ___.'], ex:'I saw it differently because the data showed another trend. We agreed to run a small test first.'},
+  {q:'Where do you see yourself in five years?', pt:'Onde você se vê em cinco anos?', f:["I'd like to be ___.",'I want to grow into ___.'], ex:"I'd like to be leading a small team. I want to grow into a management role."},
+  {q:'What are your salary expectations?', pt:'Qual sua pretensão salarial?', f:["Based on my research, I'm looking for ___.","I'd be open to ___."], ex:"Based on my research, I'm looking for something between nine and eleven thousand, but I'd be open to discussing the full package."},
+  {q:'How do you handle pressure?', pt:'Como você lida com pressão?', f:['When things get tight, I ___.'], ex:'When things get tight, I break the work into small steps and talk to the team early.'},
+  {q:'Walk me through your biggest achievement.', pt:'Me conte sua maior conquista.', f:['We increased ___ by ___.','The key was ___.'], ex:'We increased sales by twenty percent in one year. The key was focusing on existing clients.'}],
+C1:[
+  {q:'How would you handle an underperforming team member?', pt:'Como você lidaria com alguém do time rendendo abaixo?', f:['First, I would ___.',"One thing I'd like you to work on is ___."], ex:"First, I would have a private conversation to understand what's going on, then agree on clear goals and check in every week."},
+  {q:'Tell me about a decision you made with incomplete information.', pt:'Conte uma decisão que você tomou com informação incompleta.', f:['We had to decide whether ___.','In hindsight, ___.'], ex:'We had to decide whether to enter a new market before the data was in. In hindsight, moving early gave us an edge.'},
+  {q:'What would you change about our industry?', pt:'O que você mudaria no nosso setor?', f:["If it were up to me, I'd ___.",'The bottom line is that ___.'], ex:"If it were up to me, I'd make pricing more transparent. The bottom line is that trust drives repeat business."},
+  {q:"How do you influence people you don't manage?", pt:'Como você influencia pessoas que não são da sua equipe?', f:['I try to ___.','What usually works is ___.'], ex:'I try to understand what they care about first. What usually works is showing how my request helps their goals.'},
+  {q:'Describe a failure and what it taught you.', pt:'Descreva uma falha e o que ela te ensinou.', f:['Looking back, ___.','What I learned is that ___.'], ex:'Looking back, I launched too fast without testing. What I learned is that small pilots save a lot of pain.'}]
+};
+
+/* ---------------- NARRAÇÃO MENTAL ---------------- */
+const NARRA={
+A2:[
+  {t:'Narre o que você está fazendo agora, passo a passo.', f:["I'm ___ing.","Now I'm going to ___.",'After that, I ___.'], ex:"I'm making coffee. Now I'm going to take a shower. After that, I'm going to work."},
+  {t:'Descreva o lugar onde você está.', f:['There is a ___.','There are ___.','I can see ___.'], ex:'There is a table and two chairs. There are some books on the shelf. I can see the street from the window.'},
+  {t:'Diga 3 coisas que você vai fazer hoje.', f:["First, I'm going to ___.",'Then ___.','Later, ___.'], ex:"First, I'm going to answer my emails. Then I'm going to call a client. Later, I'm going to study English."},
+  {t:'Fale o que você comeu e bebeu hoje.', f:['I had ___ for breakfast.','I drank ___.'], ex:'I had bread and eggs for breakfast. I drank black coffee.'},
+  {t:'Descreva uma pessoa do seu trabalho.', f:['She works in ___.','He is very ___.'], ex:'She works in finance. She is very organized and friendly.'}],
+B1:[
+  {t:'Explique para alguém imaginário como fazer uma tarefa do seu trabalho.', f:['First you ___.','Then you ___.','Make sure you ___.'], ex:'First you open the system. Then you check the new orders. Make sure you confirm the address.'},
+  {t:'Conte o que aconteceu ontem, com detalhes.', f:['Yesterday ___.','After that ___.','The best part was ___.'], ex:'Yesterday I had a long meeting. After that I went to the gym. The best part was dinner with my family.'},
+  {t:'Planeje sua semana em voz baixa.', f:['On Monday I have to ___.',"If I have time, I'll ___."], ex:"On Monday I have to send the report. If I have time, I'll call two new clients."},
+  {t:'Reclame, com educação, de algo que te incomodou hoje.', f:['What bothers me is ___.','It would be better if ___.'], ex:'What bothers me is the traffic. It would be better if I could leave earlier.'}],
+B2:[
+  {t:'Dê sua opinião sobre algo que você viu hoje e justifique.', f:['In my opinion, ___.','The main reason is ___.','On the other hand, ___.'], ex:'In my opinion, remote work is here to stay. The main reason is productivity. On the other hand, new people learn slower.'},
+  {t:'Explique um problema do trabalho e proponha uma solução.', f:['The issue is that ___.',"What I'd suggest is ___."], ex:"The issue is that clients wait too long for answers. What I'd suggest is a simple daily check."},
+  {t:'Resuma uma notícia ou vídeo que você viu.', f:['Basically, ___.','What surprised me was ___.'], ex:'Basically, the company cut prices to win market share. What surprised me was how fast competitors reacted.'}],
+C1:[
+  {t:'Debata consigo mesmo: defenda os dois lados de uma decisão.', f:['One could argue that ___.','That said, ___.','On balance, ___.'], ex:'One could argue that hiring now is risky. That said, waiting could cost us clients. On balance, I would hire one person.'},
+  {t:'Explique um conceito do seu trabalho para um leigo.', f:['Think of it as ___.','In other words, ___.'], ex:'Think of a sales pipeline as a funnel. In other words, many people enter at the top and only some buy.'}]
+};
+
+const DIARIO={
+A2:['Conte como foi seu dia em 5 frases.','Fale do seu trabalho: o que você faz e do que gosta.','Fale dos seus planos para amanhã.','Descreva sua casa e sua cidade.'],
+B1:['Conte um desafio do dia e como você lidou com ele.','Explique por que você quer uma vaga melhor.','Conte uma conversa que você teve hoje.'],
+B2:['Faça um pitch de 1 minuto sobre você para um recrutador.','Analise o que deu certo e o que deu errado na sua semana.','Defenda uma ideia que você teria para sua empresa.'],
+C1:['Grave como se estivesse abrindo a reunião de amanhã.','Explique uma decisão difícil que você tomou e as alternativas.']
+};
+
+const VIDEOS={
+A2:['6 Minute English BBC Learning English','VOA Learning English Lets Learn English','English listening practice slow beginner','daily English conversation slow'],
+B1:['English conversation at work intermediate','job interview English practice','TED-Ed short lesson','business English small talk'],
+B2:['business English meeting real conversation','TED talk career advice','salary negotiation English example','English presentation skills'],
+C1:['CEO interview podcast','TED talk leadership','business podcast full episode','panel discussion business']
+};
+
+/* ---------------- MISSÕES DO DIA ---------------- */
+const MISSIONS=[
+ {id:'rev1', slot:'Ao acordar', t:'Revisão espaçada', min:5, r:'LPI', why:'Você tenta lembrar antes de ver a resposta. É esse esforço de buscar na memória que fixa a frase.'},
+ {id:'narra', slot:'Café ou banho', t:'Narração mental', min:5, r:'LPI', why:'Treina a fala interna em inglês, o começo de "pensar em inglês". Faça em silêncio ou sussurrando, sem traduzir do português.'},
+ {id:'escuta', slot:'Deslocamento', t:'Escuta repetida', min:15, minI:25, r:'PI', why:'Ouvir o mesmo trecho várias vezes rende mais que ouvir sempre coisa nova. Primeira volta sem texto, só tentando entender.'},
+ {id:'shadow', slot:'Meio da manhã', t:'Shadowing da frase do dia', min:10, r:'LPI', why:'Repetir junto com o nativo, no mesmo ritmo e tom, treina a entonação e acostuma a boca a fazer os sons.'},
+ {id:'fabrica', slot:'Fim da manhã', t:'Fábrica de frases', min:10, r:'LPI', why:'É o seu ponto de travamento: montar frases. Uma estrutura, cinco trocas, você falando em voz alta antes de ver a resposta.'},
+ {id:'video', slot:'Almoço', t:'Vídeo do seu nível', min:10, minI:20, r:'PI', why:'Escuta por prazer, com legenda em inglês. Se entender menos de 70%, troque por algo mais fácil.'},
+ {id:'micro', slot:'Tarde', t:'3 microdesafios de fala', min:6, r:'PI', why:'Perguntas reais de entrevista e de trabalho. Responder em voz alta, sem roteiro, é o treino de fluência.'},
+ {id:'diario', slot:'Noite', t:'Diário falado', min:5, r:'PI', why:'Dois minutos falando do seu dia, gravando. Ouvir a própria voz mostra onde você trava.'},
+ {id:'rev2', slot:'Antes de dormir', t:'Revisão da noite', min:5, r:'LPI', why:'Segunda passada do dia. O que você errou de manhã volta aqui.'},
+ {id:'conversa', slot:'Fim de semana', t:'Conversa com gente de verdade', min:30, r:'LPI', weekend:true, why:'O site não substitui conversa real. Uma por semana já acelera muito.'}
+];
+const RITMOS={leve:{n:'Leve',k:'L'},padrao:{n:'Padrão',k:'P'},intenso:{n:'Intenso',k:'I'}};
+
+/* ==================================================================
+   MÉTODO DIÁRIO — lógica
+   ================================================================== */
+Object.assign(state, { place:null, placing:false, rv:null, fab:null, fabPid:null, triPat:null,
+  esc:{reps:3, rate:0.9}, open:null, triLvl:null });
+
+function addDays(n){ const d=new Date(); d.setDate(d.getDate()+n); return isoLocal(d); }
+function lvlIdx(l){ return Math.max(0, LVLS.indexOf(l)); }
+function dayNum(){ return Math.floor(new Date(today()+'T12:00:00').getTime()/86400000); }
+function pickDay(arr, off){ return arr && arr.length ? arr[((dayNum()+(off||0))%arr.length+arr.length)%arr.length] : null; }
+function isWeekend(){ const g=new Date().getDay(); return g===0||g===6; }
+function curLvl(){ return state.profile ? state.profile.level : 'A2'; }
+function trackLvl(l){ return l==='A1' ? 'A2' : l; }
+function fill(frame, x){ return frame.replace('___', x); }
+function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+const MESES=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+
+/* ---------------- dias, minutos, horas ---------------- */
+function dayRec(d){ d=d||today(); if(!state.days[d]) state.days[d]={done:{}, min:0, ext:0}; return state.days[d]; }
+function totalMin(){ return Object.values(state.days).reduce((a,r)=>a+(r.min||0)+(r.ext||0),0); }
+function hoursDone(){ const p=state.profile; if(!p) return 0; return p.base + Math.max(0,totalMin()-(p.minAtPlace||0))/60; }
+function missionsToday(){ const k=RITMOS[(state.profile&&state.profile.ritmo)||'padrao'].k; return MISSIONS.filter(m=>m.r.includes(k) && (!m.weekend||isWeekend())); }
+function mMin(m){ return (state.profile && state.profile.ritmo==='intenso' && m.minI) ? m.minI : m.min; }
+function metaMin(){ return missionsToday().filter(m=>!m.weekend).reduce((a,m)=>a+mMin(m),0); }
+function avgDaily(){
+  let s=0, n=0;
+  for(let i=1;i<=14;i++){ const r=state.days[addDays(-i)]; if(r){ const v=(r.min||0)+(r.ext||0); s+=v; if(v>0) n++; } }
+  return n>=5 ? s/14 : metaMin()*6/7;
+}
+function eta(){
+  const p=state.profile; const rest=(CUM[p.goal]-hoursDone())*60;
+  if(rest<=0) return {txt:'meta atingida', sub:'refaça o teste de nível'};
+  const avg=Math.max(5, avgDaily()); const days=Math.ceil(rest/avg);
+  const d=new Date(); d.setDate(d.getDate()+days);
+  const txt = days<60 ? `~${Math.round(days/7)} semanas` : `~${Math.round(days/30)} meses`;
+  return {txt, sub:`${p.goal} por volta de ${MESES[d.getMonth()]}/${d.getFullYear()}`};
+}
+function markDone(id, val){
+  const r=dayRec(), m=MISSIONS.find(x=>x.id===id); if(!m) return;
+  if(val && !r.done[id]){ r.done[id]=true; r.min+=mMin(m); logEvent('mission', m.t); }
+  else if(!val && r.done[id]){ delete r.done[id]; r.min=Math.max(0, r.min-mMin(m)); }
+  save();
+}
+
+/* ---------------- teste de nível ---------------- */
+function startPlace(){
+  const p=state.profile;
+  state.place={ ans:(p&&p.answers)?p.answers.slice():CANDO.map(()=>null), goal:p?p.goal:'B2', ritmo:p?p.ritmo:'padrao' };
+}
+function computePlace(){
+  const A=state.place.ans; let level='C1', partial=false;
+  for(const l of LVLS){
+    const ix=CANDO.map((c,i)=>c.lvl===l?i:-1).filter(i=>i>=0);
+    const yes=ix.filter(i=>A[i]===1).length;
+    if(yes<ix.length){ level=l; partial=yes>0; break; }
+  }
+  const li=lvlIdx(level), prev=li>0?CUM[LVLS[li-1]]:0;
+  const base = prev + (partial ? (CUM[level]-prev)/2 : 0);
+  let goal=state.place.goal; if(lvlIdx(goal)<=li) goal=LVLS[Math.min(4,li+1)];
+  state.profile={ level, goal, ritmo:state.place.ritmo, base, minAtPlace:totalMin(), answers:A.slice(), at:today() };
+  state.placing=false; state.place=null; logEvent('place', level); save();
+}
+function placeHTML(){
+  if(!state.place) startPlace();
+  const P=state.place;
+  return `<section class="kit place">
+    <p class="eyebrow">${state.profile?'Refazer o teste':'Antes de começar'}</p>
+    <h2 class="kit__title">Onde você está hoje?</h2>
+    <p class="kit__brief">Marque só o que é verdade agora, sem esforço. O nível define as estruturas, as perguntas e os vídeos do seu dia — e a previsão de quando você chega na meta.</p>
+    <div style="margin-top:18px">${CANDO.map((c,i)=>`<div class="cando">
+      <span class="cando__t"><span class="cando__lv">${c.lvl}</span>${esc(c.t)}</span>
+      <span class="yn"><button data-cando="${i}" data-v="1" aria-pressed="${P.ans[i]===1}">Sim</button><button data-cando="${i}" data-v="0" aria-pressed="${P.ans[i]===0}">Não</button></span>
+    </div>`).join('')}</div>
+    <p class="hist__h" style="margin-top:24px">Meta</p>
+    <div class="chips" style="margin:0">${['B1','B2','C1'].map(g=>`<button class="chip" data-goal="${g}" aria-pressed="${P.goal===g}">${g} · ${LVL_NAME[g]}${g==='B2'?' — o que a maioria das vagas pede':''}</button>`).join('')}</div>
+    <p class="hist__h" style="margin-top:20px">Quanto tempo por dia, somando tudo</p>
+    <div class="chips" style="margin:0">${Object.entries(RITMOS).map(([k,v])=>{
+      const mins=MISSIONS.filter(m=>m.r.includes(v.k)&&!m.weekend).reduce((a,m)=>a+((k==='intenso'&&m.minI)?m.minI:m.min),0);
+      return `<button class="chip" data-pritmo="${k}" aria-pressed="${P.ritmo===k}">${v.n} · ${mins} min</button>`; }).join('')}</div>
+    <div class="kit__foot"><button class="act act--main" data-placego="1">Calcular meu nível e montar o dia →</button>
+      ${state.profile?'<button class="act" data-placecancel="1">Cancelar</button>':''}</div>
+  </section>`;
+}
+
+/* ---------------- revisão espaçada ---------------- */
+function dueList(){ const t=today(); return state.phrases.filter(p=>(p.due||t)<=t); }
+function startReview(ctx, extra){
+  let ids;
+  if(extra){ ids=shuffle(state.phrases.filter(p=>(p.due||today())>today())).slice(0,10).map(p=>p.id); }
+  else ids=dueList().sort((a,b)=>(a.stage||0)-(b.stage||0)).slice(0,25).map(p=>p.id);
+  state.rv={ctx, q:ids, i:0, shown:false, ok:0};
+}
+function nextIntervalLabel(p, g){
+  const s=p.stage||0;
+  if(g===0) return 'hoje à noite';
+  const ns = g===1 ? Math.max(1,s) : Math.min(5, s+(g===2?1:2));
+  const d=SRS_INT[ns]; return d===1?'amanhã':d+' dias';
+}
+function grade(g){
+  const R=state.rv; const p=find(R.q[R.i]); if(!p) return;
+  let s=p.stage||0;
+  if(g===0){ s=0; p.due=today(); }
+  else { s = g===1 ? Math.max(1,s) : Math.min(5, s+(g===2?1:2)); p.due=addDays(SRS_INT[s]); R.ok++; }
+  p.stage=s; p.known = s>=4; logEvent('review', p.text);
+  R.i++; R.shown=false;
+  if(R.i>=R.q.length && MISSIONS.some(m=>m.id===R.ctx)) markDone(R.ctx, true);
+  save();
+}
+function reviewHTML(ctx){
+  if(!state.phrases.length) return `<div class="empty" style="margin:0"><h2>Nada para revisar ainda</h2>
+    <p>As frases entram aqui quando você salva. Comece pela Fábrica de frases ou abra um kit na Trilha.</p>
+    <button class="btn btn--ghost" data-gomode="tri">Abrir a trilha</button></div>`;
+  if(!state.rv || state.rv.ctx!==ctx) startReview(ctx);
+  const R=state.rv;
+  if(!R.q.length){
+    const prox=state.phrases.map(p=>p.due).filter(Boolean).sort()[0];
+    return `<div class="drill"><p class="drill__q">Nada vencido agora ✓</p>
+      <p class="sec__d" style="margin-top:8px">${prox?'Próxima revisão marcada para '+prox.split('-').reverse().slice(0,2).join('/')+'.':''} Revisar antes da hora não é proibido, só rende menos.</p>
+      <div class="acts acts--bare" style="margin-top:12px"><button class="act" data-rvextra="${esc(ctx)}">Revisar 10 adiantadas</button></div></div>`;
+  }
+  if(R.i>=R.q.length){
+    return `<div class="drill"><p class="drill__pos">Sessão completa</p>
+      <p class="drill__q">${R.ok} de ${R.q.length} lembradas</p>
+      <p class="sec__d" style="margin-top:8px">As que você errou voltam ainda hoje. As outras foram empurradas para mais longe — esse é o espaçamento trabalhando.</p>
+      <div class="acts acts--bare" style="margin-top:12px"><button class="act" data-rvrestart="${esc(ctx)}">Revisar de novo o que venceu</button></div></div>`;
+  }
+  const p=find(R.q[R.i]); if(!p){ R.i++; return reviewHTML(ctx); }
+  const hasPt = p.source && p.source!==p.text;
+  return `<div class="drill">
+    <p class="drill__pos">${R.i+1} de ${R.q.length} · nível ${p.stage||0} de 5</p>
+    ${hasPt ? `<p class="drill__ask">Como você diria em inglês? Fale em voz alta antes de ver.</p><p class="drill__q">${esc(p.source)}</p>`
+            : `<p class="drill__ask">Leia em voz alta e lembre o que significa.</p><p class="drill__q">${markedHTML(p.text)}</p>`}
+    ${!R.shown ? `<div class="acts acts--bare" style="margin-top:16px">
+        <button class="act act--main" data-rvshow="1">Mostrar resposta</button>
+        ${listenBtn('rv', p.text)}</div>${listenOut('rv')}`
+      : `<div class="drill__a">
+        ${hasPt ? `<p class="drill__q">${markedHTML(p.text)}</p>` : `<p class="drill__q" style="font-size:20px">${esc(p.source||'(sem tradução salva)')}</p>`}
+        <div class="acts acts--bare" style="margin-top:10px">
+          <button class="act" data-say="${p.id}" data-rate="1">▶ Ouvir</button>
+          <button class="act" data-say="${p.id}" data-rate="0.6">▶ Devagar</button>
+          ${listenBtn('rv', p.text)}</div>${listenOut('rv')}
+        <div class="grades">${[['Errei',0],['Difícil',1],['Lembrei',2],['Fácil',3]].map(([l,g])=>
+          `<button class="grade ${g===0?'grade--bad':''}" data-grade="${g}">${l}<small>${nextIntervalLabel(p,g)}</small></button>`).join('')}</div>
+      </div>`}
+  </div>`;
+}
+
+/* ---------------- reconhecimento de voz ---------------- */
+const SRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+let recog=null, recogKey=null;
+function listenBtn(key, target){
+  if(!SRec) return '';
+  return `<button class="act" data-listen="${esc(key)}" data-target="${esc(target||'')}">🎤 ${target?'Falar e conferir':'Falar e transcrever'}</button>`;
+}
+function listenOut(key){ return SRec ? `<div class="sc" id="sc-${esc(key)}"></div>` : ''; }
+function toks(s){ return String(s).toLowerCase().replace(/[’]/g,"'").replace(/[^a-z0-9'\s]/g,' ').split(/\s+/).filter(Boolean); }
+function cmpSpeech(t, s){
+  const tw=toks(t), pool=toks(s);
+  const marks=tw.map(w=>{ const i=pool.indexOf(w); if(i>=0){ pool.splice(i,1); return {w,ok:true}; } return {w,ok:false}; });
+  return { marks, said:s, score: tw.length ? marks.filter(m=>m.ok).length/tw.length : 0 };
+}
+function runListen(btn){
+  const key=btn.dataset.listen, target=btn.dataset.target, out=document.getElementById('sc-'+key);
+  if(recog){ const same=recogKey===key; try{ recog.stop(); }catch(e){} if(same) return; }
+  const r=new SRec(); recog=r; recogKey=key;
+  r.lang=state.accent; r.interimResults=false; r.maxAlternatives=3; r.continuous=!target;
+  const label=btn.textContent;
+  btn.textContent = target ? '● ouvindo… fale agora' : '● ouvindo… toque para parar';
+  btn.classList.add('act--live');
+  let got=false; const parts=[];
+  r.onresult=e=>{
+    got=true;
+    if(target){
+      const alts=Array.from(e.results[0]).map(a=>a.transcript);
+      const best=alts.map(a=>cmpSpeech(target,a)).sort((x,y)=>y.score-x.score)[0];
+      const pct=Math.round(best.score*100);
+      const v = pct>=85 ? 'Mandou bem' : pct>=60 ? 'Quase lá' : 'Ainda não — ouça e tente de novo';
+      if(out) out.innerHTML=`<p class="sc__v">${pct}% · ${v}</p>
+        <p>${best.marks.map(m=>`<span class="sc__w sc__w--${m.ok?'ok':'no'}">${esc(m.w)}</span>`).join('')}</p>
+        <p class="sc__l" style="margin-top:6px">O que eu entendi: “${esc(best.said)}”</p>`;
+      logEvent('speak', target); if(window.onSpeakScore) onSpeakScore(best.score);
+    } else {
+      for(let i=e.resultIndex;i<e.results.length;i++) if(e.results[i].isFinal) parts.push(e.results[i][0].transcript);
+      const txt=parts.join(' ').trim();
+      if(out) out.innerHTML=`<p class="sc__l">O que o reconhecimento entendeu · ${words(txt).length} palavras</p><p class="sc__said">${esc(txt)}</p>`;
+    }
+  };
+  r.onerror=e=>{ if(out && e.error!=='aborted') out.innerHTML=`<p class="sc__l">${e.error==='not-allowed'||e.error==='service-not-allowed'
+      ? 'Microfone bloqueado. Libere o acesso ao microfone para este site no navegador.'
+      : e.error==='no-speech' ? 'Não ouvi nada. Fale mais perto do microfone.' : 'O reconhecimento falhou ('+esc(e.error)+'). Tente de novo.'}</p>`; got=true; };
+  r.onend=()=>{ if(recog===r){ recog=null; recogKey=null; } btn.textContent=label; btn.classList.remove('act--live');
+    if(!got && out) out.innerHTML='<p class="sc__l">Não captei sua voz. Tente de novo.</p>'; save(); };
+  try{ r.start(); }catch(e){ btn.textContent=label; btn.classList.remove('act--live'); }
+}
+
+/* ---------------- gravador ---------------- */
+const recs={}; let mediaRec=null, mrKey=null, mrT0=0, mrTick=null;
+function recHTML(key, opts){ return `<div class="rec" data-recbox="${esc(key)}" data-max="${(opts&&opts.max)||0}" data-dl="${(opts&&opts.dl)||''}">${recInner(key)}</div>`; }
+function recInner(key){
+  const box=document.querySelector(`[data-recbox="${key}"]`);
+  const dl = box ? box.dataset.dl : '';
+  const live = mrKey===key;
+  if(!(navigator.mediaDevices && window.MediaRecorder)) return '<span class="sc__l">Este navegador não grava áudio.</span>';
+  return `<button class="act ${live?'act--live':''}" data-rec="${esc(key)}">${live?'■ Parar':'● Gravar minha voz'}</button>
+    ${live?`<span class="rec__t" id="rect-${esc(key)}">0s</span>`:''}
+    ${recs[key]&&!live?`<audio controls src="${recs[key]}"></audio>${dl?`<a class="act" download="${esc(dl)}" href="${recs[key]}">Baixar</a>`:''}`:''}`;
+}
+function paintRec(key){ const b=document.querySelector(`[data-recbox="${key}"]`); if(b) b.innerHTML=recInner(key); }
+async function toggleRec(key){
+  if(mediaRec){ const same=mrKey===key; mediaRec.stop(); if(same) return; }
+  try{
+    const stream=await navigator.mediaDevices.getUserMedia({audio:true});
+    const chunks=[]; const mr=new MediaRecorder(stream); mediaRec=mr; mrKey=key; mrT0=Date.now();
+    mr.ondataavailable=e=>{ if(e.data.size) chunks.push(e.data); };
+    mr.onstop=()=>{ stream.getTracks().forEach(t=>t.stop()); clearInterval(mrTick);
+      if(recs[key]) URL.revokeObjectURL(recs[key]);
+      recs[key]=URL.createObjectURL(new Blob(chunks,{type:mr.mimeType||'audio/webm'}));
+      if(mediaRec===mr){ mediaRec=null; mrKey=null; } logEvent('record', key); save(); paintRec(key); };
+    mr.start(); paintRec(key);
+    const box=document.querySelector(`[data-recbox="${key}"]`); const max=box?+box.dataset.max:0;
+    clearInterval(mrTick);
+    mrTick=setInterval(()=>{ const s=Math.round((Date.now()-mrT0)/1000); const el=document.getElementById('rect-'+key);
+      if(el) el.textContent=s+'s'; if(max && s>=max && mediaRec===mr) mr.stop(); },500);
+  }catch(e){
+    mediaRec=null; mrKey=null;
+    const b=document.querySelector(`[data-recbox="${key}"]`);
+    if(b) b.innerHTML='<span class="sc__l">Não consegui acessar o microfone. Libere a permissão no navegador e tente de novo.</span>';
+  }
+}
+
+/* ---------------- fábrica de frases ---------------- */
+function patsFor(l){ return PATTERNS.filter(p=>p.lvl===trackLvl(l)); }
+function fabHTML(ctx, pid){
+  const pat=PATTERNS.find(p=>p.id===pid); if(!pat) return '';
+  if(!state.fab || state.fab.ctx!==ctx || state.fab.pid!==pid)
+    state.fab={ctx, pid, order:shuffle(pat.slots.map((_,i)=>i)), i:0, shown:false, ok:0};
+  const F=state.fab;
+  const head=`<div class="fab__frame"><p class="fab__en">${esc(pat.en)}</p><p class="fab__pt">${esc(pat.pt)}</p>${pat.tip?`<p class="fab__tip">${esc(pat.tip)}</p>`:''}</div>`;
+  if(F.i>=F.order.length){
+    return `<div class="drill">${head}
+      <p class="drill__pos">Rodada completa · ${F.ok} de ${F.order.length} certas</p>
+      <p class="drill__q">Agora a sua.</p>
+      <p class="sec__d" style="margin-top:6px">Use a mesma estrutura com algo da sua vida. Escreva em inglês, ouça e fale em voz alta. Ela vai para a sua revisão.</p>
+      <div class="compose__row" style="margin-top:10px">
+        <input class="field" id="fab-own" placeholder="${esc(fill(pat.en,'...'))}" autocomplete="off">
+        <button class="btn" data-fabown="${pat.id}">Salvar a minha</button></div>
+      <p class="msg" id="fab-msg"></p>
+      <div class="acts acts--bare" style="margin-top:12px"><button class="act" data-fabagain="1">↻ Outra rodada</button></div>
+    </div>`;
+  }
+  const s=pat.slots[F.order[F.i]], en=fill(pat.en, s.en), pt=fill(pat.pt, s.pt);
+  return `<div class="drill">${head}
+    <p class="drill__pos">${F.i+1} de ${F.order.length}</p>
+    <p class="drill__ask">Monte em inglês e fale em voz alta:</p>
+    <p class="drill__q">${esc(pt)}</p>
+    ${!F.shown ? `<div class="acts acts--bare" style="margin-top:16px">
+        <button class="act act--main" data-fabshow="1">Mostrar inglês</button>${listenBtn('fab', en)}</div>${listenOut('fab')}`
+    : `<div class="drill__a"><p class="drill__q">${markedHTML(en)}</p>
+        <div class="acts acts--bare" style="margin-top:10px">
+          <button class="act" data-sayraw="${esc(en)}">▶ Ouvir de novo</button>${listenBtn('fab', en)}
+          <button class="act ${isSaved(en)?'mini--on':''}" data-keep="${esc(en)}" data-pt="${esc(pt)}" data-core="${esc(coreOf(en))}">${isSaved(en)?'✓ na coleção':'+ coleção'}</button></div>${listenOut('fab')}
+        <div class="grades grades--2"><button class="grade grade--bad" data-fabgrade="0">Errei</button><button class="grade" data-fabgrade="1">Acertei</button></div>
+      </div>`}
+  </div>`;
+}
+function fabPicker(ctx, cur){
+  return `<div class="chips" style="margin:0 0 12px">${patsFor(curLvl()).map(p=>`<button class="chip chip--sm" data-fabpick="${p.id}" data-ctx="${ctx}" aria-pressed="${p.id===cur}">${esc(p.en)}</button>`).join('')}</div>`;
+}
+
+/* ---------------- escuta repetida ---------------- */
+let escTok=0, escTimer=null;
+function escKit(){
+  const L=lvlIdx(curLvl());
+  const ks=KITS.filter(k=>lvlIdx(k.lvl)<=Math.max(L,1));
+  const same=ks.filter(k=>k.lvl===trackLvl(curLvl()));
+  return pickDay(dayNum()%2 && same.length ? same : ks) || KITS[0];
+}
+function escLines(k){ const out=[]; (k.hear||[]).forEach(x=>out.push(x)); k.steps.forEach(s=>s.lines.forEach(x=>out.push(x))); return out.slice(0,12); }
+function stopEsc(){ escTok++; clearTimeout(escTimer); if('speechSynthesis' in window) speechSynthesis.cancel();
+  document.querySelectorAll('.row--on').forEach(r=>r.classList.remove('row--on')); }
+function escPlay(){
+  if(!('speechSynthesis' in window)) return;
+  stopEsc(); const tok=++escTok;
+  const L=escLines(escKit()); let lap=0, i=0;
+  const st=()=>document.getElementById('esc-st');
+  const hi=n=>document.querySelectorAll('[data-escl]').forEach(r=>r.classList.toggle('row--on', +r.dataset.escl===n));
+  const next=()=>{
+    if(tok!==escTok) return;
+    if(i>=L.length){ i=0; lap++;
+      if(lap===1){ const b=document.getElementById('esc-box'); if(b) b.classList.remove('esc--hide'); }
+      if(lap>=state.esc.reps){ hi(-1); const s=st(); if(s) s.textContent='Fim das voltas. Na última, você repetiu junto? Pode concluir a missão.'; gain(8,'escuta completa'); return; } }
+    hi(i);
+    const s=st(); if(s) s.textContent=`volta ${lap+1} de ${state.esc.reps}${lap===0?' · sem texto, só ouvindo':lap===state.esc.reps-1?' · repita junto (shadowing)':' · com texto'} · frase ${i+1} de ${L.length}`;
+    const u=new SpeechSynthesisUtterance(L[i].en); u.lang=state.accent; u.rate=state.esc.rate;
+    const v=pickVoice(state.accent); if(v) u.voice=v;
+    let fired=false; const go=()=>{ if(fired||tok!==escTok) return; fired=true; i++; escTimer=setTimeout(next, lap===state.esc.reps-1?2600:1300); };
+    u.onend=go; u.onerror=go; speechSynthesis.speak(u);
+  };
+  logEvent('listen', 'escuta'); save();
+  next();
+}
+function escutaHTML(){
+  const k=escKit(), L=escLines(k);
+  return `<p class="sec__d"><b>${esc(k.title)}</b> · ${L.length} frases. Ponha o fone e dê o play: a 1ª volta é sem texto, a 2ª com texto, e na última você repete junto, em voz alta ou sussurrando.</p>
+    <div class="auto__row" style="margin:12px 0">
+      <span class="auto__l" style="margin-left:0">voltas</span>${[2,3,5].map(n=>`<button class="chip chip--sm" data-escreps="${n}" aria-pressed="${state.esc.reps===n}">${n}×</button>`).join('')}
+      <span class="auto__l">velocidade</span>${[[0.75,'lenta'],[0.9,'média'],[1,'normal']].map(([r,l])=>`<button class="chip chip--sm" data-escrate="${r}" aria-pressed="${state.esc.rate===r}">${l}</button>`).join('')}
+    </div>
+    <div class="acts acts--bare"><button class="act act--main" data-escplay="1">▶ Tocar as voltas</button><button class="act" data-escstop="1">■ Parar</button><button class="act" data-esctxt="1">Mostrar/ocultar texto</button></div>
+    <p class="auto__st" id="esc-st">Parado.</p>
+    <div id="esc-box" class="esc--hide" style="margin-top:8px">${L.map((x,i)=>`<div class="row" data-escl="${i}">
+      <button class="row__play" data-sayraw="${esc(x.en)}" aria-label="Ouvir">▶</button>
+      <div class="row__body"><p class="row__en">${esc(x.en)}</p><p class="row__pt">${esc(x.pt||'')}</p></div></div>`).join('')}</div>`;
+}
+
+/* ---------------- frase do dia + shadowing ---------------- */
+function podPhrase(force){
+  const r=dayRec(); let p=!force && r.pod && find(r.pod); if(p) return p;
+  const cand=state.phrases.filter(x=>!x.known && x.id!==r.pod);
+  if(cand.length) p = force ? cand[Math.floor(Math.random()*cand.length)] : pickDay(cand);
+  else {
+    const lines=escKit().steps.flatMap(s=>s.lines).filter(x=>!isSaved(x.en));
+    const x=(force?lines[Math.floor(Math.random()*lines.length)]:pickDay(lines,3)) || escKit().steps[0].lines[0];
+    keep(x.en, x.pt, x.core, 'frase do dia'); p=state.phrases.find(q=>q.text===x.en);
+  }
+  r.pod=p.id; save(); return p;
+}
+function shadowHTML(){
+  const p=podPhrase();
+  return `<ol class="steps">
+      <li>Ouça em <b>devagar</b> duas vezes, olhando os sons em vermelho.</li>
+      <li>Toque no <b>normal</b> e fale <b>junto</b>, por cima do áudio, 5 vezes. Copie o ritmo, não só as palavras.</li>
+      <li>Abra o vídeo abaixo e repita junto com pessoas reais.</li>
+      <li>Grave a sua versão e compare com o original.</li></ol>
+    <article class="card">${cardHTML(p,true)}</article>
+    <div class="block"><p class="block__l">Sua voz</p>${recHTML('shadow',{max:30})}
+      <div class="acts acts--bare" style="margin-top:8px">${listenBtn('shadow', p.text)}<button class="act" data-podnext="1">↻ Trocar a frase do dia</button></div>${listenOut('shadow')}</div>`;
+}
+
+/* ---------------- narração, micro, diário, vídeo, conversa ---------------- */
+function framesHTML(f){ return `<div class="frames">${f.map(x=>`<button class="frame" data-sayraw="${esc(x.replace(/___/g,'something'))}" title="Ouvir">${esc(x)}</button>`).join('')}</div>`; }
+function narraHTML(){
+  const n=pickDay(NARRA[trackLvl(curLvl())]);
+  return `<p class="drill__q" style="font-size:22px">${esc(n.t)}</p>
+    <p class="sec__d" style="margin-top:6px">Use estas estruturas. Não precisa sair perfeito: o objetivo é pensar direto em inglês, sem montar a frase em português antes.</p>
+    ${framesHTML(n.f)}
+    <details class="ex"><summary>Ver um exemplo</summary><p>${esc(n.ex)} <button class="mini" data-sayraw="${esc(n.ex)}">▶</button></p></details>
+    <div class="block"><p class="block__l">Faltou uma palavra? Escreva em português</p>
+      <div class="compose__row"><input class="field" id="miss-in" placeholder="ex.: “prazo de entrega”" autocomplete="off"><button class="btn" data-miss="1">Buscar e salvar</button></div>
+      <p class="msg" id="miss-st"></p></div>`;
+}
+async function addMissing(){
+  const inp=document.getElementById('miss-in'), st=document.getElementById('miss-st'); if(!inp) return;
+  const src=inp.value.trim(); if(!src) return;
+  st.textContent='procurando…';
+  const hits=search(src);
+  if(hits.length && hits[0].sc>=130){ keep(hits[0].en,hits[0].pt,hits[0].core,'faltou na narração'); save(); renderStats();
+    st.textContent=`Achei no banco: ${hits[0].en} — foi para a revisão.`; inp.value=''; return; }
+  try{ const r=await translateOnline(src); keep(r.en, src, coreOf(r.en), 'faltou na narração'); save(); renderStats();
+    st.textContent=`${src} → ${r.en} — foi para a revisão.`; inp.value=''; }
+  catch(e){ st.textContent='Nenhum tradutor respondeu agora. Tente de novo mais tarde.'; }
+}
+function microHTML(){
+  const L=MICRO[trackLvl(curLvl())]; const qs=[0,1,2].map(i=>pickDay(L, i*2));
+  return `<p class="sec__d">Responda cada uma em voz alta, em até 30 segundos, sem escrever antes. Travou? Use uma estrutura e siga em frente.</p>
+    ${qs.map((q,i)=>`<div class="q">
+      <p class="q__en"><button class="row__play" data-sayraw="${esc(q.q)}" aria-label="Ouvir">▶</button>${esc(q.q)}</p>
+      <p class="q__pt">${esc(q.pt)}</p>
+      ${framesHTML(q.f)}
+      <details class="ex"><summary>Ver uma resposta modelo</summary><p>${esc(q.ex)} <button class="mini" data-sayraw="${esc(q.ex)}">▶</button></p></details>
+      ${recHTML('mic'+i,{max:45})}
+      <div class="acts acts--bare" style="margin-top:6px">${listenBtn('micsc'+i,'')}</div>${listenOut('micsc'+i)}
+    </div>`).join('')}`;
+}
+function diarioHTML(){
+  const t=pickDay(DIARIO[trackLvl(curLvl())]);
+  return `<p class="drill__q" style="font-size:22px">${esc(t)}</p>
+    <p class="sec__d" style="margin-top:6px">Grave até 2 minutos. Depois ouça uma vez e anote uma palavra que faltou na Narração de amanhã. Baixe a gravação se quiser comparar sua evolução daqui a um mês.</p>
+    ${recHTML('diario',{max:120, dl:'diario-'+today()+'.webm'})}
+    <div class="acts acts--bare" style="margin-top:8px">${listenBtn('diariosc','')}</div>${listenOut('diariosc')}`;
+}
+function videoHTML(){
+  const L=VIDEOS[trackLvl(curLvl())]; const qs=[0,1,2].map(i=>pickDay(L,i));
+  return `<ul class="steps">
+      <li>Legenda <b>em inglês</b>, nunca em português.</li>
+      <li>Entendeu menos de uns 70%? Troque por um vídeo mais fácil — escuta difícil demais cansa e ensina pouco.</li>
+      <li>Ouviu uma frase útil? Pause, repita junto e salve aqui embaixo.</li></ul>
+    <div class="acts acts--bare">${qs.map(q=>`<a class="act" target="_blank" rel="noopener" href="https://www.youtube.com/results?search_query=${encodeURIComponent(q)}">${esc(q)} ↗</a>`).join('')}</div>
+    <div class="block"><p class="block__l">Frase que você ouviu</p>
+      <div class="compose__row"><input class="field" id="vid-in" placeholder="escreva em inglês o que ouviu" autocomplete="off"><button class="btn" data-vsave="1">Salvar</button></div>
+      <p class="msg" id="vid-st"></p></div>`;
+}
+function conversaHTML(){
+  const week=state.phrases.filter(p=>p.added>Date.now()-7*864e5).slice(0,10);
+  return `<ul class="steps">
+      <li>Marque 30 minutos com um professor online (italki e Preply são os mais conhecidos), um grupo de conversação ou um colega que fale inglês.</li>
+      <li>Avise no começo: <i>“I'm practicing for job interviews. Please correct me.”</i></li>
+      <li>Tente encaixar as frases da sua semana, listadas abaixo.</li>
+      <li>Depois, salve aqui as correções que receber.</li></ul>
+    ${week.length?`<div class="block"><p class="block__l">Suas frases desta semana</p>${week.map(p=>`<div class="row"><button class="row__play" data-sayraw="${esc(p.text)}">▶</button><div class="row__body"><p class="row__en">${esc(p.text)}</p><p class="row__pt">${esc(p.source||'')}</p></div></div>`).join('')}</div>`:''}`;
+}
+function missionBody(m){
+  switch(m.id){
+    case 'rev1': case 'rev2': return reviewHTML(m.id);
+    case 'narra': return narraHTML();
+    case 'escuta': return escutaHTML();
+    case 'shadow': return shadowHTML();
+    case 'fabrica': { const pid=state.fabPid || (pickDay(patsFor(curLvl()))||{}).id; return fabPicker('fabrica',pid)+fabHTML('fabrica',pid); }
+    case 'video': return videoHTML();
+    case 'micro': return microHTML();
+    case 'diario': return diarioHTML();
+    case 'conversa': return conversaHTML();
+  }
+  return '';
+}
+
+/* ---------------- painel HOJE ---------------- */
+function hojeHTML(){
+  const p=state.profile, r=dayRec(), ms=missionsToday();
+  const h=hoursDone(), goalH=CUM[p.goal], E=eta();
+  const meta=metaMin(), feito=(r.min||0)+(r.ext||0);
+  const nDone=ms.filter(m=>r.done[m.id]).length;
+  const dt=new Date().toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long'});
+  const levelUp = h>=CUM[p.level] && p.level!=='C1';
+  const due=dueList().length;
+  return `<section class="today">
+    <p class="eyebrow">Hoje · ${esc(dt)}</p>
+    <h2 class="today__t">Você está construindo o <em>${p.level}</em></h2>
+    <p class="today__d">Meta: ${p.goal} · ${LVL_NAME[p.goal]}. ${due?`${due} frase${due>1?'s':''} esperando revisão.`:'Nenhuma revisão vencida.'}</p>
+    <div class="kpis">
+      <div><span class="kpi__n">${Math.round(h)}h</span><span class="kpi__l">de ~${goalH}h até o ${p.goal}</span></div>
+      <div><span class="kpi__n">${E.txt}</span><span class="kpi__l">${esc(E.sub)}</span></div>
+      <div><span class="kpi__n">${feito}<small>/${meta}</small></span><span class="kpi__l">minutos hoje</span></div>
+    </div>
+    <div class="prog"><span style="width:${Math.min(100,h/goalH*100).toFixed(1)}%"></span></div>
+    <div class="prog__l"><span>zero</span><span>${p.goal}</span></div>
+    <div class="prog prog--day"><span style="width:${Math.min(100,feito/Math.max(1,meta)*100).toFixed(1)}%"></span></div>
+    <div class="prog__l"><span>${nDone} de ${ms.length} missões</span><span>meta do dia</span></div>
+    ${levelUp?`<div class="notice"><span>Você já somou as horas típicas do ${p.level}. Refaça o teste para subir de nível.</span><button class="act" data-replace="1">Refazer teste</button></div>`:''}
+    <div class="today__ctl">
+      <div class="seg" role="group" aria-label="Ritmo">${Object.entries(RITMOS).map(([k,v])=>`<button data-ritmo="${k}" aria-pressed="${p.ritmo===k}">${v.n}</button>`).join('')}</div>
+      <span class="auto__l" style="margin-left:4px;color:#9fb0a8">fora do app</span>
+      ${[10,15,30].map(n=>`<button class="act" data-ext="${n}">+${n} min</button>`).join('')}
+    </div>
+    <p class="today__d" style="margin-top:8px;font-size:12px">Use “fora do app” para Duolingo, série com legenda em inglês ou conversa real. ${r.ext?`Hoje: ${r.ext} min.`:''}</p>
+  </section>
+  <div class="mis-list">${ms.map(m=>{
+    const done=!!r.done[m.id], open=state.open===m.id;
+    return `<div class="mis ${done?'mis--done':''}" id="mis-${m.id}">
+      <button class="mis__chk" data-mdone="${m.id}" aria-pressed="${done}" aria-label="Marcar ${esc(m.t)} como feita">${done?'✓':''}</button>
+      <button class="mis__head" data-mopen="${m.id}" aria-expanded="${open}">
+        <span class="mis__slot">${esc(m.slot)}</span><span class="mis__t">${esc(m.t)}</span>
+        <span class="mis__min">${mMin(m)} min</span><span class="mis__chev">${open?'−':'+'}</span></button>
+      ${open?`<div class="mis__body"><p class="mis__why">${esc(m.why)}</p>${missionBody(m)}
+        <div class="acts"><button class="act act--main" data-mdone="${m.id}" data-force="1">✓ Concluir e ir para a próxima</button></div></div>`:''}
+    </div>`; }).join('')}</div>
+  <div class="foot" style="margin-top:20px"><span>Nível ${p.level} · teste feito em ${esc((p.at||'').split('-').reverse().join('/'))}</span><button data-replace="1">Refazer teste de nível</button></div>`;
+}
+
+/* ---------------- aba REVISÃO ---------------- */
+function revModeHTML(){
+  const st=[0,0,0,0,0,0]; state.phrases.forEach(p=>st[Math.min(5,p.stage||0)]++);
+  const mx=Math.max(1,...st);
+  return `<section class="hist">
+    <h2 class="hist__t">Revisão espaçada</h2>
+    <p class="hist__d">Cada frase volta em 1, 3, 7, 21 e 60 dias. Errou, ela volta no mesmo dia. A partir do nível 4 ela conta como dominada.</p>
+    <div class="srs">${st.map((n,i)=>`<div class="srs__c"><div class="srs__b" style="height:${Math.max(3,n/mx*46)}px"></div><span>${n}</span><small>nív ${i}</small></div>`).join('')}</div>
+    <div style="margin-top:20px">${reviewHTML('rev')}</div>
+  </section>`;
+}
+
+/* ---------------- aba TRILHA ---------------- */
+function triHTML(){
+  const L = state.triLvl || trackLvl(curLvl());
+  const pats=PATTERNS.filter(p=>p.lvl===L), kits=KITS.filter(k=>k.lvl===L);
+  const can=CANDO.filter(c=>c.lvl===L);
+  return `<div class="chips">${['A2','B1','B2','C1'].map(l=>`<button class="chip" data-trilvl="${l}" aria-pressed="${l===L}">${l} · ${LVL_NAME[l]}${l===trackLvl(curLvl())?' ●':''}</button>`).join('')}</div>
+    <section class="kit">
+      <p class="eyebrow">Trilha ${L} · até ~${CUM[L]}h acumuladas</p>
+      <h2 class="kit__title">No fim do ${L} você consegue</h2>
+      <ul class="steps" style="margin-top:12px">${can.map(c=>`<li>${esc(c.t)}</li>`).join('')}</ul>
+      <h3 class="sec__t">Estruturas de frase</h3>
+      <p class="sec__d">O esqueleto das frases. Treine cada uma até sair sem pensar — depois disso, montar frases novas fica fácil.</p>
+      ${state.triPat && pats.some(p=>p.id===state.triPat)?`<div style="margin:12px 0">${fabHTML('tri', state.triPat)}</div>`:''}
+      <div class="units">${pats.map(p=>{ const n=state.fabDone[p.id]||0;
+        return `<div class="unit ${state.triPat===p.id?'unit--on':''}"><span class="unit__en">${esc(p.en)}</span><span class="unit__pt">${esc(p.pt)}</span>
+          <div class="unit__bar"><span style="width:${Math.min(100,n/3*100)}%"></span></div>
+          <span class="unit__pt">${n>=3?'✓ dominada':n+' de 3 rodadas'}</span>
+          <button class="act" data-tripat="${p.id}">${state.triPat===p.id?'Treinando acima':'Treinar'}</button></div>`; }).join('')}</div>
+      <h3 class="sec__t">Situações</h3>
+      <p class="sec__d">Frases prontas para momentos reais. Abra o kit, ouça e salve: elas entram na revisão espaçada.</p>
+      <div class="units">${kits.map(k=>{ const all=k.steps.flatMap(s=>s.lines); const sv=all.filter(x=>isSaved(x.en)).length;
+        return `<div class="unit"><span class="cando__lv">${esc(k.tag)}</span><span class="mis__t" style="font-size:17px">${esc(k.title)}</span>
+          <div class="unit__bar"><span style="width:${sv/all.length*100}%"></span></div>
+          <span class="unit__pt">${sv} de ${all.length} frases salvas</span>
+          <button class="act" data-trikit="${k.id}">Abrir kit</button></div>`; }).join('')}</div>
+    </section>`;
+}
+
+/* ---------------- render e eventos ---------------- */
+function setModeBtn(mode){
+  const map={con:'m-con',hoje:'m-hoje',tri:'m-tri',rev:'m-rev',col:'m-col',sit:'m-sit',tra:'m-tra',his:'m-his'};
+  MODE_BTNS.forEach(id=>document.getElementById(id).setAttribute('aria-pressed', id===map[mode]?'true':'false'));
+}
+function renderMetodo(){
+  if(state.mode==='hoje'){
+    view.innerHTML = (state.profile && !state.placing) ? hojeHTML() : placeHTML();
+    if(state.open==='shadow') wireVideo();
+    return;
+  }
+  if(state.mode==='rev'){ view.innerHTML=revModeHTML(); return; }
+  if(state.mode==='tri'){ view.innerHTML=triHTML(); return; }
+}
+function scrollTo$(id){ const el=document.getElementById(id); if(el) el.scrollIntoView({behavior:'smooth', block:'start'}); }
+
+view.addEventListener('click', async e=>{
+  const t=e.target.closest('[data-mdone],[data-mopen],[data-cando],[data-goal],[data-pritmo],[data-placego],[data-placecancel],[data-replace],[data-ritmo],[data-ext],[data-rvshow],[data-grade],[data-rvextra],[data-rvrestart],[data-listen],[data-rec],[data-fabshow],[data-fabgrade],[data-fabpick],[data-fabagain],[data-fabown],[data-escplay],[data-escstop],[data-esctxt],[data-escreps],[data-escrate],[data-podnext],[data-miss],[data-vsave],[data-trilvl],[data-tripat],[data-trikit],[data-gomode]');
+  if(!t) return; const d=t.dataset;
+
+  if(d.mdone){
+    const id=d.mdone, v = d.force ? true : !dayRec().done[id];
+    markDone(id, v);
+    if(d.force){ if(id==='escuta') stopEsc();
+      const nx=missionsToday().find(m=>!dayRec().done[m.id]); state.open = nx ? nx.id : null; state.rv=null; state.fab=null; }
+    render(); if(d.force && state.open) scrollTo$('mis-'+state.open); return;
+  }
+  if(d.mopen){ if(state.open==='escuta') stopEsc(); state.open = state.open===d.mopen ? null : d.mopen; state.rv=null; render();
+    if(state.open) scrollTo$('mis-'+state.open); return; }
+
+  if(d.cando!==undefined){ state.place.ans[+d.cando]=+d.v; render(); return; }
+  if(d.goal){ state.place.goal=d.goal; render(); return; }
+  if(d.pritmo){ state.place.ritmo=d.pritmo; render(); return; }
+  if(d.placego){ computePlace(); state.open=state.phrases.length?'rev1':'fabrica'; render(); window.scrollTo({top:0,behavior:'smooth'}); return; }
+  if(d.placecancel){ state.placing=false; state.place=null; render(); return; }
+  if(d.replace){ state.placing=true; startPlace(); state.mode='hoje'; setModeBtn('hoje'); render(); window.scrollTo({top:0,behavior:'smooth'}); return; }
+  if(d.ritmo){ state.profile.ritmo=d.ritmo; save(); render(); return; }
+  if(d.ext){ dayRec().ext += +d.ext; logEvent('ext', d.ext+' min'); gain(Math.round(d.ext/2),'prática fora do app'); save(); render(); return; }
+
+  if(d.rvshow){ state.rv.shown=true; render(); const p=find(state.rv.q[state.rv.i]); if(p) say(p.text,1,null); return; }
+  if(d.grade!==undefined){ grade(+d.grade); render(); return; }
+  if(d.rvextra){ startReview(d.rvextra, true); render(); return; }
+  if(d.rvrestart){ startReview(d.rvrestart); render(); return; }
+
+  if(d.listen){ runListen(t); return; }
+  if(d.rec){ toggleRec(d.rec); return; }
+
+  if(d.fabshow){ state.fab.shown=true; render(); const pat=PATTERNS.find(p=>p.id===state.fab.pid);
+    say(fill(pat.en, pat.slots[state.fab.order[state.fab.i]].en), 1, null); return; }
+  if(d.fabgrade!==undefined){ const F=state.fab; if(+d.fabgrade) F.ok++; gain(+d.fabgrade?4:1,'fábrica de frases'); F.i++; F.shown=false; logEvent('fab', F.pid);
+    if(F.i>=F.order.length){ state.fabDone[F.pid]=(state.fabDone[F.pid]||0)+1; gain(10,'rodada completa'); cloudEvent('fabrica','Rodada completa: '+(PATTERNS.find(p=>p.id===F.pid)||{}).en,10); if(F.ctx==='fabrica') markDone('fabrica', true); }
+    save(); render(); return; }
+  if(d.fabpick){ state.fabPid=d.fabpick; state.fab=null; render(); return; }
+  if(d.fabagain){ state.fab=null; render(); return; }
+  if(d.fabown){ const inp=document.getElementById('fab-own'), msg=document.getElementById('fab-msg'); const v=(inp&&inp.value||'').trim();
+    if(!v) return; const pat=PATTERNS.find(p=>p.id===d.fabown);
+    const ok=keep(v, '', coreOf(v), 'criada por você · '+pat.en); if(ok) gain(8,'frase criada por você'); save(); renderStats(); say(v,1,null);
+    if(msg) msg.textContent = ok ? 'Salva. Ela vai aparecer na sua revisão.' : 'Essa já estava na coleção.'; inp.value=''; return; }
+
+  if(d.escplay){ escPlay(); return; }
+  if(d.escstop){ stopEsc(); const s=document.getElementById('esc-st'); if(s) s.textContent='Parado.'; return; }
+  if(d.esctxt){ const b=document.getElementById('esc-box'); if(b) b.classList.toggle('esc--hide'); return; }
+  if(d.escreps){ state.esc.reps=+d.escreps; stopEsc(); render(); return; }
+  if(d.escrate){ state.esc.rate=+d.escrate; stopEsc(); render(); return; }
+
+  if(d.podnext){ state.video=null; podPhrase(true); render(); return; }
+  if(d.miss){ addMissing(); return; }
+  if(d.vsave){ const inp=document.getElementById('vid-in'), st=document.getElementById('vid-st'); const v=(inp&&inp.value||'').trim(); if(!v) return;
+    const ok=keep(v, '', coreOf(v), 'ouvida em vídeo'); save(); renderStats(); if(st) st.textContent= ok?'Salva na coleção e na revisão.':'Essa já estava salva.'; inp.value=''; return; }
+
+  if(d.trilvl){ state.triLvl=d.trilvl; state.triPat=null; render(); return; }
+  if(d.tripat){ state.triPat=d.tripat; state.fab=null; render(); return; }
+  if(d.trikit){ state.mode='sit'; state.kit=d.trikit; setModeBtn('sit'); save(); render(); window.scrollTo({top:0,behavior:'smooth'}); return; }
+  if(d.gomode){ state.mode=d.gomode; setModeBtn(d.gomode); render(); return; }
+});
+
+view.addEventListener('keydown', e=>{
+  if(e.key!=='Enter') return;
+  if(e.target.id==='miss-in'){ e.preventDefault(); addMissing(); }
+  if(e.target.id==='fab-own'){ e.preventDefault(); const b=document.querySelector('[data-fabown]'); if(b) b.click(); }
+  if(e.target.id==='vid-in'){ e.preventDefault(); const b=document.querySelector('[data-vsave]'); if(b) b.click(); }
+});
+
+
+</script>
+<script>
+/* ==================================================================
+   GAMIFICAÇÃO — XP, patentes, conquistas, escudos, baú, certificados
+   ================================================================== */
+function newGame(){ return { xp:0, xpDays:{}, badges:{}, shields:0, shieldDays:{}, shieldMark:'', chests:{}, certs:[],
+  theme:'padrao', bestSpeak:0, recs:0, bestStreak:0, cap:null, outbox:[], nome:'', rankSeen:0 }; }
+state.game = newGame();
+
+const RANKS=[
+  {xp:0,     n:'Novato',              ic:'🌱', r:'Começo da jornada'},
+  {xp:300,   n:'Curioso',             ic:'🔎', r:'+1 escudo de sequência'},
+  {xp:1000,  n:'Explorador',          ic:'🧭', r:'Tema Oceano'},
+  {xp:2500,  n:'Conversador',         ic:'💬', r:'Tema Vinho'},
+  {xp:5000,  n:'Desenrolado',         ic:'⚡', r:'+2 escudos de sequência'},
+  {xp:10000, n:'Profissional',        ic:'💼', r:'Tema Ouro'},
+  {xp:20000, n:'Fluente em formação', ic:'🚀', r:'Selo dourado nos certificados'},
+  {xp:35000, n:'Líder global',        ic:'🌎', r:'+3 escudos de sequência'},
+  {xp:60000, n:'Lenda',               ic:'👑', r:'O topo. Hora de dar aula.'}
+];
+const THEMES={ padrao:{n:'Padrão', need:0}, oceano:{n:'Oceano', need:2}, vinho:{n:'Vinho', need:3}, ouro:{n:'Ouro', need:5} };
+function rankIdx(xp){ let i=0; RANKS.forEach((r,k)=>{ if(xp>=r.xp) i=k; }); return i; }
+function rankOf(xp){ return RANKS[rankIdx(xp)]; }
+function practiceMin(){ return totalMin(); }
+function kitFull(id){ const k=KITS.find(x=>x.id===id); return !!k && k.steps.every(s=>s.lines.every(x=>isSaved(x.en))); }
+
+const BADGES=[
+  {id:'frase1',   ic:'✨', t:'Primeira frase',       d:'Salvou a primeira frase.',                  ok:()=>state.phrases.length>=1},
+  {id:'frase50',  ic:'📚', t:'Colecionador',         d:'50 frases salvas.',                         ok:()=>state.phrases.length>=50},
+  {id:'frase200', ic:'🏛️', t:'Biblioteca viva',      d:'200 frases salvas.',                        ok:()=>state.phrases.length>=200},
+  {id:'dom10',    ic:'🧠', t:'Dez na memória',       d:'10 frases dominadas na revisão.',           ok:()=>state.phrases.filter(p=>p.known).length>=10},
+  {id:'dom100',   ic:'🧠', t:'Cem na memória',       d:'100 frases dominadas na revisão.',          ok:()=>state.phrases.filter(p=>p.known).length>=100},
+  {id:'fab1',     ic:'⚙️', t:'Operário das frases',  d:'Primeira rodada completa na Fábrica.',      ok:()=>Object.keys(state.fabDone).length>=1},
+  {id:'fab10',    ic:'🏗️', t:'Mestre de obras',      d:'10 estruturas dominadas (3 rodadas cada).', ok:()=>Object.values(state.fabDone).filter(n=>n>=3).length>=10},
+  {id:'grav',     ic:'🎙️', t:'No ar',                d:'Gravou a própria voz pela primeira vez.',   ok:()=>state.game.recs>=1},
+  {id:'voz',      ic:'🎯', t:'Pronúncia aprovada',   d:'85% ou mais no Falar e conferir.',          ok:()=>state.game.bestSpeak>=0.85},
+  {id:'dia',      ic:'☀️', t:'Dia completo',         d:'Cumpriu todas as missões de um dia.',       ok:()=>Object.keys(state.game.chests).length>=1},
+  {id:'dia10',    ic:'🏅', t:'Dez dias completos',   d:'10 dias com todas as missões feitas.',      ok:()=>Object.keys(state.game.chests).length>=10},
+  {id:'seq7',     ic:'🔥', t:'Semana de fogo',       d:'7 dias seguidos de treino.',                ok:()=>state.game.bestStreak>=7},
+  {id:'seq30',    ic:'🔥', t:'Mês inteiro',          d:'30 dias seguidos de treino.',               ok:()=>state.game.bestStreak>=30},
+  {id:'seq100',   ic:'💯', t:'Cem dias',             d:'100 dias seguidos de treino.',              ok:()=>state.game.bestStreak>=100},
+  {id:'h10',      ic:'⏱️', t:'10 horas',             d:'10 horas de prática registradas.',          ok:()=>practiceMin()>=600},
+  {id:'h50',      ic:'⏳', t:'50 horas',             d:'50 horas de prática registradas.',          ok:()=>practiceMin()>=3000},
+  {id:'h100',     ic:'🏆', t:'100 horas',            d:'100 horas de prática registradas.',         ok:()=>practiceMin()>=6000},
+  {id:'conversa', ic:'☎️', t:'Conversa real',        d:'Fez uma conversa com gente de verdade.',    ok:()=>Object.values(state.days).some(r=>r.done&&r.done.conversa)},
+  {id:'kit',      ic:'🧰', t:'Kit completo',         d:'Salvou todas as frases de um kit.',         ok:()=>KITS.some(k=>kitFull(k.id))},
+  {id:'entrev',   ic:'🤝', t:'Pronto pra entrevista',d:'Completou os kits Entrevista e Negociar salário.', ok:()=>kitFull('entrevista')&&kitFull('salario')},
+  {id:'lvB1',     ic:'🥉', t:'Etapa B1',             d:'Chegou ao B1 no teste de nível.',           ok:()=>!!state.profile&&lvlIdx(state.profile.level)>=2},
+  {id:'lvB2',     ic:'🥈', t:'Etapa B2',             d:'Chegou ao B2 no teste de nível.',           ok:()=>!!state.profile&&lvlIdx(state.profile.level)>=3},
+  {id:'lvC1',     ic:'🥇', t:'Etapa C1',             d:'Chegou ao C1 no teste de nível.',           ok:()=>!!state.profile&&lvlIdx(state.profile.level)>=4}
+];
+
+/* ---------------- toast e celebração ---------------- */
+let toastT=null;
+function toast(txt){
+  const el=document.getElementById('toast'); if(!el) return;
+  el.textContent=txt; el.hidden=false; el.classList.remove('toast--on'); void el.offsetWidth; el.classList.add('toast--on');
+  clearTimeout(toastT); toastT=setTimeout(()=>{ el.hidden=true; },2200);
+}
+const celebQ=[];
+function celebrate(c){ celebQ.push(c); if(celebQ.length===1) showCeleb(); }
+function showCeleb(){
+  const box=document.getElementById('celeb'); if(!box) return;
+  const c=celebQ[0]; if(!c){ box.hidden=true; return; }
+  box.innerHTML=`<div class="celeb__box" role="dialog" aria-modal="true" aria-label="${esc(c.t)}">
+    <div class="celeb__ic">${c.ic||'🎉'}</div>
+    <p class="eyebrow" style="text-align:center">${esc(c.kicker||'Recompensa')}</p>
+    <h2 class="celeb__t">${esc(c.t)}</h2>
+    ${c.d?`<p class="celeb__d">${esc(c.d)}</p>`:''}
+    ${c.list?`<div class="celeb__list">${c.list.map(b=>`<div class="celeb__it"><span>${b.ic}</span><span><b>${esc(b.t)}</b><br><small>${esc(b.d)}</small></span></div>`).join('')}</div>`:''}
+    ${c.reward?`<p class="celeb__r">${esc(c.reward)}</p>`:''}
+    <div class="acts acts--bare" style="justify-content:center;margin-top:18px">
+      ${c.cert?`<button class="act" data-cert="${esc(c.cert)}">Ver certificado</button>`:''}
+      <button class="act act--main" data-celebok="1">Continuar</button></div></div>`;
+  box.hidden=false;
+  const b=box.querySelector('[data-celebok]'); if(b) b.focus();
+}
+
+/* ---------------- XP ---------------- */
+let inBadge=false;
+function gain(n, motivo, opt){
+  const G=state.game, d=today(); if(!n) return;
+  if(opt && opt.cap){
+    if(!G.cap || G.cap.d!==d) G.cap={d, v:{}};
+    const used=G.cap.v[opt.cap]||0; if(used>=opt.capMax) return;
+    n=Math.min(n, opt.capMax-used); G.cap.v[opt.cap]=used+n;
+  }
+  G.xp+=n; G.xpDays[d]=(G.xpDays[d]||0)+n;
+  toast(`+${n} XP · ${motivo}`);
+  const ri=rankIdx(G.xp);
+  while(G.rankSeen<ri){ G.rankSeen++; rankReward(G.rankSeen); }
+  if(!inBadge) checkBadges();
+  paintStatsXP();
+}
+function rankReward(i){
+  const R=RANKS[i], G=state.game;
+  if(i===1) G.shields=Math.min(5,G.shields+1);
+  if(i===4) G.shields=Math.min(5,G.shields+2);
+  if(i===7) G.shields=Math.min(5,G.shields+3);
+  celebrate({ic:R.ic, kicker:'Nova patente', t:R.n, d:`Você passou de ${R.xp.toLocaleString('pt-BR')} XP.`, reward:'Recompensa: '+R.r});
+  cloudEvent('patente', 'Nova patente: '+R.n, 0);
+}
+function checkBadges(silentXp){
+  const G=state.game, novos=[];
+  BADGES.forEach(b=>{ if(!G.badges[b.id]){ let ok=false; try{ ok=b.ok(); }catch(e){} if(ok){ G.badges[b.id]=today(); novos.push(b); } } });
+  if(!novos.length) return;
+  inBadge=true;
+  novos.forEach(b=>{ gain(25, 'conquista: '+b.t); cloudEvent('conquista', b.t, 25); });
+  inBadge=false;
+  celebrate(novos.length===1
+    ? {ic:novos[0].ic, kicker:'Nova conquista', t:novos[0].t, d:novos[0].d, reward:'+25 XP'}
+    : {ic:'🏆', kicker:'Novas conquistas', t:`${novos.length} conquistas desbloqueadas`, list:novos, reward:`+${novos.length*25} XP`});
+  save();
+}
+function paintStatsXP(){ const el=document.getElementById('s-xp'); if(el) el.textContent=state.game.xp.toLocaleString('pt-BR'); }
+
+/* ---------------- sequência com escudos ---------------- */
+function activeDays(){ const s=new Set(state.log.map(e=>e.d)); Object.keys(state.game.shieldDays||{}).forEach(d=>s.add(d)); return s; }
+function streakFrom(dstr, days){
+  days=days||activeDays(); let n=0; const d=new Date(dstr+'T12:00:00');
+  while(days.has(isoLocal(d)) && n<2000){ n++; d.setDate(d.getDate()-1); }
+  return n;
+}
+streak=function(){ const days=activeDays(); const t=today(); return days.has(t) ? streakFrom(t,days) : streakFrom(addDays(-1),days); };
+function applyShields(){
+  const G=state.game; if(G.shieldCheck===today()) return; G.shieldCheck=today();
+  const days=activeDays(), y=addDays(-1);
+  if(!days.has(y) && G.shields>0 && streakFrom(addDays(-2),days)>0){
+    G.shieldDays[y]=1; G.shields--;
+    celebrate({ic:'🛡️', kicker:'Escudo usado', t:'Sua sequência foi salva', d:'Ontem você não treinou, então um escudo protegeu seus dias seguidos.', reward:`Restam ${G.shields} escudo${G.shields===1?'':'s'}.`});
+    cloudEvent('escudo','Escudo protegeu a sequência',0);
+  }
+  save();
+}
+function checkStreak(){
+  const G=state.game, s=streak();
+  if(s>G.bestStreak) G.bestStreak=s;
+  if(s>0 && s%7===0 && G.shieldMark!==today()){
+    G.shieldMark=today();
+    if(G.shields<5){ G.shields++; celebrate({ic:'🛡️', kicker:`${s} dias seguidos`, t:'Você ganhou um escudo', d:'Se um dia você não conseguir treinar, o escudo protege sua sequência automaticamente.', reward:`Escudos: ${G.shields} de 5`}); }
+  }
+}
+
+/* ---------------- baú do dia ---------------- */
+function checkChest(){
+  const G=state.game, d=today(); if(G.chests[d]) return;
+  const ms=missionsToday().filter(m=>!m.weekend); const r=dayRec();
+  if(!ms.length || !ms.every(m=>r.done[m.id])) return;
+  const bonus=20+Math.floor(Math.random()*41); G.chests[d]=bonus;
+  celebrate({ic:'🎁', kicker:'Dia completo', t:'Baú do dia aberto', d:'Você cumpriu todas as missões de hoje. É exatamente assim que a fluência é construída: um dia de cada vez.', reward:`+${bonus} XP de bônus`});
+  gain(bonus,'baú do dia');
+  cloudEvent('dia','Dia completo: todas as missões',bonus);
+}
+
+/* ---------------- certificados de etapa ---------------- */
+function issueCert(lvl){
+  const G=state.game; if(G.certs.some(c=>c.lvl===lvl)) return;
+  G.certs.push({lvl, at:today(), horas:Math.round(practiceMin()/60), frases:state.phrases.length, dom:state.phrases.filter(p=>p.known).length, seq:G.bestStreak});
+  celebrate({ic:'🎓', kicker:'Etapa concluída', t:`Você concluiu o ${lvl}`, d:`${LVL_NAME[lvl]}: etapa vencida. O certificado ficou guardado na aba Conquistas.`, reward:'+200 XP', cert:lvl});
+  gain(200,'etapa '+lvl+' concluída');
+  cloudEvent('certificado','Etapa '+lvl+' concluída',200);
+}
+function certHTML(lvl){
+  const c=state.game.certs.find(x=>x.lvl===lvl); if(!c) return '';
+  const nome=state.game.nome || (cloud.aluno&&cloud.aluno.nome) || 'Aluno';
+  const ouro=rankIdx(state.game.xp)>=6;
+  return `<div class="cert ${ouro?'cert--ouro':''}" id="cert">
+    <div class="cert__mark">${LOGOS[state.logo].svg}</div>
+    <p class="eyebrow">Inglês do Zeu · certificado de etapa</p>
+    <p class="cert__lead">Certificamos que</p>
+    <h2 class="cert__nome">${esc(nome)}</h2>
+    <p class="cert__txt">concluiu a etapa <b>${lvl} · ${LVL_NAME[lvl]}</b> do método diário de inglês para o trabalho,
+      com ${c.horas} horas de prática registradas, ${c.frases} frases estudadas (${c.dom} dominadas na revisão espaçada)
+      e uma sequência máxima de ${c.seq} dias.</p>
+    <p class="cert__data">${c.at.split('-').reverse().join('/')}</p>
+    ${ouro?'<p class="cert__selo">Selo dourado · Fluente em formação</p>':''}
+    <p class="cert__nota">Registro de progresso pessoal. Não substitui exames oficiais como Cambridge, IELTS ou TOEFL.</p>
+  </div>`;
+}
+function openCert(lvl){
+  const b=document.getElementById('certbox'); if(!b) return;
+  b.innerHTML=`<div class="certbox__in">${certHTML(lvl)}
+    <div class="acts acts--bare" style="justify-content:center;margin-top:14px">
+      <button class="act act--main" data-print="1">Imprimir ou salvar PDF</button><button class="act" data-certclose="1">Fechar</button></div></div>`;
+  b.hidden=false;
+}
+
+/* ---------------- ganchos nos pontos do app ---------------- */
+const _logEvent=logEvent;
+logEvent=function(kind, text){
+  _logEvent(kind, text);
+  const R={play:[1,'ouvir',30], add:[2,'frase salva',60], record:[5,'gravação',40], listen:[3,'escuta',9], edit:[1,'frase corrigida',10]}[kind];
+  if(R) gain(R[0], R[1], {cap:kind, capMax:R[2]});
+  if(kind==='record') state.game.recs++;
+  checkStreak();
+};
+const _markDone=markDone;
+markDone=function(id, val){
+  const was=!!dayRec().done[id]; _markDone(id, val);
+  if(val && !was){ const m=MISSIONS.find(x=>x.id===id); gain(15,'missão concluída'); cloudEvent('missao', m.t, 15); checkChest(); }
+};
+const _grade=grade;
+grade=function(g){ _grade(g); gain(g>0?5:2, g>0?'revisão':'revisão: tentou'); };
+const _computePlace=computePlace;
+computePlace=function(){
+  const old=state.profile?state.profile.level:null;
+  _computePlace();
+  const nw=state.profile.level;
+  cloudEvent('nivel', old ? `Teste refeito: ${old} → ${nw}` : `Teste de nível: construindo o ${nw}`, 0);
+  if(!old) gain(20,'teste de nível');
+  else for(let i=lvlIdx(old); i<lvlIdx(nw); i++) issueCert(LVLS[i]);
+};
+window.onSpeakScore=function(s){
+  const G=state.game; if(s>G.bestSpeak) G.bestSpeak=s;
+  gain(s>=0.85?6:s>=0.6?3:1, s>=0.85?'pronúncia aprovada':s>=0.6?'quase lá':'tentou falar', {cap:'speak', capMax:60});
+};
+
+/* ---------------- telas de gamificação ---------------- */
+function gameBarHTML(){
+  const G=state.game, i=rankIdx(G.xp), R=RANKS[i], N=RANKS[i+1];
+  const pct = N ? (G.xp-R.xp)/(N.xp-R.xp)*100 : 100;
+  return `<section class="gbar">
+    <div class="gbar__rank"><span class="gbar__ic">${R.ic}</span><div><p class="eyebrow" style="margin:0">Patente</p><p class="gbar__n">${esc(R.n)}</p></div></div>
+    <div class="gbar__xp">
+      <div class="gbar__row"><b>${G.xp.toLocaleString('pt-BR')} XP</b><span>${N?`faltam ${(N.xp-G.xp).toLocaleString('pt-BR')} para ${esc(N.n)}`:'patente máxima'}</span></div>
+      <div class="gbar__bar"><span style="width:${pct.toFixed(1)}%"></span></div></div>
+    <div class="gbar__st"><span title="Dias seguidos">🔥 ${streak()}</span><span title="Escudos de sequência">🛡️ ${G.shields}</span><span title="XP hoje">+${G.xpDays[today()]||0} hoje</span></div>
+    <button class="act" data-gomode="con">Conquistas →</button>
+  </section>`;
+}
+function conHTML(){
+  const G=state.game, i=rankIdx(G.xp), R=RANKS[i], N=RANKS[i+1];
+  const pct = N ? (G.xp-R.xp)/(N.xp-R.xp)*100 : 100;
+  const got=BADGES.filter(b=>G.badges[b.id]).length;
+  const ds=[]; for(let k=13;k>=0;k--) ds.push(addDays(-k));
+  const mx=Math.max(10,...ds.map(d=>G.xpDays[d]||0));
+  const nextCert = state.profile ? state.profile.level : 'A2';
+  return `
+  <section class="hist">
+    <p class="eyebrow">Patente atual</p>
+    <h2 class="kit__title">${R.ic} ${esc(R.n)}</h2>
+    <p class="hist__d" style="margin-top:6px">${G.xp.toLocaleString('pt-BR')} XP${N?` · faltam ${(N.xp-G.xp).toLocaleString('pt-BR')} para ${esc(N.n)} (${esc(N.r)})`:''}</p>
+    <div class="gbar__bar" style="margin-bottom:18px"><span style="width:${pct.toFixed(1)}%"></span></div>
+    ${RANKS.map((r,k)=>`<div class="rank ${k<=i?'':'rank--lock'}"><span class="rank__n">${r.ic}</span>
+      <span><b>${esc(r.n)}</b> <span style="color:var(--ink-soft)">— ${esc(r.r)}</span></span>
+      <span class="rank__c">${k<i?'✓':k===i?'atual':r.xp.toLocaleString('pt-BR')+' XP'}</span></div>`).join('')}
+    <p class="hist__h" style="margin-top:22px">Como ganhar XP</p>
+    <p class="hist__d" style="margin:0">Missão concluída +15 · revisão +5 (errou, +2) · acerto na Fábrica +4 · rodada completa +10 · frase criada por você +8 · pronúncia aprovada +6 · gravação +5 · escuta completa +8 · conquista +25 · baú do dia +20 a 60 · etapa concluída +200.</p>
+  </section>
+
+  <section class="hist">
+    <h2 class="hist__t">Sequência e escudos</h2>
+    <div class="stats" style="margin:12px 0 18px">
+      <div><div class="stat__n">🔥 ${streak()}</div><div class="stat__l">dias seguidos</div></div>
+      <div><div class="stat__n">${G.bestStreak}</div><div class="stat__l">recorde</div></div>
+      <div><div class="stat__n">🛡️ ${G.shields}</div><div class="stat__l">escudos (máx. 5)</div></div>
+      <div><div class="stat__n">${Object.keys(G.chests).length}</div><div class="stat__l">baús abertos</div></div>
+    </div>
+    <p class="hist__d">Você ganha um escudo a cada 7 dias seguidos. Se pular um dia, o escudo é usado sozinho e a sequência continua.</p>
+    <p class="hist__h">XP nos últimos 14 dias</p>
+    <div class="days">${ds.map(d=>{ const v=G.xpDays[d]||0; return `<div class="day ${v?(v>=mx*.6?'day--top':'day--hot'):''}" style="height:${v?Math.max(6,Math.round(v/mx*70)):3}px" title="${d}: ${v} XP"></div>`; }).join('')}</div>
+    <div class="days__ax"><span>14 dias atrás</span><span>hoje</span></div>
+  </section>
+
+  <section class="hist">
+    <h2 class="hist__t">Conquistas · ${got} de ${BADGES.length}</h2>
+    <div class="badges">${BADGES.map(b=>{ const on=G.badges[b.id];
+      return `<div class="badge ${on?'':'badge--lock'}"><span class="badge__ic">${on?b.ic:'🔒'}</span><b>${esc(b.t)}</b><small>${esc(b.d)}</small>${on?`<small class="badge__dt">${on.split('-').reverse().join('/')}</small>`:''}</div>`; }).join('')}</div>
+  </section>
+
+  <section class="hist">
+    <h2 class="hist__t">Certificados de etapa</h2>
+    <p class="hist__d">Cada vez que o teste de nível mostrar que você subiu, a etapa anterior vira um certificado. O próximo é o do ${nextCert}.</p>
+    <div class="compose__row" style="margin-bottom:12px"><input class="field" id="cert-nome" placeholder="Seu nome no certificado" value="${esc(G.nome|| (cloud.aluno&&cloud.aluno.nome) || '')}"><button class="btn btn--ghost" data-certname="1">Salvar nome</button></div>
+    ${G.certs.length ? G.certs.map(c=>`<div class="rank"><span class="rank__n">🎓</span><span><b>Etapa ${c.lvl}</b> · ${LVL_NAME[c.lvl]}</span><button class="mini" data-cert="${c.lvl}">ver</button></div>`).join('')
+      : `<div class="rank rank--lock"><span class="rank__n">🔒</span><span>Etapa ${nextCert} · ${LVL_NAME[nextCert]||''}</span><span class="rank__c">em andamento</span></div>`}
+  </section>
+
+  <section class="hist">
+    <h2 class="hist__t">Temas</h2>
+    <p class="hist__d">Desbloqueados pelas patentes.</p>
+    <div class="chips">${Object.entries(THEMES).map(([k,t])=>{ const ok=i>=t.need;
+      return `<button class="chip" data-theme="${k}" aria-pressed="${G.theme===k}" ${ok?'':'disabled'}>${ok?'':'🔒 '}${t.n}${ok?'':' · '+RANKS[t.need].n}</button>`; }).join('')}</div>
+  </section>`;
+}
+function applyTheme(){
+  const t=state.game.theme; const ok=THEMES[t] && rankIdx(state.game.xp)>=THEMES[t].need;
+  document.documentElement.setAttribute('data-tema', ok ? t : 'padrao');
+}
+
+/* ==================================================================
+   NUVEM — Supabase: cadastro de aluno, login, sincronização, professor
+   ================================================================== */
+const SQL_SCRIPT = "-- ============================================================\n-- INGLÊS DO ZEU — banco de dados (Supabase)\n-- Cole tudo no SQL Editor e clique em Run. Pode rodar de novo\n-- sem problema: ele não apaga nada que já existe.\n-- ============================================================\n\n-- 1. TABELAS ---------------------------------------------------\ncreate table if not exists public.professores (\n  email text primary key\n);\n\ncreate table if not exists public.alunos (\n  id            uuid primary key references auth.users(id) on delete cascade,\n  email         text,\n  nome          text,\n  objetivo      text,\n  meta          text default 'B2',\n  nivel         text,\n  ativo         boolean not null default true,\n  criado_em     timestamptz not null default now(),\n  ultimo_acesso timestamptz\n);\n\ncreate table if not exists public.progresso (\n  aluno_id      uuid primary key references public.alunos(id) on delete cascade,\n  dados         jsonb not null default '{}'::jsonb,\n  xp            integer default 0,\n  patente       text,\n  nivel         text,\n  horas         numeric default 0,\n  streak        integer default 0,\n  frases        integer default 0,\n  atualizado_em timestamptz not null default now()\n);\n\ncreate table if not exists public.eventos (\n  id        bigint generated always as identity primary key,\n  aluno_id  uuid not null references public.alunos(id) on delete cascade,\n  tipo      text not null,\n  detalhe   text,\n  xp        integer default 0,\n  criado_em timestamptz not null default now()\n);\ncreate index if not exists eventos_aluno_idx on public.eventos (aluno_id, criado_em desc);\n\n-- 2. QUEM É PROFESSOR -----------------------------------------\ncreate or replace function public.eh_professor()\nreturns boolean language sql stable security definer set search_path = public as $$\n  select exists (\n    select 1 from public.professores\n    where lower(email) = lower(coalesce(auth.jwt() ->> 'email', ''))\n  );\n$$;\n\n-- 3. MATRÍCULA AUTOMÁTICA: todo cadastro vira um aluno ---------\ncreate or replace function public.novo_aluno()\nreturns trigger language plpgsql security definer set search_path = public as $$\nbegin\n  insert into public.alunos (id, email, nome, objetivo, meta)\n  values (\n    new.id, new.email,\n    coalesce(nullif(new.raw_user_meta_data ->> 'nome', ''), split_part(new.email, '@', 1)),\n    coalesce(new.raw_user_meta_data ->> 'objetivo', ''),\n    coalesce(nullif(new.raw_user_meta_data ->> 'meta', ''), 'B2')\n  )\n  on conflict (id) do nothing;\n  insert into public.eventos (aluno_id, tipo, detalhe) values (new.id, 'cadastro', 'Matrícula criada');\n  return new;\nend $$;\n\ndrop trigger if exists ao_criar_usuario on auth.users;\ncreate trigger ao_criar_usuario after insert on auth.users\n  for each row execute function public.novo_aluno();\n\n-- 4. PROFESSOR ATIVA OU PAUSA UM ALUNO -------------------------\ncreate or replace function public.definir_status(p_aluno uuid, p_ativo boolean)\nreturns void language plpgsql security definer set search_path = public as $$\nbegin\n  if not public.eh_professor() then\n    raise exception 'Apenas professores podem fazer isso';\n  end if;\n  update public.alunos set ativo = p_ativo where id = p_aluno;\n  insert into public.eventos (aluno_id, tipo, detalhe)\n  values (p_aluno, 'status', case when p_ativo then 'Matrícula ativada' else 'Matrícula pausada' end);\nend $$;\n\n-- 5. SEGURANÇA: cada aluno só vê o que é dele ------------------\nalter table public.professores enable row level security;\nalter table public.alunos      enable row level security;\nalter table public.progresso   enable row level security;\nalter table public.eventos     enable row level security;\n\ndrop policy if exists alunos_ler      on public.alunos;\ndrop policy if exists alunos_editar   on public.alunos;\ndrop policy if exists progresso_ler   on public.progresso;\ndrop policy if exists progresso_criar on public.progresso;\ndrop policy if exists progresso_editar on public.progresso;\ndrop policy if exists eventos_ler     on public.eventos;\ndrop policy if exists eventos_criar   on public.eventos;\n\ncreate policy alunos_ler on public.alunos for select to authenticated\n  using (id = auth.uid() or public.eh_professor());\ncreate policy alunos_editar on public.alunos for update to authenticated\n  using (id = auth.uid()) with check (id = auth.uid());\n\ncreate policy progresso_ler on public.progresso for select to authenticated\n  using (aluno_id = auth.uid() or public.eh_professor());\ncreate policy progresso_criar on public.progresso for insert to authenticated\n  with check (aluno_id = auth.uid());\ncreate policy progresso_editar on public.progresso for update to authenticated\n  using (aluno_id = auth.uid()) with check (aluno_id = auth.uid());\n\ncreate policy eventos_ler on public.eventos for select to authenticated\n  using (aluno_id = auth.uid() or public.eh_professor());\ncreate policy eventos_criar on public.eventos for insert to authenticated\n  with check (aluno_id = auth.uid());\n\n-- permissões: o aluno não consegue se reativar sozinho\nrevoke all on public.professores from anon, authenticated;\nrevoke all on public.alunos      from anon;\nrevoke all on public.progresso   from anon;\nrevoke all on public.eventos     from anon;\nrevoke update on public.alunos from authenticated;\ngrant usage on schema public to authenticated;\ngrant select on public.alunos to authenticated;\ngrant update (nome, objetivo, meta, nivel, ultimo_acesso) on public.alunos to authenticated;\ngrant select, insert, update on public.progresso to authenticated;\ngrant select, insert on public.eventos to authenticated;\nrevoke execute on function public.definir_status(uuid, boolean) from public, anon;\ngrant execute on function public.definir_status(uuid, boolean) to authenticated;\ngrant execute on function public.eh_professor() to authenticated;\n\n-- 6. VOCÊ COMO PROFESSOR --------------------------------------\ninsert into public.professores (email) values ('EMAIL_DO_PROFESSOR')\n  on conflict (email) do nothing;\n";
+const cloud = { sb:null, user:null, aluno:null, prof:false, status:'off', last:0, err:'', tab:'entrar',
+                msg:'', profData:null, profSel:null, profMsg:'', busy:false };
+let CFG = (()=>{ try{ return JSON.parse(localStorage.getItem('zeu:cfg')||'{}'); }catch(e){ return {}; } })();
+function writeCfg(){ try{ localStorage.setItem('zeu:cfg', JSON.stringify(CFG)); }catch(e){} }
+/* projeto Supabase do Inglês do Zeu — a publishable key é pública por natureza; quem protege os dados são as regras (RLS) do banco */
+const NUVEM_PADRAO={ url:'https://iocvyljourpanvqlwgxs.supabase.co', key:'sb_publishable_kU2M28-a3FoL81DxCizNnQ_TkmpazBm', prof:'zeugalvao@yahoo.com.br' };
+if(!CFG.url || !CFG.key){ CFG.url=NUVEM_PADRAO.url; CFG.key=NUVEM_PADRAO.key; }
+if(!CFG.prof) CFG.prof=NUVEM_PADRAO.prof;
+if(!CFG.email) cloud.tab='cadastro';
+if(CFG.uid) KEY='zeu:v1:u:'+CFG.uid;
+
+function resetState(){
+  Object.assign(state, { phrases:[], log:[], profile:null, days:{}, fabDone:{}, kit:null, rv:null, fab:null, open:null,
+    video:null, idx:0, place:null, placing:false, savedAt:0, game:newGame() });
+}
+function snapshot(){
+  return { phrases:state.phrases, log:state.log.slice(-800), logo:state.logo, kit:state.kit, profile:state.profile,
+    days:state.days, fabDone:state.fabDone, game:Object.assign({}, state.game, {outbox:[]}),
+    auto:{on:state.auto.on, reps:state.auto.reps, tail:state.auto.tail}, savedAt:state.savedAt||Date.now() };
+}
+function applySnapshot(d){
+  state.phrases=d.phrases||[]; state.log=d.log||[]; state.logo=d.logo||state.logo; state.kit=d.kit||null;
+  state.profile=d.profile||null; state.days=d.days||{}; state.fabDone=d.fabDone||{};
+  const ob=state.game.outbox||[]; state.game=Object.assign(newGame(), d.game||{}); state.game.outbox=ob;
+  state.savedAt=d.savedAt||Date.now();
+}
+function cloudEvent(tipo, detalhe, xp){
+  if(!CFG.uid) return;
+  const ob=state.game.outbox; ob.push({tipo, detalhe:String(detalhe||'').slice(0,140), xp:xp||0, criado_em:new Date().toISOString()});
+  if(ob.length>200) ob.splice(0, ob.length-200);
+}
+
+/* ---------------- conexão ---------------- */
+function loadLib(){
+  return new Promise(res=>{
+    if(window.supabase && window.supabase.createClient) return res(true);
+    let done=false; const fin=v=>{ if(!done){ done=true; res(v); } };
+    const s=document.createElement('script');
+    s.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
+    s.onload=()=>fin(!!(window.supabase && window.supabase.createClient));
+    s.onerror=()=>fin(false);
+    document.head.appendChild(s);
+    setTimeout(()=>fin(!!(window.supabase && window.supabase.createClient)), 12000);
+  });
+}
+function traduzErro(e){
+  const m=String((e&&(e.message||e.error_description||e))||'');
+  if(/Invalid login credentials/i.test(m)) return 'E-mail ou senha errados.';
+  if(/already registered|already been registered|User already/i.test(m)) return 'Esse e-mail já tem cadastro. Use a aba Entrar.';
+  if(/Password should be|at least 6/i.test(m)) return 'A senha precisa ter pelo menos 6 caracteres.';
+  if(/Email not confirmed/i.test(m)) return 'E-mail ainda não confirmado. Abra o link que chegou no e-mail, ou desligue a confirmação (passo 4 do guia).';
+  if(/invalid.*email|Unable to validate email/i.test(m)) return 'Esse e-mail parece inválido.';
+  if(/rate limit|too many/i.test(m)) return 'Muitas tentativas seguidas. Espere um minuto e tente de novo.';
+  if(/Failed to fetch|NetworkError|network/i.test(m)) return 'Sem conexão com o Supabase. Confira a internet e o endereço do projeto.';
+  if(/Invalid API key|No API key|apikey/i.test(m)) return 'Chave inválida. Copie de novo a Publishable key do projeto.';
+  return m || 'Erro desconhecido.';
+}
+async function cloudInit(){
+  if(!CFG.url || !CFG.key){ cloud.status='off'; paintAcct(); return; }
+  cloud.status='conectando'; paintAcct();
+  const ok=await loadLib();
+  if(!ok){ cloud.status='offline'; cloud.err='Sem internet agora. Seu progresso continua salvo neste aparelho e sobe quando a conexão voltar.'; paintAcct(); return; }
+  try{ cloud.sb=window.supabase.createClient(CFG.url, CFG.key); }
+  catch(e){ cloud.status='erro'; cloud.err=traduzErro(e); paintAcct(); return; }
+  const {data}=await cloud.sb.auth.getSession();
+  if(data && data.session){ cloud.user=data.session.user; await afterLogin(); render(); }
+  else { cloud.status = CFG.uid ? 'expirou' : 'saiu'; paintAcct(); }
+}
+async function afterLogin(){
+  const u=cloud.user, sb=cloud.sb;
+  const myKey='zeu:v1:u:'+u.id;
+  if(KEY!==myKey){ resetState(); KEY=myKey; await load(); }
+  CFG.uid=u.id; CFG.email=u.email; writeCfg();
+  const al=await sb.from('alunos').select('*').eq('id',u.id).maybeSingle();
+  cloud.aluno=al.data||null;
+  if(cloud.aluno){ CFG.nome=cloud.aluno.nome; writeCfg(); if(!state.game.nome) state.game.nome=cloud.aluno.nome; }
+  const pf=await sb.rpc('eh_professor'); cloud.prof = pf.data===true;
+  const pr=await sb.from('progresso').select('dados').eq('aluno_id',u.id).maybeSingle();
+  const remote=pr.data && pr.data.dados;
+  if(remote && (remote.savedAt||0) > (state.savedAt||0)){
+    applySnapshot(remote); toast('Progresso baixado da nuvem');
+  } else if(!remote && !state.phrases.length && !state.profile){
+    const g=await store.get('zeu:v1');
+    if(g){ try{ const gd=JSON.parse(g);
+      if(((gd.phrases||[]).length || gd.profile) && confirm(`Levar o progresso que está neste aparelho (${(gd.phrases||[]).length} frases) para a conta ${u.email}?`)){
+        applySnapshot(gd); state.savedAt=Date.now(); cloudEvent('importacao','Progresso local importado para a conta',0);
+      } }catch(e){} }
+    if(!state.profile && cloud.aluno && cloud.aluno.meta) state.place={ ans:CANDO.map(()=>null), goal:cloud.aluno.meta, ritmo:'padrao' };
+  }
+  cloud.status = (cloud.aluno && cloud.aluno.ativo===false) ? 'pausado' : 'ok';
+  cloud.err='';
+  save();
+  await cloudPush();
+}
+let pushTimer=null;
+function cloudSchedule(){ if(!cloud.sb || !cloud.user) return; clearTimeout(pushTimer); pushTimer=setTimeout(cloudPush, 3000); }
+async function cloudPush(){
+  if(!cloud.sb || !cloud.user || cloud.status==='pausado') { paintAcct(); return; }
+  cloud.status='sincronizando'; paintAcct();
+  const uid=cloud.user.id, G=state.game;
+  try{
+    const r1=await cloud.sb.from('progresso').upsert({ aluno_id:uid, dados:snapshot(), xp:G.xp, patente:rankOf(G.xp).n,
+      nivel:state.profile?state.profile.level:null, horas:Math.round(practiceMin()/6)/10, streak:streak(),
+      frases:state.phrases.length, atualizado_em:new Date().toISOString() });
+    if(r1.error) throw r1.error;
+    if(G.outbox.length){
+      const lote=G.outbox.slice(0,50).map(e=>Object.assign({aluno_id:uid}, e));
+      const r2=await cloud.sb.from('eventos').insert(lote);
+      if(!r2.error) G.outbox.splice(0, lote.length);
+    }
+    await cloud.sb.from('alunos').update({ nivel:state.profile?state.profile.level:null, ultimo_acesso:new Date().toISOString() }).eq('id',uid);
+    cloud.status='ok'; cloud.last=Date.now(); cloud.err='';
+  }catch(e){ cloud.status='erro'; cloud.err=traduzErro(e); }
+  paintAcct();
+}
+document.addEventListener('visibilitychange', ()=>{ if(document.visibilityState==='hidden' && cloud.user){ clearTimeout(pushTimer); cloudPush(); } });
+window.addEventListener('online', ()=>{ if(CFG.url && !cloud.sb) cloudInit(); else if(cloud.user) cloudPush(); });
+
+/* ---------------- ações de conta ---------------- */
+function val(id){ const el=document.getElementById(id); return el ? el.value.trim() : ''; }
+async function ensureClient(){ if(!cloud.sb){ await cloudInit(); } return !!cloud.sb; }
+function keepDraft(){ state.authDraft={ nome:val('su-nome'), email:val('su-email')||val('lg-email'), obj:val('su-obj') }; }
+async function doLogin(){
+  keepDraft(); const email=val('lg-email'), password=val('lg-pw');
+  if(!email || !password){ cloud.msg='Preencha e-mail e senha.'; return render(); }
+  if(!await ensureClient()){ cloud.msg=cloud.err||'Não conectou.'; return render(); }
+  cloud.busy=true; cloud.msg='entrando…'; render();
+  const {data,error}=await cloud.sb.auth.signInWithPassword({ email, password });
+  cloud.busy=false;
+  if(error){ cloud.msg=traduzErro(error); return render(); }
+  cloud.user=data.user; cloud.msg=''; await afterLogin();
+  state.mode='hoje'; setModeBtn('hoje'); render(); window.scrollTo({top:0,behavior:'smooth'});
+}
+async function doSignup(){
+  keepDraft();
+  if(!await ensureClient()){ cloud.msg=cloud.err||'Não conectou.'; return render(); }
+  const nome=state.authDraft.nome, email=state.authDraft.email, pw=val('su-pw'), objetivo=state.authDraft.obj, meta=(document.querySelector('[data-sumeta][aria-pressed="true"]')||{dataset:{sumeta:'B2'}}).dataset.sumeta;
+  if(!nome || !email || pw.length<6){ cloud.msg='Preencha nome, e-mail e uma senha com pelo menos 6 caracteres.'; return render(); }
+  cloud.busy=true; cloud.msg='criando sua matrícula…'; render();
+  const {data,error}=await cloud.sb.auth.signUp({ email, password:pw, options:{ data:{ nome, objetivo, meta } } });
+  cloud.busy=false;
+  if(error){ cloud.msg=traduzErro(error); return render(); }
+  if(!data.session){ cloud.msg='Cadastro feito, mas o Supabase pediu confirmação por e-mail. Abra o link que chegou, ou desligue a confirmação (passo 4 do guia) e entre pela aba Entrar.'; cloud.tab='entrar'; return render(); }
+  cloud.user=data.user; cloud.msg=''; state.game.nome=nome;
+  await afterLogin();
+  state.mode='hoje'; setModeBtn('hoje'); render(); window.scrollTo({top:0,behavior:'smooth'});
+}
+async function doLogout(){
+  await cloudPush();
+  if(cloud.sb) await cloud.sb.auth.signOut();
+  cloud.user=null; cloud.aluno=null; cloud.prof=false; cloud.status='saiu'; cloud.profData=null; cloud.profSel=null;
+  CFG.uid=null; CFG.email=null; CFG.nome=null; writeCfg();
+  resetState(); KEY='zeu:v1'; await load();
+  state.mode='conta'; render();
+}
+async function saveCfg(){
+  state.cfgDraft={url:val('cf-url'), key:val('cf-key')};
+  let url=val('cf-url').replace(/\/+$/,''), key=val('cf-key');
+  if(!/^https:\/\/.+/.test(url)){ cloud.msg='O endereço precisa começar com https:// (ex.: https://abcd1234.supabase.co).'; return render(); }
+  if(!key){ cloud.msg='Cole a Publishable key.'; return render(); }
+  if(/^sb_secret_/.test(key) || /service_role/.test(atobSafe(key))){ cloud.msg='Essa é a chave SECRETA. Nunca coloque ela no site. Use a Publishable key (começa com sb_publishable_).'; return render(); }
+  cloud.msg='testando a conexão…'; render();
+  const ok=await loadLib(); if(!ok){ cloud.msg='Sem internet para carregar o Supabase. Tente de novo.'; return render(); }
+  let sb; try{ sb=window.supabase.createClient(url, key); }catch(e){ cloud.msg=traduzErro(e); return render(); }
+  const t=await sb.rpc('eh_professor');
+  if(t.error){
+    const m=String(t.error.message||'');
+    cloud.msg = /Could not find|does not exist|PGRST202|schema cache/i.test(m+t.error.code)
+      ? 'Conectou, mas o banco ainda não foi criado. Faça o passo 3: rode o SQL no SQL Editor.'
+      : traduzErro(t.error);
+    return render();
+  }
+  CFG.url=url; CFG.key=key; CFG.prof=val('cf-prof')||CFG.prof||''; writeCfg();
+  cloud.sb=sb; cloud.status='saiu'; cloud.msg='Conectado! Agora cadastre-se como aluno ou entre.'; state.cfgEdit=false; cloud.tab='cadastro';
+  render();
+}
+function atobSafe(k){ try{ return atob((k.split('.')[1]||'').replace(/-/g,'+').replace(/_/g,'/')); }catch(e){ return ''; } }
+function sqlFor(email){ return SQL_SCRIPT.replace('EMAIL_DO_PROFESSOR', (email||'seu@email.com').replace(/'/g,'')); }
+
+/* ---------------- painel do professor ---------------- */
+async function profLoad(){
+  if(!cloud.sb || !cloud.prof) return;
+  const [a,p]=await Promise.all([
+    cloud.sb.from('alunos').select('*').order('criado_em',{ascending:false}),
+    cloud.sb.from('progresso').select('aluno_id,xp,patente,nivel,horas,streak,frases,atualizado_em')]);
+  if(a.error){ cloud.profMsg=traduzErro(a.error); return render(); }
+  const map={}; (p.data||[]).forEach(r=>map[r.aluno_id]=r);
+  cloud.profData={ alunos:a.data||[], prog:map, at:Date.now() };
+  render();
+}
+async function profDetail(id){
+  cloud.profSel={id, loading:true}; render();
+  const [e,d]=await Promise.all([
+    cloud.sb.from('eventos').select('*').eq('aluno_id',id).order('criado_em',{ascending:false}).limit(60),
+    cloud.sb.from('progresso').select('dias:dados->days').eq('aluno_id',id).maybeSingle()]);
+  cloud.profSel={ id, eventos:e.data||[], dias:(d.data&&d.data.dias)||{} };
+  render();
+}
+async function profStatus(id, ativo){
+  const r=await cloud.sb.rpc('definir_status', { p_aluno:id, p_ativo:ativo });
+  cloud.profMsg = r.error ? traduzErro(r.error) : (ativo?'Matrícula ativada.':'Matrícula pausada.');
+  await profLoad(); if(cloud.profSel && cloud.profSel.id===id) await profDetail(id);
+}
+async function profNew(){
+  const nome=val('pn-nome'), email=val('pn-email'), pw=val('pn-pw'), objetivo=val('pn-obj');
+  if(!nome || !email || pw.length<6){ cloud.profMsg='Preencha nome, e-mail e uma senha provisória de 6+ caracteres.'; return render(); }
+  cloud.profMsg='ativando aluno…'; render();
+  const tmp=window.supabase.createClient(CFG.url, CFG.key, { auth:{ persistSession:false, autoRefreshToken:false, detectSessionInUrl:false, storageKey:'zeu-tmp-'+Date.now() } });
+  const {data,error}=await tmp.auth.signUp({ email, password:pw, options:{ data:{ nome, objetivo, meta:'B2' } } });
+  if(error){ cloud.profMsg=traduzErro(error); return render(); }
+  cloud.profMsg = data.session
+    ? `Aluno ${nome} ativado. Ele entra com ${email} e a senha provisória.`
+    : `Aluno ${nome} criado, mas precisa confirmar o e-mail antes de entrar (ou desligue a confirmação no Supabase).`;
+  await profLoad();
+}
+function relTime(iso){
+  if(!iso) return 'nunca'; const s=(Date.now()-new Date(iso).getTime())/1000;
+  if(s<90) return 'agora'; if(s<3600) return `há ${Math.round(s/60)} min`; if(s<86400) return `há ${Math.round(s/3600)} h`;
+  const d=Math.round(s/86400); return d===1?'ontem':`há ${d} dias`;
+}
+const EV_IC={cadastro:'📝', nivel:'📊', missao:'✅', conquista:'🏆', patente:'⭐', certificado:'🎓', dia:'🎁', escudo:'🛡️', status:'🔁', importacao:'📦', fabrica:'⚙️'};
+function profHTML(){
+  if(!cloud.prof) return `<div class="empty"><h2>Área do professor</h2><p>Só o e-mail cadastrado como professor no passo 3 do guia enxerga esta tela.</p></div>`;
+  if(!cloud.profData){ setTimeout(profLoad,0); return `<div class="empty"><h2>Carregando alunos…</h2></div>`; }
+  const A=cloud.profData.alunos, P=cloud.profData.prog;
+  const ativos=A.filter(a=>a.ativo).length;
+  const hoje=A.filter(a=>a.ultimo_acesso && (Date.now()-new Date(a.ultimo_acesso))<86400000).length;
+  const sel=cloud.profSel;
+  return `<section class="hist">
+    <p class="eyebrow">Painel do professor</p>
+    <h2 class="kit__title">Seus alunos</h2>
+    <div class="stats" style="margin:14px 0 4px">
+      <div><div class="stat__n">${A.length}</div><div class="stat__l">matrículas</div></div>
+      <div><div class="stat__n">${ativos}</div><div class="stat__l">ativas</div></div>
+      <div><div class="stat__n">${hoje}</div><div class="stat__l">treinaram em 24h</div></div>
+    </div>
+    ${cloud.profMsg?`<p class="msg">${esc(cloud.profMsg)}</p>`:''}
+    <div class="acts acts--bare" style="margin-top:12px"><button class="act" data-proflist="1">↻ Atualizar</button></div>
+  </section>
+
+  <section class="hist">
+    <h2 class="hist__t">Ativar aluno novo</h2>
+    <p class="hist__d">Crie a matrícula com uma senha provisória e passe para o aluno. Você continua logado como professor.</p>
+    <div class="compose__row"><input class="field" id="pn-nome" placeholder="Nome do aluno"><input class="field" id="pn-email" placeholder="e-mail do aluno" type="email"></div>
+    <div class="compose__row" style="margin-top:8px"><input class="field" id="pn-obj" placeholder="Objetivo (ex.: vaga de vendas em multinacional)"><input class="field" id="pn-pw" placeholder="senha provisória (6+)" type="text"></div>
+    <div class="acts acts--bare" style="margin-top:10px"><button class="act act--main" data-profnew="1">Ativar matrícula</button></div>
+  </section>
+
+  <div class="list">${A.map(a=>{ const p=P[a.id]||{}; const R=rankOf(p.xp||0); const open=sel&&sel.id===a.id;
+    return `<article class="card stu ${a.ativo?'':'stu--off'}">
+      <div class="stu__top">
+        <div><p class="card__text" style="font-size:22px;margin:0">${esc(a.nome||a.email)}</p>
+          <p class="card__note" style="margin:2px 0 0">${esc(a.email)}${a.objetivo?' · '+esc(a.objetivo):''}</p></div>
+        <span class="stu__st">${a.ativo?'ativo':'pausado'}</span></div>
+      <div class="stu__kpi">
+        <span><b>${p.nivel||a.nivel||'—'}</b><small>nível → ${esc(a.meta||'B2')}</small></span>
+        <span><b>${R.ic} ${(p.xp||0).toLocaleString('pt-BR')}</b><small>${esc(R.n)}</small></span>
+        <span><b>🔥 ${p.streak||0}</b><small>dias seguidos</small></span>
+        <span><b>${p.horas||0}h</b><small>praticadas</small></span>
+        <span><b>${p.frases||0}</b><small>frases</small></span>
+        <span><b>${relTime(a.ultimo_acesso)}</b><small>último acesso</small></span></div>
+      <div class="acts">
+        <button class="act ${open?'act--main':''}" data-profsee="${a.id}">${open?'Fechar evolução':'Ver evolução'}</button>
+        <button class="act" data-profstatus="${a.id}" data-on="${a.ativo?0:1}">${a.ativo?'Pausar matrícula':'Ativar matrícula'}</button></div>
+      ${open?profDetailHTML(sel):''}
+    </article>`; }).join('') || '<div class="empty"><h2>Nenhum aluno ainda</h2><p>Ative o primeiro acima.</p></div>'}</div>`;
+}
+function profDetailHTML(sel){
+  if(sel.loading) return '<p class="msg">carregando…</p>';
+  const ds=[]; for(let k=13;k>=0;k--) ds.push(addDays(-k));
+  const mins=ds.map(d=>{ const r=sel.dias[d]; return r?(r.min||0)+(r.ext||0):0; });
+  const mx=Math.max(30,...mins);
+  return `<div class="block"><p class="block__l">Minutos de prática · 14 dias</p>
+    <div class="days">${mins.map((v,i)=>`<div class="day ${v?(v>=mx*.6?'day--top':'day--hot'):''}" style="height:${v?Math.max(6,Math.round(v/mx*70)):3}px" title="${ds[i]}: ${v} min"></div>`).join('')}</div>
+    <div class="days__ax"><span>14 dias atrás</span><span>hoje</span></div></div>
+    <div class="block"><p class="block__l">Linha do tempo</p>
+    ${sel.eventos.length? sel.eventos.map(e=>`<div class="tl"><span class="tl__ic">${EV_IC[e.tipo]||'•'}</span>
+      <span class="tl__b"><b>${esc(e.detalhe||e.tipo)}</b>${e.xp?` <span class="tl__xp">+${e.xp} XP</span>`:''}</span>
+      <span class="tl__t">${relTime(e.criado_em)}</span></div>`).join('') : '<p class="hist__d">Nenhum evento ainda.</p>'}</div>`;
+}
+
+/* ---------------- tela de conta ---------------- */
+function setupHTML(){
+  const prof=CFG.prof||'';
+  return `<section class="kit">
+    <p class="eyebrow">Banco de dados na nuvem · Supabase, plano grátis</p>
+    <h2 class="kit__title">Ligar o site na nuvem</h2>
+    <p class="kit__brief">Faça uma vez só, leva uns 10 minutos. Depois disso cada aluno tem login próprio, o progresso fica salvo na nuvem e você acompanha todos pelo painel do professor.</p>
+    ${[
+      ['Crie sua conta', 'Entre em <a href="https://supabase.com" target="_blank" rel="noopener">supabase.com</a>, clique em <b>Start your project</b> e crie a conta (pode ser com o GitHub ou com e-mail).'],
+      ['Crie o projeto', 'Clique em <b>New project</b>. Nome: <b>ingles-do-zeu</b>. Crie uma senha do banco e guarde num lugar seguro. Região: <b>South America (São Paulo)</b>. Plano: <b>Free</b>. Clique em <b>Create</b> e espere uns 2 minutos.'],
+      ['Crie as tabelas', 'Escreva seu e-mail de professor aqui embaixo, copie o script e cole no Supabase em <b>SQL Editor → New query</b>. Clique em <b>Run</b>. Tem que aparecer <b>Success</b>.'],
+      ['Desligue a confirmação de e-mail', 'Em <b>Authentication</b>, abra as configurações do provedor <b>Email</b> e desligue <b>Confirm email</b>. Assim você ativa alunos de teste sem precisar abrir e-mail. Salve.'],
+      ['Copie o endereço e a chave', 'Clique no botão <b>Connect</b> no topo do projeto (ou em <b>Settings → API Keys</b>). Copie a <b>Project URL</b> e a <b>Publishable key</b> (começa com <code>sb_publishable_</code>). Nunca use a <b>secret key</b> no site.'],
+      ['Cole aqui e teste', 'Cole os dois campos abaixo e clique em <b>Salvar e testar</b>.']
+    ].map((s,i)=>`<div class="stage"><div class="stage__h"><span class="stage__n">${String(i+1).padStart(2,'0')}</span><span class="stage__t">${s[0]}</span></div><p class="opt__d" style="font-size:14px;margin:8px 0 0">${s[1]}</p>
+      ${i===2?`<div class="compose__row" style="margin-top:12px"><input class="field" id="cf-prof" type="email" placeholder="seu e-mail de professor" value="${esc(prof)}"></div>
+        <textarea class="sql" id="cf-sql" readonly spellcheck="false">${esc(sqlFor(prof))}</textarea>
+        <div class="acts acts--bare" style="margin-top:8px"><button class="act act--main" data-cfgcopy="1">Copiar o script SQL</button><span class="msg" id="cf-copied" style="margin:0"></span></div>`:''}
+      ${i===5?`<div class="compose__row" style="margin-top:12px"><input class="field" id="cf-url" placeholder="https://xxxxxxxx.supabase.co" value="${esc((state.cfgDraft&&state.cfgDraft.url)||CFG.url||'')}"></div>
+        <div class="compose__row" style="margin-top:8px"><input class="field" id="cf-key" placeholder="sb_publishable_..." value="${esc((state.cfgDraft&&state.cfgDraft.key)||CFG.key||'')}"></div>
+        <div class="acts acts--bare" style="margin-top:10px"><button class="act act--main" data-cfgsave="1">Salvar e testar</button>
+          ${CFG.url?'<button class="act" data-cfgcancel="1">Cancelar</button>':''}</div>
+        ${cloud.msg?`<p class="msg">${esc(cloud.msg)}</p>`:''}`:''}
+    </div>`).join('')}
+    <p class="hist__d" style="margin-top:22px">Bom saber: no plano grátis, o Supabase pausa o projeto se ele passar 7 dias sem nenhum uso. Treinando todo dia isso não acontece. Se pausar, é só entrar no painel do Supabase e clicar em <b>Resume project</b> — os dados continuam lá.</p>
+  </section>`;
+}
+function authHTML(){
+  const t=cloud.tab;
+  return `<section class="kit">
+    <p class="eyebrow">Conta de aluno</p>
+    <h2 class="kit__title">${t==='entrar'?'Entrar':'Fazer minha matrícula'}</h2>
+    <div class="chips"><button class="chip" data-authtab="cadastro" aria-pressed="${t==='cadastro'}">Sou aluno novo</button><button class="chip" data-authtab="entrar" aria-pressed="${t==='entrar'}">Já tenho conta</button></div>
+    ${t==='entrar' ? `
+      <div class="compose__row" style="margin-top:14px"><input class="field" id="lg-email" type="email" placeholder="e-mail" autocomplete="email" value="${esc((state.authDraft&&state.authDraft.email)||CFG.email||'')}"></div>
+      <div class="compose__row" style="margin-top:8px"><input class="field" id="lg-pw" type="password" placeholder="senha" autocomplete="current-password"></div>
+      <div class="acts acts--bare" style="margin-top:12px"><button class="act act--main" data-login="1" ${cloud.busy?'disabled':''}>Entrar</button></div>`
+    : `
+      <p class="kit__brief">Seu progresso vai para a nuvem, você acessa de qualquer aparelho, e o professor acompanha sua evolução.</p>
+      <div class="compose__row" style="margin-top:14px"><input class="field" id="su-nome" placeholder="Seu nome" autocomplete="name" value="${esc((state.authDraft&&state.authDraft.nome)||'')}"></div>
+      <div class="compose__row" style="margin-top:8px"><input class="field" id="su-email" type="email" placeholder="e-mail" autocomplete="email" value="${esc((state.authDraft&&state.authDraft.email)||'')}"></div>
+      <div class="compose__row" style="margin-top:8px"><input class="field" id="su-pw" type="password" placeholder="senha (6 ou mais caracteres)" autocomplete="new-password"></div>
+      <div class="compose__row" style="margin-top:8px"><input class="field" id="su-obj" placeholder="Seu objetivo (ex.: vaga de vendas em empresa internacional)" value="${esc((state.authDraft&&state.authDraft.obj)||'')}"></div>
+      <p class="hist__h" style="margin-top:14px">Meta</p>
+      <div class="chips" style="margin:0">${['B1','B2','C1'].map(g=>`<button class="chip" data-sumeta="${g}" aria-pressed="${g===((state.authDraft&&state.authDraft.meta)||'B2')}">${g} · ${LVL_NAME[g]}</button>`).join('')}</div>
+      <div class="acts acts--bare" style="margin-top:14px"><button class="act act--main" data-signup="1" ${cloud.busy?'disabled':''}>Criar minha matrícula</button></div>`}
+    ${cloud.msg?`<p class="msg">${esc(cloud.msg)}</p>`:''}
+    <div class="kit__foot"><button class="act" data-gomode="hoje">Continuar sem conta (só neste aparelho)</button><button class="act" data-cfgedit="1">Configuração da nuvem</button></div>
+  </section>`;
+}
+function perfilHTML(){
+  const a=cloud.aluno||{}, G=state.game, R=rankOf(G.xp);
+  return `<section class="kit">
+    <p class="eyebrow">Minha matrícula</p>
+    <h2 class="kit__title">${esc(a.nome||cloud.user.email)}</h2>
+    <p class="kit__brief">${esc(cloud.user.email)}${a.objetivo?' · '+esc(a.objetivo):''}</p>
+    ${a.ativo===false?'<div class="notice" style="margin-top:14px"><span>Sua matrícula está pausada pelo professor. Você pode treinar, mas o progresso não sobe para a nuvem até ela ser reativada.</span></div>':''}
+    <div class="stats" style="margin:18px 0 0">
+      <div><div class="stat__n">${state.profile?state.profile.level:'—'}</div><div class="stat__l">nível atual</div></div>
+      <div><div class="stat__n">${esc(a.meta||(state.profile&&state.profile.goal)||'B2')}</div><div class="stat__l">meta</div></div>
+      <div><div class="stat__n">${R.ic} ${G.xp.toLocaleString('pt-BR')}</div><div class="stat__l">${esc(R.n)}</div></div>
+      <div><div class="stat__n">${a.criado_em?new Date(a.criado_em).toLocaleDateString('pt-BR'):'—'}</div><div class="stat__l">matrícula</div></div>
+    </div>
+    <p class="hist__d" style="margin-top:18px">${cloud.status==='ok'?`Sincronizado ${relTime(new Date(cloud.last||Date.now()).toISOString())}.`:esc(cloud.err||cloud.status)} ${G.outbox.length?G.outbox.length+' eventos esperando para subir.':''}</p>
+    <div class="kit__foot">
+      <button class="act act--main" data-syncnow="1">↻ Sincronizar agora</button>
+      ${cloud.prof?'<button class="act" data-gomode="prof">Painel do professor →</button>':''}
+      <button class="act" data-logout="1">Sair da conta</button>
+      <button class="act" data-cfgedit="1">Configuração da nuvem</button></div>
+  </section>`;
+}
+function contaHTML(){
+  if(!CFG.url || !CFG.key || state.cfgEdit) return setupHTML();
+  if(cloud.user) return perfilHTML();
+  return authHTML();
+}
+function paintAcct(){
+  const el=document.getElementById('acct'); if(!el) return;
+  let dot='off', txt;
+  if(!CFG.url){ txt='Modo local, sem conta · <b>ligar a nuvem e cadastrar aluno</b>'; }
+  else if(cloud.user){
+    const n=esc((cloud.aluno&&cloud.aluno.nome)||cloud.user.email);
+    const st={ok:`sincronizado ${relTime(new Date(cloud.last||Date.now()).toISOString())}`, sincronizando:'sincronizando…', erro:'erro ao sincronizar', pausado:'matrícula pausada', conectando:'conectando…'}[cloud.status]||cloud.status;
+    dot = cloud.status==='ok'?'ok':cloud.status==='erro'||cloud.status==='pausado'?'bad':'wait';
+    txt=`<b>${n}</b> · ${cloud.prof?'professor e aluno':'aluno'} · ${st}`;
+  }
+  else if(cloud.status==='conectando'){ dot='wait'; txt='conectando à nuvem…'; }
+  else if(cloud.status==='offline'){ dot='bad'; txt=`${CFG.nome?'<b>'+esc(CFG.nome)+'</b> · ':''}sem internet, salvando neste aparelho`; }
+  else if(cloud.status==='expirou'){ dot='bad'; txt=`<b>${esc(CFG.nome||'')}</b> · sessão expirou, <b>entre de novo</b>`; }
+  else { txt='Nuvem ligada · <b>entrar ou fazer matrícula</b>'; }
+  el.innerHTML=`<button class="acct__b" data-acct="1"><span class="acct__dot acct__dot--${dot}"></span>${txt}</button>`;
+}
+
+/* ---------------- render: novas abas ---------------- */
+const _hojeHTML=hojeHTML;
+hojeHTML=function(){ return gameBarHTML()+_hojeHTML(); };
+const _renderMetodo=renderMetodo;
+renderMetodo=function(){
+  if(state.mode==='con'){ view.innerHTML=conHTML(); return; }
+  if(state.mode==='conta'){ view.innerHTML=contaHTML(); return; }
+  if(state.mode==='prof'){ view.innerHTML=profHTML(); return; }
+  _renderMetodo();
+};
+const _render=render;
+render=function(){ applyTheme(); _render(); paintAcct(); paintStatsXP(); };
+
+/* ---------------- eventos ---------------- */
+document.addEventListener('click', async e=>{
+  const t=e.target.closest('[data-acct],[data-celebok],[data-cert],[data-certclose],[data-print],[data-theme],[data-certname],[data-cfgcopy],[data-cfgsave],[data-cfgcancel],[data-cfgedit],[data-authtab],[data-login],[data-signup],[data-sumeta],[data-logout],[data-syncnow],[data-proflist],[data-profsee],[data-profstatus],[data-profnew]');
+  if(!t) return; const d=t.dataset;
+  if(d.acct){ state.mode='conta'; setModeBtn('conta'); cloud.msg=''; render(); window.scrollTo({top:0,behavior:'smooth'}); return; }
+  if(d.celebok){ celebQ.shift(); showCeleb(); render(); return; }
+  if(d.cert){ celebQ.length=0; showCeleb(); openCert(d.cert); return; }
+  if(d.certclose){ document.getElementById('certbox').hidden=true; return; }
+  if(d.print){ window.print(); return; }
+  if(d.theme){ state.game.theme=d.theme; save(); render(); return; }
+  if(d.certname){ state.game.nome=val('cert-nome'); save(); toast('Nome salvo'); return; }
+  if(d.cfgcopy){ const ta=document.getElementById('cf-sql'), ok=document.getElementById('cf-copied');
+    try{ await navigator.clipboard.writeText(ta.value); }catch(err){ ta.select(); try{ document.execCommand('copy'); }catch(e2){} }
+    if(ok) ok.textContent='copiado ✓ agora cole no SQL Editor'; return; }
+  if(d.cfgsave){ saveCfg(); return; }
+  if(d.cfgcancel){ state.cfgEdit=false; cloud.msg=''; render(); return; }
+  if(d.cfgedit){ state.cfgEdit=true; cloud.msg=''; state.mode='conta'; setModeBtn('conta'); render(); return; }
+  if(d.authtab){ cloud.tab=d.authtab; cloud.msg=''; render(); return; }
+  if(d.sumeta){ state.authDraft=Object.assign(state.authDraft||{}, {meta:d.sumeta}); document.querySelectorAll('[data-sumeta]').forEach(b=>b.setAttribute('aria-pressed', b===t)); return; }
+  if(d.login){ doLogin(); return; }
+  if(d.signup){ doSignup(); return; }
+  if(d.logout){ doLogout(); return; }
+  if(d.syncnow){ await cloudPush(); render(); return; }
+  if(d.proflist){ cloud.profData=null; profLoad(); return; }
+  if(d.profsee){ if(cloud.profSel && cloud.profSel.id===d.profsee){ cloud.profSel=null; render(); } else profDetail(d.profsee); return; }
+  if(d.profstatus){ profStatus(d.profstatus, d.on==='1'); return; }
+  if(d.profnew){ profNew(); return; }
+});
+document.addEventListener('input', e=>{
+  if(e.target.id==='cf-prof'){ const ta=document.getElementById('cf-sql'); if(ta) ta.value=sqlFor(e.target.value.trim()); CFG.prof=e.target.value.trim(); }
+});
+document.addEventListener('keydown', e=>{
+  if(e.key==='Escape'){ const c=document.getElementById('celeb'); if(c && !c.hidden){ celebQ.shift(); showCeleb(); }
+    const cb=document.getElementById('certbox'); if(cb && !cb.hidden) cb.hidden=true; }
+  if(e.key!=='Enter') return;
+  if(e.target.id==='lg-pw' || e.target.id==='lg-email'){ e.preventDefault(); doLogin(); }
+  if(e.target.id==='su-pw'){ e.preventDefault(); doSignup(); }
+});
+
+/* ---------------- início ---------------- */
+(async()=>{
+  await load();
+  applyShields(); checkStreak();
+  setModeBtn(state.mode); render();
+  checkBadges();
+  cloudInit();
+})();
+
 </script>
