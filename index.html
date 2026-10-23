@@ -758,6 +758,14 @@ body[data-mode="col"] .bar,body[data-mode="tra"] .bar{display:flex}
 @keyframes toastin{from{opacity:0;transform:translate(-50%,-10px)}to{opacity:1;transform:translate(-50%,0)}}
 .banner{top:62px}
 [hidden]{display:none!important}
+.michelp{margin:6px 0 0;padding-left:18px;line-height:1.55}
+.michelp li{margin:3px 0}
+
+.vprog{display:flex;gap:10px;margin-bottom:6px}
+.vprog__v{flex:1;display:flex;gap:4px;padding:6px;border:2px solid var(--line);border-radius:12px;justify-content:center}
+.vprog__v--on{border-color:#84D8FF;background:#F1F9FF}
+.vprog__v i{width:14px;height:14px;border-radius:50%;background:var(--line)}
+.vprog__v i.on{background:var(--green)}
 
 /* ===== sensação de app instalado ===== */
 html{-webkit-text-size-adjust:100%}
@@ -1769,18 +1777,16 @@ function videoBlock(p){
         <button class="mini" data-vclose="1">fechar</button>
       </div>
       <div class="auto" id="auto-panel">
-        <div class="auto__row">
-          <button class="chip" id="auto-toggle" aria-pressed="${state.auto.on}">${state.auto.on?'⏸ automático ligado':'▶ ligar automático'}</button>
-          <span class="auto__l">repetir cada vídeo</span>
-          <span id="auto-reps">${[1,2,3,5].map(n=>`<button class="chip chip--sm" data-reps="${n}" aria-pressed="${state.auto.reps===n}">${n}×</button>`).join('')}</span>
-          <span class="auto__l">seguir mais</span>
-          <span id="auto-tail">${[0,5,10].map(n=>`<button class="chip chip--sm" data-tail="${n}" aria-pressed="${state.auto.tail===n}">${n}s</button>`).join('')}</span>
+        <div class="vprog" id="vprog">${[0,1,2].map(i=>`<span class="vprog__v" data-vv="${i}">${[0,1,2].map(()=>'<i></i>').join('')}</span>`).join('')}</div>
+        <p class="auto__st" id="auto-status">3 vídeos diferentes · a frase toca 3 vezes em cada um e o vídeo pausa logo depois.</p>
+        <div class="auto__row" style="margin-top:8px">
+          <button class="chip chip--sm" id="vid-skip">⏭ Pular este vídeo</button>
+          <button class="chip chip--sm" id="vid-again">↻ Repetir a frase</button>
         </div>
-        <p class="auto__st" id="auto-status">Ligue o automático para repetir e avançar sozinho.</p>
       </div>
       <div class="vid__box" id="yg-box"></div>
       <div id="vid-next"></div>
-      <p class="vid__note" id="vid-note">O YouGlish já começa no instante exato em que a frase é dita — ele não toca o vídeo inteiro.</p>
+      <p class="vid__note" id="vid-note">Depois de cada vez, o vídeo pausa uns segundos: é a sua vez de repetir em voz alta. Vídeo que não é em inglês é pulado sozinho; se passar algum, toque em “Pular este vídeo”.</p>
     </div>` : ''}
   </div>`;
 }
@@ -1826,58 +1832,62 @@ function videoFalhou(motivo, termo){
 function wireVideo(){
   if(!state.video || !state.video.open) return;
   const termo = state.video.term;
+  const frase = (find(state.video.id)||{}).text || termo;
   const box = document.getElementById('yg-box');
   if(!box) return;
 
   const A = state.auto;
-  A.rep = 1; A.track = 1; A.total = 0; A.fim = false;
+  const MAXV = 3, REPS = 3, PAUSA = 2600;
+  A.on = true; A.rep = 1; A.seen = 0; A.total = 0; A.fim = false; A.skipped = 0; A.waiting = false;
   clearTimeout(A.timer);
-
   const msg    = ()=>document.getElementById('vid-msg');
   const status = ()=>document.getElementById('auto-status');
+  const NAO_EN = /[؀-ۿݐ-ݿ֐-׿Ѐ-ӿऀ-ॿ฀-๿぀-ヿ㐀-鿿가-힯]/;
 
-  function pintaStatus(){
-    const s = status(); if(!s) return;
-    if(!A.on){ s.textContent = 'Automático desligado — use os controles do player.'; return; }
-    if(A.fim){ return; }
-    s.textContent = `vídeo ${A.track}${A.total?' de '+A.total:''} · repetição ${A.rep} de ${A.reps}`
-      + (A.tail ? ` · seguindo ${A.tail}s depois da frase` : '');
+  function pintaProg(){
+    document.querySelectorAll('#vprog [data-vv]').forEach((v,i)=>{
+      const n = i < A.seen ? REPS : i === A.seen && !A.fim ? A.rep-1 : 0;
+      v.classList.toggle('vprog__v--on', i===A.seen && !A.fim);
+      v.querySelectorAll('i').forEach((d,j)=>d.classList.toggle('on', j<n));
+    });
   }
-
-  function acabou(){
+  function pintaStatus(txt){
+    const s = status(); if(!s) return;
+    s.textContent = txt || (A.fim ? '' : `vídeo ${A.seen+1} de ${MAXV} · repetição ${A.rep} de ${REPS}${A.waiting?' · sua vez: repita em voz alta':''}`);
+    pintaProg();
+  }
+  function acabou(w, motivo){
     A.fim = true; clearTimeout(A.timer);
-    const s = status(); if(s) s.textContent = `Fim dos ${A.total||''} vídeos do YouGlish.`;
+    try{ w && w.pause(); }catch(e){}
+    pintaStatus(motivo || `Pronto: ${A.seen} vídeo${A.seen===1?'':'s'} × ${REPS} repetições. O vídeo ficou pausado.`);
     const n = document.getElementById('vid-next');
     if(n) n.innerHTML = `<div class="handoff">
-      <p class="handoff__t">Acabaram os vídeos do YouGlish com “${esc(termo)}”</p>
-      <p class="handoff__d">Os outros dois sites não permitem que o app controle a reprodução deles, então a passagem é manual: abrem em aba nova e você segue por lá.</p>
-      <div class="acts acts--bare" style="justify-content:center">
-        <a class="act act--main" href="${ppURL(termo)}" target="_blank" rel="noopener">Continuar no PlayPhrase ↗</a>
-        <a class="act" href="${ytURL(termo)}" target="_blank" rel="noopener">Depois no YouTube ↗</a>
-        <button class="act" id="auto-restart">↺ Recomeçar do primeiro</button>
-      </div></div>`;
+      <p class="handoff__t">${A.seen>=MAXV?'Shadowing com vídeos concluído 🎉':'Acabaram os vídeos disponíveis'}</p>
+      <p class="handoff__d">Agora grave a sua versão logo abaixo e compare com o que você ouviu.</p>
+      <div class="acts acts--bare" style="justify-content:center"><button class="act" id="auto-restart">↺ Ver de novo</button></div></div>`;
     const r = document.getElementById('auto-restart');
     if(r) r.onclick = ()=>{ state.video = {id:state.video.id, term:termo, open:true}; render(); };
   }
-
-  /* o ciclo: terminou a frase → segura N segundos → repete ou avança */
+  function proximo(w){
+    A.rep = 1; A.waiting = false;
+    if(A.total && A.seen + A.skipped >= A.total) return acabou(w);
+    try{ w.next(); }catch(e){ return acabou(w); }
+    pintaStatus();
+  }
+  /* terminou a frase: pausa, dá tempo para repetir, depois repete ou passa para o próximo vídeo */
   function aoTerminarFrase(w){
-    if(!A.on || A.fim) return;
+    if(A.fim || A.waiting) return;
     clearTimeout(A.timer);
+    try{ w.pause(); }catch(e){}
+    if(typeof countPlay === 'function') countPlay(frase);
+    A.waiting = true; pintaStatus();
     A.timer = setTimeout(()=>{
-      if(A.rep < A.reps){
-        A.rep++;
-        try{ if(typeof w.replay === 'function') w.replay(); else w.fetch(termo,'english',dial()); }
-        catch(e){ /* segue */ }
-      } else {
-        A.rep = 1;
-        if(A.total && A.track >= A.total) return acabou();
-        A.track++;
-        try{ if(typeof w.next === 'function') w.next(); else return acabou(); }
-        catch(e){ return acabou(); }
-      }
-      pintaStatus();
-    }, Math.max(300, A.tail * 1000));
+      A.waiting = false;
+      if(A.rep < REPS){ A.rep++; try{ w.replay(); }catch(e){} pintaStatus(); return; }
+      A.seen++;
+      if(A.seen >= MAXV) return acabou(w);
+      proximo(w);
+    }, PAUSA);
   }
 
   loadYG(ok=>{
@@ -1887,6 +1897,7 @@ function wireVideo(){
       const w = new window.YG.Widget('yg-box', {
         width: box.clientWidth || 620,
         components: 9,
+        restrictionMode: 1,
         events: {
           onFetchDone: e => {
             respondeu = true;
@@ -1894,13 +1905,14 @@ function wireVideo(){
             const m = msg(); if(m){
               m.innerHTML = A.total === 0
                 ? 'Nenhum vídeo com “'+esc(termo)+'”. Tente um termo mais curto acima.'
-                : A.total + ' vídeos encontrados.';
+                : 'Vídeos de pessoas falando inglês ('+(dial()==='uk'?'Reino Unido':'EUA')+')';
             }
-            if(A.total === 0) acabou(); else pintaStatus();
+            if(A.total === 0) acabou(w, 'Nenhum vídeo encontrado para esse termo.'); else pintaStatus();
           },
-          onVideoChange: e => {
-            if(e && typeof e.trackNumber === 'number') A.track = e.trackNumber + 1;
-            A.rep = 1; pintaStatus();
+          onVideoChange: () => { A.rep = 1; A.waiting = false; clearTimeout(A.timer); if(!A.fim) pintaStatus(); },
+          onCaptionChange: e => {
+            if(A.fim || !e || !e.caption) return;
+            if(NAO_EN.test(e.caption)){ A.skipped++; clearTimeout(A.timer); pintaStatus('Pulei um vídeo que não era em inglês…'); proximo(w); }
           },
           onCaptionConsumed: () => aoTerminarFrase(w),
           onError: () => videoFalhou('o player retornou um erro', termo)
@@ -1910,31 +1922,14 @@ function wireVideo(){
       w.fetch(termo, 'english', dial());
       setTimeout(()=>{ if(!respondeu && !box.querySelector('iframe,div,video'))
         videoFalhou('o player não respondeu a tempo', termo); }, 9000);
+      const sk = document.getElementById('vid-skip');
+      if(sk) sk.onclick = ()=>{ if(A.fim) return; A.skipped++; clearTimeout(A.timer); proximo(w); };
+      const ag = document.getElementById('vid-again');
+      if(ag) ag.onclick = ()=>{ if(A.fim) return; clearTimeout(A.timer); A.waiting=false; try{ w.replay(); }catch(e){} pintaStatus(); };
     }catch(err){
       videoFalhou('o player não inicializou', termo);
       return;
     }
-
-    /* controles — atualizam sem redesenhar a página, senão o player morre */
-    const t = document.getElementById('auto-toggle');
-    if(t) t.onclick = ()=>{
-      A.on = !A.on; t.setAttribute('aria-pressed', A.on);
-      t.textContent = A.on ? '⏸ automático ligado' : '▶ ligar automático';
-      if(!A.on) clearTimeout(A.timer);
-      save(); pintaStatus();
-    };
-    document.querySelectorAll('#auto-reps [data-reps]').forEach(b=> b.onclick = ()=>{
-      A.reps = +b.dataset.reps; A.rep = 1;
-      document.querySelectorAll('#auto-reps [data-reps]').forEach(o=>
-        o.setAttribute('aria-pressed', +o.dataset.reps === A.reps));
-      save(); pintaStatus();
-    });
-    document.querySelectorAll('#auto-tail [data-tail]').forEach(b=> b.onclick = ()=>{
-      A.tail = +b.dataset.tail;
-      document.querySelectorAll('#auto-tail [data-tail]').forEach(o=>
-        o.setAttribute('aria-pressed', +o.dataset.tail === A.tail));
-      save(); pintaStatus();
-    });
     pintaStatus();
   });
 }
@@ -2617,15 +2612,31 @@ function cmpSpeech(t, s){
   const marks=tw.map(w=>{ const i=pool.indexOf(w); if(i>=0){ pool.splice(i,1); return {w,ok:true}; } return {w,ok:false}; });
   return { marks, said:s, score: tw.length ? marks.filter(m=>m.ok).length/tw.length : 0 };
 }
+/* ---------------- microfone: um uso por vez + mensagens claras ---------------- */
+function micHelp(tipo){
+  if(tipo==='busy') return `<p class="sc__l"><b>O microfone estava ocupado.</b> Pode ser a gravação, uma ligação ou outro app usando o microfone (WhatsApp, assistente de voz). Feche o outro uso e toque de novo.</p>`;
+  if(tipo==='none') return `<p class="sc__l"><b>Não encontrei um microfone</b> neste aparelho.</p>`;
+  if(tipo==='net') return `<p class="sc__l"><b>O reconhecimento de voz precisa de internet.</b> Confira a conexão e toque de novo.</p>`;
+  return `<div class="sc__l"><b>O navegador bloqueou o microfone para o app.</b> Para liberar:
+    <ol class="michelp"><li><b>App instalado (Android):</b> segure o ícone do app → <b>Informações do app</b> (ⓘ) → <b>Permissões</b> → <b>Microfone</b> → <b>Permitir</b>.</li>
+    <li><b>No Chrome:</b> toque no ícone à esquerda do endereço → <b>Permissões</b> → <b>Microfone</b> → <b>Permitir</b>.</li>
+    <li>Feche o app por completo e abra de novo.</li></ol></div>`;
+}
+async function micBloqueado(){
+  try{ const p=await navigator.permissions.query({name:'microphone'}); return p.state==='denied'; }catch(e){ return true; }
+}
 function runListen(btn){
   const key=btn.dataset.listen, target=btn.dataset.target, out=document.getElementById('sc-'+key);
-  if(recog){ const same=recogKey===key; try{ recog.stop(); }catch(e){} if(same) return; }
+  if(recog){ const same=recogKey===key; try{ recog.abort(); }catch(e){} recog=null; recogKey=null; if(same) return; }
+  if(mediaRec){ try{ mediaRec.stop(); }catch(e){} setTimeout(()=>runListen(btn), 450); return; }
   const r=new SRec(); recog=r; recogKey=key;
   r.lang=state.accent; r.interimResults=false; r.maxAlternatives=3; r.continuous=!target;
   const label=btn.textContent;
   btn.textContent = target ? '● ouvindo… fale agora' : '● ouvindo… toque para parar';
   btn.classList.add('act--live');
-  let got=false; const parts=[];
+  let got=false, ended=false; const parts=[];
+  const fim=()=>{ if(ended) return; ended=true; clearTimeout(wd); if(recog===r){ recog=null; recogKey=null; } btn.textContent=label; btn.classList.remove('act--live'); };
+  const wd=setTimeout(()=>{ if(ended) return; try{ r.abort(); }catch(e){} fim(); if(!got && out) out.innerHTML='<p class="sc__l">Não captei sua voz. Toque e fale de novo.</p>'; }, target?12000:120000);
   r.onresult=e=>{
     got=true;
     if(target){
@@ -2646,12 +2657,18 @@ function runListen(btn){
       if(window.onTranscribe) onTranscribe(key, txt);
     }
   };
-  r.onerror=e=>{ if(out && e.error!=='aborted') out.innerHTML=`<p class="sc__l">${e.error==='not-allowed'||e.error==='service-not-allowed'
-      ? 'Microfone bloqueado. Libere o acesso ao microfone para este site no navegador.'
-      : e.error==='no-speech' ? 'Não ouvi nada. Fale mais perto do microfone.' : 'O reconhecimento falhou ('+esc(e.error)+'). Tente de novo.'}</p>`; got=true; };
-  r.onend=()=>{ if(recog===r){ recog=null; recogKey=null; } btn.textContent=label; btn.classList.remove('act--live');
-    if(!got && out) out.innerHTML='<p class="sc__l">Não captei sua voz. Tente de novo.</p>'; save(); };
-  try{ r.start(); }catch(e){ btn.textContent=label; btn.classList.remove('act--live'); }
+  r.onerror=async e=>{
+    got=true; fim();
+    if(!out || e.error==='aborted') return;
+    out.className='sc';
+    if(e.error==='not-allowed'||e.error==='service-not-allowed') out.innerHTML = micHelp(await micBloqueado() ? 'blocked' : 'busy');
+    else if(e.error==='audio-capture') out.innerHTML = micHelp('busy');
+    else if(e.error==='network') out.innerHTML = micHelp('net');
+    else if(e.error==='no-speech') out.innerHTML = '<p class="sc__l">Não ouvi nada. Fale mais perto do microfone e toque de novo.</p>';
+    else out.innerHTML = '<p class="sc__l">O reconhecimento falhou ('+esc(e.error)+'). Toque de novo.</p>';
+  };
+  r.onend=()=>{ fim(); if(!got && out) out.innerHTML='<p class="sc__l">Não captei sua voz. Toque e fale de novo.</p>'; save(); };
+  try{ r.start(); }catch(e){ fim(); if(out) out.innerHTML=micHelp('busy'); }
 }
 
 /* ---------------- gravador ---------------- */
@@ -2669,6 +2686,7 @@ function recInner(key){
 function paintRec(key){ const b=document.querySelector(`[data-recbox="${key}"]`); if(b) b.innerHTML=recInner(key); }
 async function toggleRec(key){
   if(mediaRec){ const same=mrKey===key; mediaRec.stop(); if(same) return; }
+  if(recog){ try{ recog.abort(); }catch(e){} recog=null; recogKey=null; await new Promise(r=>setTimeout(r,400)); }
   try{
     const stream=await navigator.mediaDevices.getUserMedia({audio:true});
     const chunks=[]; const mr=new MediaRecorder(stream); mediaRec=mr; mrKey=key; mrT0=Date.now();
@@ -2686,7 +2704,10 @@ async function toggleRec(key){
   }catch(e){
     mediaRec=null; mrKey=null;
     const b=document.querySelector(`[data-recbox="${key}"]`);
-    if(b) b.innerHTML='<span class="sc__l">Não consegui acessar o microfone. Libere a permissão no navegador e tente de novo.</span>';
+    const tipo = e && (e.name==='NotReadableError'||e.name==='AbortError'||e.name==='TrackStartError') ? 'busy'
+      : e && (e.name==='NotFoundError'||e.name==='DevicesNotFoundError') ? 'none'
+      : (await micBloqueado()) ? 'blocked' : 'busy';
+    if(b) b.innerHTML=`<div class="sc">${micHelp(tipo)}</div><button class="act" data-rec="${esc(key)}">● Tentar gravar de novo</button>`;
   }
 }
 
@@ -3508,6 +3529,7 @@ function traduzErro(e){
   if(/Password should be|at least 6/i.test(m)) return 'A senha precisa ter pelo menos 6 caracteres.';
   if(/Email not confirmed/i.test(m)) return 'E-mail ainda não confirmado. Abra o link que chegou no e-mail, ou desligue a confirmação (passo 4 do guia).';
   if(/invalid.*email|Unable to validate email/i.test(m)) return 'Esse e-mail parece inválido.';
+  if(/signups? (are )?(not allowed|disabled)|Signups not allowed/i.test(m)) return 'As matrículas novas estão fechadas no momento. Avise o professor para liberar o cadastro no Supabase (Authentication → Sign In / Providers → Email ligado e “Allow new users to sign up” ligado).';
   if(/rate limit|too many/i.test(m)) return 'Muitas tentativas seguidas. Espere um minuto e tente de novo.';
   if(/Failed to fetch|NetworkError|network/i.test(m)) return 'Sem conexão com o Supabase. Confira a internet e o endereço do projeto.';
   if(/Invalid API key|No API key|apikey/i.test(m)) return 'Chave inválida. Copie de novo a Publishable key do projeto.';
