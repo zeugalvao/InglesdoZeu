@@ -403,6 +403,28 @@ a{color:inherit}
 
 body.portao .top,body.portao .bar,body.portao .compose{display:none}
 body.portao #view{margin-top:18px}
+
+.tmr{position:sticky;top:0;z-index:5;background:var(--ink);color:var(--ground);padding:11px 14px 10px;margin:0 0 14px;display:grid;gap:7px;box-shadow:0 6px 14px rgba(16,33,28,.12)}
+.tmr__row{display:flex;justify-content:space-between;gap:6px 14px;flex-wrap:wrap;font-size:14px}
+.tmr__row b{font-family:var(--font-mono)}
+.tmr__bar{height:6px;background:#2b3d37;position:relative}
+.tmr__bar span{position:absolute;left:0;top:0;bottom:0;background:var(--chalk);transition:width .9s linear}
+.tmr__st{font-family:var(--font-mono);font-size:10px;letter-spacing:.06em;color:#9fb0a8}
+.tmr--pause .tmr__bar span{background:#7d918a}
+.tmr--done{background:#1E7A4A}
+.tmr--done .tmr__bar span{background:#9BE7B9}
+.drill__top{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin:0 0 10px}
+.maos[aria-pressed="true"]{background:var(--alert);border-color:var(--alert);color:#fff}
+.sc__go{font-weight:700;color:#1E9E5A;margin:8px 0 0}
+
+.banner{position:fixed;left:50%;top:14px;transform:translate(-50%,-140%);z-index:65;background:var(--card);border:2px solid var(--ink);box-shadow:0 10px 28px rgba(16,33,28,.22);padding:12px 16px;display:flex;gap:12px;align-items:center;max-width:min(92vw,460px);transition:transform .35s cubic-bezier(.2,1.2,.4,1);pointer-events:none}
+.banner--on{transform:translate(-50%,0)}
+.banner__ic{font-size:32px;line-height:1}
+.banner span:last-child{display:flex;flex-direction:column;gap:1px;font-size:14px}
+.banner small{font-family:var(--font-mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--signal)}
+.banner b{font-family:var(--font-display);font-size:18px}
+.banner em{font-style:normal;color:var(--ink-soft);font-size:13px}
+.banner i{font-style:normal;font-family:var(--font-mono);font-size:12px;background:var(--chalk);align-self:flex-start;padding:1px 6px;margin-top:3px}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 
@@ -2226,7 +2248,7 @@ function reviewHTML(ctx){
   const p=find(R.q[R.i]); if(!p){ R.i++; return reviewHTML(ctx); }
   const hasPt = p.source && p.source!==p.text;
   return `<div class="drill">
-    <p class="drill__pos">${R.i+1} de ${R.q.length} · nível ${p.stage||0} de 5</p>
+    <div class="drill__top"><p class="drill__pos" style="margin:0">${R.i+1} de ${R.q.length} · nível ${p.stage||0} de 5</p>${maosHTML()}</div>
     ${hasPt ? `<p class="drill__ask">Como você diria em inglês? Fale em voz alta antes de ver.</p><p class="drill__q">${esc(p.source)}</p>`
             : `<p class="drill__ask">Leia em voz alta e lembre o que significa.</p><p class="drill__q">${markedHTML(p.text)}</p>`}
     ${!R.shown ? `<div class="acts acts--bare" style="margin-top:16px">
@@ -2251,7 +2273,7 @@ function listenBtn(key, target){
   if(!SRec) return '';
   return `<button class="act" data-listen="${esc(key)}" data-target="${esc(target||'')}">🎤 ${target?'Falar e conferir':'Falar e transcrever'}</button>`;
 }
-function listenOut(key){ return SRec ? `<div class="sc" id="sc-${esc(key)}"></div>` : ''; }
+function listenOut(key){ return SRec ? `<div class="sc" id="sc-${esc(key)}">${(typeof scMem!=='undefined'&&scMem[key])||''}</div>` : ''; }
 function toks(s){ return String(s).toLowerCase().replace(/[’]/g,"'").replace(/[^a-z0-9'\s]/g,' ').split(/\s+/).filter(Boolean); }
 function cmpSpeech(t, s){
   const tw=toks(t), pool=toks(s);
@@ -2278,6 +2300,7 @@ function runListen(btn){
         <p>${best.marks.map(m=>`<span class="sc__w sc__w--${m.ok?'ok':'no'}">${esc(m.w)}</span>`).join('')}</p>
         <p class="sc__l" style="margin-top:6px">O que eu entendi: “${esc(best.said)}”</p>`;
       logEvent('speak', target); if(window.onSpeakScore) onSpeakScore(best.score);
+      if(out) scMem[key]=out.innerHTML; if(window.onSpeakPass) onSpeakPass(key, best.score);
     } else {
       for(let i=e.resultIndex;i<e.results.length;i++) if(e.results[i].isFinal) parts.push(e.results[i][0].transcript);
       const txt=parts.join(' ').trim();
@@ -2337,20 +2360,22 @@ function fabHTML(ctx, pid){
   const head=`<div class="fab__frame"><p class="fab__en">${esc(pat.en)}</p><p class="fab__pt">${esc(pat.pt)}</p>${pat.tip?`<p class="fab__tip">${esc(pat.tip)}</p>`:''}</div>`;
   if(F.i>=F.order.length){
     return `<div class="drill">${head}
-      <p class="drill__pos">Rodada completa · ${F.ok} de ${F.order.length} certas</p>
+      <p class="drill__pos">Rodada completa · ${F.ok} de ${F.order.length} certas · ${Math.min(3,state.fabDone[pat.id]||0)} de 3 rodadas desta estrutura${(state.fabDone[pat.id]||0)>=3?' ✓ dominada':''}</p>
+      <div class="acts acts--bare" style="margin:0 0 14px">
+        ${(state.fabDone[pat.id]||0)<3?'<button class="act act--main" data-fabagain="1">↻ Mais uma rodada desta</button>':''}
+        <button class="act ${(state.fabDone[pat.id]||0)>=3?'act--main':''}" data-fabnext="${pat.id}">Próxima estrutura →</button></div>
       <p class="drill__q">Agora a sua.</p>
       <p class="sec__d" style="margin-top:6px">Use a mesma estrutura com algo da sua vida. Escreva em inglês, ouça e fale em voz alta. Ela vai para a sua revisão.</p>
       <div class="compose__row" style="margin-top:10px">
         <input class="field" id="fab-own" placeholder="${esc(fill(pat.en,'...'))}" autocomplete="off">
         <button class="btn" data-fabown="${pat.id}">Salvar a minha</button></div>
       <p class="msg" id="fab-msg"></p>
-      <div class="acts acts--bare" style="margin-top:12px"><button class="act" data-fabagain="1">↻ Outra rodada</button></div>
     </div>`;
   }
   const s=pat.slots[F.order[F.i]], en=fill(pat.en, s.en), pt=fill(pat.pt, s.pt);
   return `<div class="drill">${head}
-    <p class="drill__pos">${F.i+1} de ${F.order.length}</p>
-    <p class="drill__ask">Monte em inglês e fale em voz alta:</p>
+    <div class="drill__top"><p class="drill__pos" style="margin:0">${F.i+1} de ${F.order.length} · ${F.ok} certas</p>${maosHTML()}</div>
+    <p class="drill__ask">Monte em inglês e fale em voz alta. Se o microfone entender certo, passa sozinho para a próxima.</p>
     <p class="drill__q">${esc(pt)}</p>
     ${!F.shown ? `<div class="acts acts--bare" style="margin-top:16px">
         <button class="act act--main" data-fabshow="1">Mostrar inglês</button>${listenBtn('fab', en)}</div>${listenOut('fab')}`
@@ -2549,8 +2574,8 @@ function hojeHTML(){
       <button class="mis__chk" data-mdone="${m.id}" aria-pressed="${done}" aria-label="Marcar ${esc(m.t)} como feita">${done?'✓':''}</button>
       <button class="mis__head" data-mopen="${m.id}" aria-expanded="${open}">
         <span class="mis__slot">${esc(m.slot)}</span><span class="mis__t">${esc(m.t)}</span>
-        <span class="mis__min">${mMin(m)} min</span><span class="mis__chev">${open?'−':'+'}</span></button>
-      ${open?`<div class="mis__body"><p class="mis__why">${esc(m.why)}</p>${missionBody(m)}
+        <span class="mis__min" data-mmin="${m.id}">${!done&&secsOf(m.id)>0?Math.floor(Math.min(secsOf(m.id),mMin(m)*60)/60)+'/'+mMin(m):mMin(m)} min</span><span class="mis__chev">${open?'−':'+'}</span></button>
+      ${open?`<div class="mis__body">${timerHTML(m.id)}<p class="mis__why">${esc(m.why)}</p>${missionBody(m)}
         <div class="acts"><button class="act act--main" data-mdone="${m.id}" data-force="1">✓ Concluir e ir para a próxima</button></div></div>`:''}
     </div>`; }).join('')}</div>
   <div class="foot" style="margin-top:20px"><span>Nível ${p.level} · teste feito em ${esc((p.at||'').split('-').reverse().join('/'))}</span><button data-replace="1">Refazer teste de nível</button></div>`;
@@ -2564,13 +2589,14 @@ function revModeHTML(){
     <h2 class="hist__t">Revisão espaçada</h2>
     <p class="hist__d">Cada frase volta em 1, 3, 7, 21 e 60 dias. Errou, ela volta no mesmo dia. A partir do nível 4 ela conta como dominada.</p>
     <div class="srs">${st.map((n,i)=>`<div class="srs__c"><div class="srs__b" style="height:${Math.max(3,n/mx*46)}px"></div><span>${n}</span><small>nív ${i}</small></div>`).join('')}</div>
-    <div style="margin-top:20px">${reviewHTML('rev')}</div>
+    <div style="margin-top:20px">${state.profile?timerHTML(timerTarget()||'rev1'):''}${reviewHTML('rev')}</div>
   </section>`;
 }
 
 /* ---------------- aba TRILHA ---------------- */
 function triHTML(){
   const L = state.triLvl || trackLvl(curLvl());
+  if(!state.triPat){ const fp=PATTERNS.find(p=>p.lvl===L && (state.fabDone[p.id]||0)<3); if(fp) state.triPat=fp.id; }
   const pats=PATTERNS.filter(p=>p.lvl===L), kits=KITS.filter(k=>k.lvl===L);
   const can=CANDO.filter(c=>c.lvl===L);
   return `<div class="chips">${['A2','B1','B2','C1'].map(l=>`<button class="chip" data-trilvl="${l}" aria-pressed="${l===L}">${l} · ${LVL_NAME[l]}${l===trackLvl(curLvl())?' ●':''}</button>`).join('')}</div>
@@ -2580,7 +2606,7 @@ function triHTML(){
       <ul class="steps" style="margin-top:12px">${can.map(c=>`<li>${esc(c.t)}</li>`).join('')}</ul>
       <h3 class="sec__t">Estruturas de frase</h3>
       <p class="sec__d">O esqueleto das frases. Treine cada uma até sair sem pensar — depois disso, montar frases novas fica fácil.</p>
-      ${state.triPat && pats.some(p=>p.id===state.triPat)?`<div style="margin:12px 0">${fabHTML('tri', state.triPat)}</div>`:''}
+      ${state.triPat && pats.some(p=>p.id===state.triPat)?`<div style="margin:12px 0;scroll-margin-top:10px" id="tri-drill">${state.profile&&missionsToday().some(m=>m.id==='fabrica')?timerHTML('fabrica'):''}${fabHTML('tri', state.triPat)}</div>`:''}
       <div class="units">${pats.map(p=>{ const n=state.fabDone[p.id]||0;
         return `<div class="unit ${state.triPat===p.id?'unit--on':''}"><span class="unit__en">${esc(p.en)}</span><span class="unit__pt">${esc(p.pt)}</span>
           <div class="unit__bar"><span style="width:${Math.min(100,n/3*100)}%"></span></div>
@@ -2595,6 +2621,115 @@ function triHTML(){
           <button class="act" data-trikit="${k.id}">Abrir kit</button></div>`; }).join('')}</div>
     </section>`;
 }
+
+/* ---------------- fluxo: avanço automático pela fala ---------------- */
+const scMem={};
+state.maos = (()=>{ try{ return localStorage.getItem('zeu:maos')==='1'; }catch(e){ return false; } })();
+function setMaos(v){ state.maos=v; try{ localStorage.setItem('zeu:maos', v?'1':'0'); }catch(e){} }
+function maosHTML(){
+  if(!SRec) return '';
+  return `<button class="chip chip--sm maos" data-maos="1" aria-pressed="${state.maos}">🎤 Modo contínuo ${state.maos?'ligado':'desligado'}</button>`;
+}
+function maosLivres(key){
+  if(!state.maos || !SRec) return;
+  let n=0; const go=()=>{ const c=document.getElementById('celeb');
+    if(c && !c.hidden){ if(++n<60) setTimeout(go,800); return; }
+    const b=document.querySelector(`[data-listen="${key}"]`); if(b && !recog) runListen(b); };
+  setTimeout(go, 700);
+}
+function fabAdvance(ok){
+  const F=state.fab; if(!F || F.i>=F.order.length) return;
+  if(ok) F.ok++; gain(ok?4:1,'fábrica de frases'); F.i++; F.shown=false; scMem.fab=''; logEvent('fab', F.pid);
+  if(F.i>=F.order.length){
+    state.fabDone[F.pid]=(state.fabDone[F.pid]||0)+1; gain(10,'rodada completa');
+    cloudEvent('fabrica','Rodada completa: '+(PATTERNS.find(p=>p.id===F.pid)||{}).en,10);
+  }
+  save(); render();
+  if(F.i<F.order.length) maosLivres('fab');
+}
+function nextPat(pid){
+  const L=PATTERNS.find(p=>p.id===pid); const lvl=L?L.lvl:trackLvl(curLvl());
+  const list=PATTERNS.filter(p=>p.lvl===lvl); const i=list.findIndex(p=>p.id===pid);
+  for(let k=1;k<=list.length;k++){ const c=list[(i+k)%list.length]; if((state.fabDone[c.id]||0)<3) return c.id; }
+  return list[(i+1)%list.length].id;
+}
+let passTimer=null;
+window.onSpeakPass=function(key, score){
+  const out=document.getElementById('sc-'+key);
+  if(key==='fab' && state.fab && state.fab.i<state.fab.order.length){
+    if(score>=0.85){
+      if(out) out.insertAdjacentHTML('beforeend','<p class="sc__go">✓ Acertou! Indo para a próxima…</p>');
+      clearTimeout(passTimer); const F=state.fab, at=F.i;
+      passTimer=setTimeout(()=>{ if(state.fab===F && F.i===at) fabAdvance(true); }, 1300);
+    } else if(score>=0.6 && !state.fab.shown){
+      state.fab.shown=true; render();
+    }
+    return;
+  }
+  if(key==='rv' && state.rv && state.rv.i<state.rv.q.length){
+    if(score>=0.85){
+      if(out) out.insertAdjacentHTML('beforeend','<p class="sc__go">✓ Lembrou! Indo para a próxima…</p>');
+      clearTimeout(passTimer); const R=state.rv, at=R.i;
+      passTimer=setTimeout(()=>{ if(state.rv===R && R.i===at){ grade(2); scMem.rv=''; render(); if(R.i<R.q.length) maosLivres('rv'); } }, 1300);
+    } else if(score>=0.6 && !state.rv.shown){
+      state.rv.shown=true; render();
+    }
+  }
+};
+
+/* ---------------- cronômetro das missões ---------------- */
+let lastAct=Date.now(), tickN=0;
+['pointerdown','keydown','touchstart','scroll'].forEach(ev=>document.addEventListener(ev, ()=>{ lastAct=Date.now(); }, {passive:true}));
+function fmtT(s){ s=Math.max(0,Math.round(s)); return Math.floor(s/60)+':'+String(s%60).padStart(2,'0'); }
+function secsOf(id){ const r=dayRec(); return (r.secs&&r.secs[id])||0; }
+function timerTarget(){
+  if(!state.profile) return null;
+  const ms=missionsToday(), has=id=>ms.some(m=>m.id===id);
+  if(state.mode==='hoje' && state.open && has(state.open)) return state.open;
+  if(state.mode==='tri' && state.triPat && has('fabrica')) return 'fabrica';
+  if(state.mode==='rev'){ const r=dayRec(); if(!r.done.rev1 || !has('rev2')) return 'rev1'; return 'rev2'; }
+  return null;
+}
+function timerHTML(id){
+  const m=MISSIONS.find(x=>x.id===id); if(!m) return '';
+  const tot=mMin(m)*60, s=Math.min(secsOf(id),tot), done=!!dayRec().done[id];
+  return `<div class="tmr ${done?'tmr--done':''}" data-tmr="${id}">
+    <div class="tmr__row"><span>⏱ <b>${esc(m.t)}</b> · ${esc(m.slot.toLowerCase())}</span>
+      <span class="tmr__txt">${done?'✓ missão concluída hoje — pode continuar treinando':`<b class="tmr__v">${fmtT(s)}</b> de ${fmtT(tot)} · faltam <b class="tmr__l">${fmtT(tot-s)}</b>`}</span></div>
+    <div class="tmr__bar"><span style="width:${done?100:(s/tot*100).toFixed(1)}%"></span></div>
+    ${done?'':'<small class="tmr__st">conta enquanto você pratica · pausa sozinho depois de 1 min parado</small>'}
+  </div>`;
+}
+function paintTimer(id){
+  const m=MISSIONS.find(x=>x.id===id); if(!m) return;
+  const tot=mMin(m)*60, s=Math.min(secsOf(id),tot), idle=Date.now()-lastAct>60000;
+  document.querySelectorAll(`[data-tmr="${id}"]`).forEach(el=>{
+    const v=el.querySelector('.tmr__v'), l=el.querySelector('.tmr__l'), b=el.querySelector('.tmr__bar span'), st=el.querySelector('.tmr__st');
+    if(v) v.textContent=fmtT(s); if(l) l.textContent=fmtT(tot-s); if(b) b.style.width=(s/tot*100).toFixed(1)+'%';
+    if(st) st.textContent = idle ? '⏸ pausado — toque em qualquer lugar ou fale para continuar' : 'contando · pausa sozinho depois de 1 min parado';
+    el.classList.toggle('tmr--pause', idle);
+  });
+  document.querySelectorAll(`[data-mmin="${id}"]`).forEach(el=>{ el.textContent=`${Math.floor(s/60)}/${mMin(m)} min`; });
+}
+setInterval(()=>{
+  const id=timerTarget(); if(!id) return;
+  if(recog || mediaRec || (window.speechSynthesis && speechSynthesis.speaking)) lastAct=Date.now();
+  const r=dayRec(); if(r.done[id]) return;
+  if(document.visibilityState!=='visible' || Date.now()-lastAct>60000){ paintTimer(id); return; }
+  if(!r.secs) r.secs={};
+  r.secs[id]=(r.secs[id]||0)+1;
+  const m=MISSIONS.find(x=>x.id===id);
+  if(r.secs[id]>=mMin(m)*60){
+    markDone(id, true);
+    toast(`⏱ ${m.t}: ${mMin(m)} minutos completos`);
+    const nx=missionsToday().find(x=>!dayRec().done[x.id] && !x.weekend);
+    celebrate({soft:true, ic:'⏱', kicker:'Tempo completo', t:m.t+' concluída', d:nx?`Próxima missão: ${nx.t} (${nx.slot.toLowerCase()}). Você pode continuar treinando aqui se quiser.`:'Era a última missão do dia.', reward:'+15 XP'});
+    document.querySelectorAll(`[data-tmr="${id}"]`).forEach(el=>{ el.outerHTML=timerHTML(id); });
+    save(); return;
+  }
+  paintTimer(id);
+  if(++tickN%20===0) save();
+}, 1000);
 
 /* ---------------- render e eventos ---------------- */
 function setModeBtn(mode){
@@ -2613,7 +2748,7 @@ function renderMetodo(){
 function scrollTo$(id){ const el=document.getElementById(id); if(el) el.scrollIntoView({behavior:'smooth', block:'start'}); }
 
 view.addEventListener('click', async e=>{
-  const t=e.target.closest('[data-mdone],[data-mopen],[data-cando],[data-goal],[data-pritmo],[data-placego],[data-placecancel],[data-replace],[data-ritmo],[data-ext],[data-rvshow],[data-grade],[data-rvextra],[data-rvrestart],[data-listen],[data-rec],[data-fabshow],[data-fabgrade],[data-fabpick],[data-fabagain],[data-fabown],[data-escplay],[data-escstop],[data-esctxt],[data-escreps],[data-escrate],[data-podnext],[data-miss],[data-vsave],[data-trilvl],[data-tripat],[data-trikit],[data-gomode]');
+  const t=e.target.closest('[data-mdone],[data-mopen],[data-cando],[data-goal],[data-pritmo],[data-placego],[data-placecancel],[data-replace],[data-ritmo],[data-ext],[data-rvshow],[data-grade],[data-rvextra],[data-rvrestart],[data-listen],[data-rec],[data-fabshow],[data-fabgrade],[data-fabpick],[data-fabagain],[data-fabown],[data-escplay],[data-escstop],[data-esctxt],[data-escreps],[data-escrate],[data-podnext],[data-miss],[data-vsave],[data-trilvl],[data-tripat],[data-trikit],[data-gomode],[data-maos],[data-fabnext]');
   if(!t) return; const d=t.dataset;
 
   if(d.mdone){
@@ -2636,7 +2771,7 @@ view.addEventListener('click', async e=>{
   if(d.ext){ dayRec().ext += +d.ext; logEvent('ext', d.ext+' min'); gain(Math.round(d.ext/2),'prática fora do app'); save(); render(); return; }
 
   if(d.rvshow){ state.rv.shown=true; render(); const p=find(state.rv.q[state.rv.i]); if(p) say(p.text,1,null); return; }
-  if(d.grade!==undefined){ grade(+d.grade); render(); return; }
+  if(d.grade!==undefined){ clearTimeout(passTimer); grade(+d.grade); scMem.rv=''; render(); maosLivres('rv'); return; }
   if(d.rvextra){ startReview(d.rvextra, true); render(); return; }
   if(d.rvrestart){ startReview(d.rvrestart); render(); return; }
 
@@ -2645,11 +2780,12 @@ view.addEventListener('click', async e=>{
 
   if(d.fabshow){ state.fab.shown=true; render(); const pat=PATTERNS.find(p=>p.id===state.fab.pid);
     say(fill(pat.en, pat.slots[state.fab.order[state.fab.i]].en), 1, null); return; }
-  if(d.fabgrade!==undefined){ const F=state.fab; if(+d.fabgrade) F.ok++; gain(+d.fabgrade?4:1,'fábrica de frases'); F.i++; F.shown=false; logEvent('fab', F.pid);
-    if(F.i>=F.order.length){ state.fabDone[F.pid]=(state.fabDone[F.pid]||0)+1; gain(10,'rodada completa'); cloudEvent('fabrica','Rodada completa: '+(PATTERNS.find(p=>p.id===F.pid)||{}).en,10); if(F.ctx==='fabrica') markDone('fabrica', true); }
-    save(); render(); return; }
-  if(d.fabpick){ state.fabPid=d.fabpick; state.fab=null; render(); return; }
-  if(d.fabagain){ state.fab=null; render(); return; }
+  if(d.fabgrade!==undefined){ clearTimeout(passTimer); fabAdvance(+d.fabgrade===1); return; }
+  if(d.maos){ setMaos(!state.maos); render(); if(state.maos){ const k=state.mode==='rev'||state.open==='rev1'||state.open==='rev2'?'rv':'fab'; maosLivres(k); } return; }
+  if(d.fabnext){ const nx=nextPat(d.fabnext); state.fab=null; scMem.fab='';
+    if(state.mode==='tri') state.triPat=nx; else state.fabPid=nx; render(); maosLivres('fab'); return; }
+  if(d.fabpick){ state.fabPid=d.fabpick; state.fab=null; scMem.fab=''; render(); return; }
+  if(d.fabagain){ state.fab=null; scMem.fab=''; render(); maosLivres('fab'); return; }
   if(d.fabown){ const inp=document.getElementById('fab-own'), msg=document.getElementById('fab-msg'); const v=(inp&&inp.value||'').trim();
     if(!v) return; const pat=PATTERNS.find(p=>p.id===d.fabown);
     const ok=keep(v, '', coreOf(v), 'criada por você · '+pat.en); if(ok) gain(8,'frase criada por você'); save(); renderStats(); say(v,1,null);
@@ -2666,8 +2802,8 @@ view.addEventListener('click', async e=>{
   if(d.vsave){ const inp=document.getElementById('vid-in'), st=document.getElementById('vid-st'); const v=(inp&&inp.value||'').trim(); if(!v) return;
     const ok=keep(v, '', coreOf(v), 'ouvida em vídeo'); save(); renderStats(); if(st) st.textContent= ok?'Salva na coleção e na revisão.':'Essa já estava salva.'; inp.value=''; return; }
 
-  if(d.trilvl){ state.triLvl=d.trilvl; state.triPat=null; render(); return; }
-  if(d.tripat){ state.triPat=d.tripat; state.fab=null; render(); return; }
+  if(d.trilvl){ state.triLvl=d.trilvl; state.triPat=null; state.fab=null; scMem.fab=''; render(); return; }
+  if(d.tripat){ state.triPat=d.tripat; state.fab=null; scMem.fab=''; render(); const el=document.getElementById('tri-drill'); if(el) el.scrollIntoView({behavior:'smooth',block:'start'}); return; }
   if(d.trikit){ state.mode='sit'; state.kit=d.trikit; setModeBtn('sit'); save(); render(); window.scrollTo({top:0,behavior:'smooth'}); return; }
   if(d.gomode){ state.mode=d.gomode; setModeBtn(d.gomode); render(); return; }
 });
@@ -2740,7 +2876,15 @@ function toast(txt){
   clearTimeout(toastT); toastT=setTimeout(()=>{ el.hidden=true; },2200);
 }
 const celebQ=[];
-function celebrate(c){ celebQ.push(c); if(celebQ.length===1) showCeleb(); }
+let bannerT=null;
+function softBanner(c){
+  let el=document.getElementById('banner');
+  if(!el){ el=document.createElement('div'); el.id='banner'; el.className='banner'; el.setAttribute('role','status'); document.body.appendChild(el); }
+  el.innerHTML=`<span class="banner__ic">${c.ic||'🎉'}</span><span><small>${esc(c.kicker||'')}</small><b>${esc(c.t)}</b>${c.d?`<em>${esc(c.d)}</em>`:''}${c.reward?`<i>${esc(c.reward)}</i>`:''}</span>`;
+  el.classList.remove('banner--on'); void el.offsetWidth; el.classList.add('banner--on');
+  clearTimeout(bannerT); bannerT=setTimeout(()=>el.classList.remove('banner--on'), 4500);
+}
+function celebrate(c){ if(c.soft){ softBanner(c); return; } celebQ.push(c); if(celebQ.length===1) showCeleb(); }
 function showCeleb(){
   const box=document.getElementById('celeb'); if(!box) return;
   const c=celebQ[0]; if(!c){ box.hidden=true; return; }
@@ -2790,7 +2934,7 @@ function checkBadges(silentXp){
   novos.forEach(b=>{ gain(25, 'conquista: '+b.t); cloudEvent('conquista', b.t, 25); });
   inBadge=false;
   celebrate(novos.length===1
-    ? {ic:novos[0].ic, kicker:'Nova conquista', t:novos[0].t, d:novos[0].d, reward:'+25 XP'}
+    ? {ic:novos[0].ic, kicker:'Nova conquista', t:novos[0].t, d:novos[0].d, reward:'+25 XP', soft:true}
     : {ic:'🏆', kicker:'Novas conquistas', t:`${novos.length} conquistas desbloqueadas`, list:novos, reward:`+${novos.length*25} XP`});
   save();
 }
