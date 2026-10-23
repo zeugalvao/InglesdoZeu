@@ -401,6 +401,8 @@ a{color:inherit}
 .tl__xp{font-family:var(--font-mono);font-size:11px;color:var(--signal)}
 .tl__t{font-family:var(--font-mono);font-size:11px;color:var(--ink-soft);white-space:nowrap}
 
+body.portao .top,body.portao .bar,body.portao .compose{display:none}
+body.portao #view{margin-top:18px}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 
@@ -2980,7 +2982,7 @@ function writeCfg(){ try{ localStorage.setItem('zeu:cfg', JSON.stringify(CFG)); 
 const NUVEM_PADRAO={ url:'https://iocvyljourpanvqlwgxs.supabase.co', key:'sb_publishable_kU2M28-a3FoL81DxCizNnQ_TkmpazBm', prof:'zeugalvao@yahoo.com.br' };
 if(!CFG.url || !CFG.key){ CFG.url=NUVEM_PADRAO.url; CFG.key=NUVEM_PADRAO.key; }
 if(!CFG.prof) CFG.prof=NUVEM_PADRAO.prof;
-if(!CFG.email) cloud.tab='cadastro';
+
 if(CFG.uid) KEY='zeu:v1:u:'+CFG.uid;
 
 function resetState(){
@@ -3033,18 +3035,18 @@ async function cloudInit(){
   if(!CFG.url || !CFG.key){ cloud.status='off'; paintAcct(); return; }
   cloud.status='conectando'; paintAcct();
   const ok=await loadLib();
-  if(!ok){ cloud.status='offline'; cloud.err='Sem internet agora. Seu progresso continua salvo neste aparelho e sobe quando a conexão voltar.'; paintAcct(); return; }
+  if(!ok){ cloud.status='offline'; cloud.err='Sem internet agora. Seu progresso continua salvo neste aparelho e sobe quando a conexão voltar.'; render(); return; }
   try{ cloud.sb=window.supabase.createClient(CFG.url, CFG.key); }
   catch(e){ cloud.status='erro'; cloud.err=traduzErro(e); paintAcct(); return; }
   const {data}=await cloud.sb.auth.getSession();
   if(data && data.session){ cloud.user=data.session.user; await afterLogin(); render(); }
-  else { cloud.status = CFG.uid ? 'expirou' : 'saiu'; paintAcct(); }
+  else { cloud.status = CFG.uid ? 'expirou' : 'saiu'; render(); }
 }
 async function afterLogin(){
   const u=cloud.user, sb=cloud.sb;
   const myKey='zeu:v1:u:'+u.id;
   if(KEY!==myKey){ resetState(); KEY=myKey; await load(); }
-  CFG.uid=u.id; CFG.email=u.email; writeCfg();
+  CFG.uid=u.id; CFG.email=u.email; CFG.guestOk=false; writeCfg();
   const al=await sb.from('alunos').select('*').eq('id',u.id).maybeSingle();
   cloud.aluno=al.data||null;
   if(cloud.aluno){ CFG.nome=cloud.aluno.nome; writeCfg(); if(!state.game.nome) state.game.nome=cloud.aluno.nome; }
@@ -3280,11 +3282,12 @@ function setupHTML(){
     <p class="hist__d" style="margin-top:22px">Bom saber: no plano grátis, o Supabase pausa o projeto se ele passar 7 dias sem nenhum uso. Treinando todo dia isso não acontece. Se pausar, é só entrar no painel do Supabase e clicar em <b>Resume project</b> — os dados continuam lá.</p>
   </section>`;
 }
-function authHTML(){
+function authHTML(gate){
   const t=cloud.tab;
   return `<section class="kit">
-    <p class="eyebrow">Conta de aluno</p>
-    <h2 class="kit__title">${t==='entrar'?'Entrar':'Fazer minha matrícula'}</h2>
+    <p class="eyebrow">${gate?'Bem-vindo ao Inglês do Zeu':'Conta de aluno'}</p>
+    <h2 class="kit__title">${t==='entrar'?'Entrar na minha conta':'Fazer minha matrícula'}</h2>
+    ${gate?'<p class="kit__brief">Entre para continuar de onde parou, em qualquer aparelho. Se é sua primeira vez, faça a matrícula.</p>':''}
     <div class="chips"><button class="chip" data-authtab="cadastro" aria-pressed="${t==='cadastro'}">Sou aluno novo</button><button class="chip" data-authtab="entrar" aria-pressed="${t==='entrar'}">Já tenho conta</button></div>
     ${t==='entrar' ? `
       <div class="compose__row" style="margin-top:14px"><input class="field" id="lg-email" type="email" placeholder="e-mail" autocomplete="email" value="${esc((state.authDraft&&state.authDraft.email)||CFG.email||'')}"></div>
@@ -3300,7 +3303,7 @@ function authHTML(){
       <div class="chips" style="margin:0">${['B1','B2','C1'].map(g=>`<button class="chip" data-sumeta="${g}" aria-pressed="${g===((state.authDraft&&state.authDraft.meta)||'B2')}">${g} · ${LVL_NAME[g]}</button>`).join('')}</div>
       <div class="acts acts--bare" style="margin-top:14px"><button class="act act--main" data-signup="1" ${cloud.busy?'disabled':''}>Criar minha matrícula</button></div>`}
     ${cloud.msg?`<p class="msg">${esc(cloud.msg)}</p>`:''}
-    <div class="kit__foot"><button class="act" data-gomode="hoje">Continuar sem conta (só neste aparelho)</button><button class="act" data-cfgedit="1">Configuração da nuvem</button></div>
+    <div class="kit__foot"><button class="act" data-guest="1">Usar sem conta (só neste aparelho)</button><button class="act" data-cfgedit="1">Configuração da nuvem</button></div>
   </section>`;
 }
 function perfilHTML(){
@@ -3350,18 +3353,25 @@ function paintAcct(){
 const _hojeHTML=hojeHTML;
 hojeHTML=function(){ return gameBarHTML()+_hojeHTML(); };
 const _renderMetodo=renderMetodo;
+function precisaPortao(){ return state.mode==='hoje' && !!CFG.url && !cloud.user && !CFG.uid && !CFG.guestOk; }
 renderMetodo=function(){
+  if(precisaPortao()){
+    view.innerHTML = (cloud.status==='off' || cloud.status==='conectando')
+      ? '<div class="empty"><h2>Conectando…</h2><p>Verificando se você já está logado neste aparelho.</p></div>'
+      : authHTML(true);
+    return;
+  }
   if(state.mode==='con'){ view.innerHTML=conHTML(); return; }
   if(state.mode==='conta'){ view.innerHTML=contaHTML(); return; }
   if(state.mode==='prof'){ view.innerHTML=profHTML(); return; }
   _renderMetodo();
 };
 const _render=render;
-render=function(){ applyTheme(); _render(); paintAcct(); paintStatsXP(); };
+render=function(){ applyTheme(); document.body.classList.toggle('portao', precisaPortao()); _render(); paintAcct(); paintStatsXP(); };
 
 /* ---------------- eventos ---------------- */
 document.addEventListener('click', async e=>{
-  const t=e.target.closest('[data-acct],[data-celebok],[data-cert],[data-certclose],[data-print],[data-theme],[data-certname],[data-cfgcopy],[data-cfgsave],[data-cfgcancel],[data-cfgedit],[data-authtab],[data-login],[data-signup],[data-sumeta],[data-logout],[data-syncnow],[data-proflist],[data-profsee],[data-profstatus],[data-profnew]');
+  const t=e.target.closest('[data-guest],[data-acct],[data-celebok],[data-cert],[data-certclose],[data-print],[data-theme],[data-certname],[data-cfgcopy],[data-cfgsave],[data-cfgcancel],[data-cfgedit],[data-authtab],[data-login],[data-signup],[data-sumeta],[data-logout],[data-syncnow],[data-proflist],[data-profsee],[data-profstatus],[data-profnew]');
   if(!t) return; const d=t.dataset;
   if(d.acct){ state.mode='conta'; setModeBtn('conta'); cloud.msg=''; render(); window.scrollTo({top:0,behavior:'smooth'}); return; }
   if(d.celebok){ celebQ.shift(); showCeleb(); render(); return; }
@@ -3376,6 +3386,7 @@ document.addEventListener('click', async e=>{
   if(d.cfgsave){ saveCfg(); return; }
   if(d.cfgcancel){ state.cfgEdit=false; cloud.msg=''; render(); return; }
   if(d.cfgedit){ state.cfgEdit=true; cloud.msg=''; state.mode='conta'; setModeBtn('conta'); render(); return; }
+  if(d.guest){ CFG.guestOk=true; writeCfg(); state.mode='hoje'; setModeBtn('hoje'); cloud.msg=''; render(); return; }
   if(d.authtab){ cloud.tab=d.authtab; cloud.msg=''; render(); return; }
   if(d.sumeta){ state.authDraft=Object.assign(state.authDraft||{}, {meta:d.sumeta}); document.querySelectorAll('[data-sumeta]').forEach(b=>b.setAttribute('aria-pressed', b===t)); return; }
   if(d.login){ doLogin(); return; }
