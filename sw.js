@@ -1,5 +1,5 @@
 /* Inglês do Zeu — service worker: abre rápido e funciona sem internet */
-const CACHE = 'zeu-app-v1';
+const CACHE = 'zeu-app-v2';
 const SHELL = ['./', './index.html', './manifest.webmanifest',
   './icons/icon-192.png', './icons/icon-512.png', './icons/icon-maskable-512.png', './icons/apple-touch-icon.png', './icons/favicon-32.png'];
 

@@ -1,6 +1,6 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#4CC23A">
+<meta name="theme-color" content="#14213D">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -12,6 +12,7 @@
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <title>Inglês do Zeu</title>
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@500;800&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&family=Public+Sans:wght@300..700&family=JetBrains+Mono:wght@400;600&display=swap');
 
@@ -758,6 +759,15 @@ body[data-mode="col"] .bar,body[data-mode="tra"] .bar{display:flex}
 @keyframes toastin{from{opacity:0;transform:translate(-50%,-10px)}to{opacity:1;transform:translate(-50%,0)}}
 .banner{top:62px}
 [hidden]{display:none!important}
+.wm{display:flex;flex-direction:column;font-family:'Outfit',system-ui,sans-serif;line-height:1}
+.wm__a{font-size:10px;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:#5A6478}
+.wm__b{font-size:24px;font-weight:800;letter-spacing:-.03em;color:#14213D;margin-top:2px}
+.wm__b i{font-style:normal;color:#1FB56A}
+.nav__brand .wm__a{font-size:12px}
+.nav__brand .wm__b{font-size:34px}
+.appbar__brand .brand__mark{width:38px;height:38px}
+.splash{background:#14213D}
+.splash img{border-radius:24px}
 .michelp{margin:6px 0 0;padding-left:18px;line-height:1.55}
 .michelp li{margin:3px 0}
 
@@ -793,7 +803,7 @@ button,.node,.nav,.lvltab,.chip,.act,.big,.grade{-webkit-user-select:none;user-s
 </style>
 
 <nav class="nav" id="nav" aria-label="Navegação">
-  <div class="nav__brand">Inglês do <em>Zeu</em></div>
+  <div class="nav__brand"><span class="wm"><span class="wm__a">Inglês do</span><span class="wm__b">Zeu<i>.</i></span></span></div>
   <button id="m-hoje" aria-pressed="true"><span class="ni">🏠</span><span class="nl">Início</span></button>
   <button id="m-tri" aria-pressed="false"><span class="ni">🗺️</span><span class="nl">Trilha</span></button>
   <button id="m-rev" aria-pressed="false"><span class="ni">🧠</span><span class="nl">Revisão</span></button>
@@ -812,7 +822,7 @@ button,.node,.nav,.lvltab,.chip,.act,.big,.grade{-webkit-user-select:none;user-s
 </nav>
 <div class="wrap">
   <header class="appbar">
-    <div class="appbar__brand"><div class="brand__mark" id="brand-mark"></div><div class="brand__w">Inglês do <em>Zeu</em></div></div>
+    <div class="appbar__brand"><div class="brand__mark" id="brand-mark"></div><div class="wm"><span class="wm__a">Inglês do</span><span class="wm__b">Zeu<i>.</i></span></div></div>
     <div class="appbar__stats">
       <span class="ab ab--lvl" title="Etapa atual"><span id="s-level">—</span></span>
       <span class="ab ab--fire" title="Dias seguidos">🔥<b id="s-streak">0</b></span>
@@ -841,6 +851,16 @@ button,.node,.nav,.lvltab,.chip,.act,.big,.grade{-webkit-user-select:none;user-s
 
 /* ---------------------------- LOGOS ---------------------------- */
 const LOGOS = {
+  ponte: {
+    name:'Z de ponte',
+    desc:'A letra Z que termina numa seta: do português para o inglês. Azul-marinho e verde.',
+    svg:`<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Inglês do Zeu">
+      <rect width="100" height="100" rx="24" fill="#14213D"/>
+      <path d="M28 30 H70 L32 70" fill="none" stroke="#FFFFFF" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M32 70 H70" fill="none" stroke="#2BD47D" stroke-width="10" stroke-linecap="round"/>
+      <path d="M61 61 L71 70 L61 79" fill="none" stroke="#2BD47D" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>`
+  },
   ritmo: {
     name:'Régua de ritmo',
     desc:'A assinatura do app virada em marca: as barras de sílaba forte e fraca. Abstrata, só sua, e explica o método sem palavra nenhuma.',
@@ -1382,7 +1402,7 @@ const store = {
 };
 
 /* ---------------------------- estado ---------------------------- */
-const state = { profile:null, days:{}, fabDone:{}, phrases:[], log:[], cache:{}, mmEmail:'', logo:'ritmo', kit:null, mode:'hoje', accent:'en-US',
+const state = { profile:null, days:{}, fabDone:{}, phrases:[], log:[], cache:{}, mmEmail:'', logo:'ponte', kit:null, mode:'hoje', accent:'en-US',
                 filter:'all', idx:0, sugg:[], showLogo:false, showCfg:false, tag:'todos', editing:null, video:null,
                 auto:{on:true, reps:3, tail:10, rep:1, track:1, total:0, fim:false, timer:null},
                 tStatus:'', tSrc:'', tBusy:false };
@@ -1561,7 +1581,7 @@ async function translateOnline(text){
 async function load(){
   const v = await store.get(KEY);
   if(v){ try{ const d=JSON.parse(v);
-    state.phrases=d.phrases||[]; state.log=d.log||[]; state.logo=d.logo||'ritmo'; state.kit=d.kit||null;
+    state.phrases=d.phrases||[]; state.log=d.log||[]; state.logo=(d.logo && d.logo!=='ritmo' && LOGOS[d.logo])?d.logo:'ponte'; state.kit=d.kit||null;
     state.cache=d.cache||{}; state.mmEmail=d.mmEmail||'';
     state.profile=d.profile||null; state.days=d.days||{}; state.fabDone=d.fabDone||{};
     state.game=Object.assign(newGame(), d.game||{}); state.savedAt=d.savedAt||0;
@@ -3498,7 +3518,7 @@ function snapshot(){
     auto:{on:state.auto.on, reps:state.auto.reps, tail:state.auto.tail}, savedAt:state.savedAt||Date.now() };
 }
 function applySnapshot(d){
-  state.phrases=d.phrases||[]; state.log=d.log||[]; state.logo=d.logo||state.logo; state.kit=d.kit||null;
+  state.phrases=d.phrases||[]; state.log=d.log||[]; state.logo=(d.logo && d.logo!=='ritmo' && LOGOS[d.logo])?d.logo:'ponte'; state.kit=d.kit||null;
   state.profile=d.profile||null; state.days=d.days||{}; state.fabDone=d.fabDone||{};
   const ob=state.game.outbox||[]; state.game=Object.assign(newGame(), d.game||{}); state.game.outbox=ob;
   state.savedAt=d.savedAt||Date.now();
