@@ -1,7 +1,8 @@
 /* Inglês do Zeu — service worker: abre rápido e funciona sem internet */
-const CACHE = 'zeu-app-v2';
-const SHELL = ['./', './index.html', './manifest.webmanifest',
-  './icons/icon-192.png', './icons/icon-512.png', './icons/icon-maskable-512.png', './icons/apple-touch-icon.png', './icons/favicon-32.png'];
+const CACHE = 'zeu-app-v3';
+const V = '?v=3';
+const SHELL = ['./', './index.html', './manifest.webmanifest'+V,
+  './icons/icon-192.png'+V, './icons/icon-512.png'+V, './icons/icon-maskable-512.png'+V, './icons/apple-touch-icon.png'+V, './icons/favicon-32.png'+V];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)).then(() => self.skipWaiting()));

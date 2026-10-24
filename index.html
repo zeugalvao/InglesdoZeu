@@ -7,9 +7,9 @@
 <meta name="apple-mobile-web-app-title" content="Inglês do Zeu">
 <meta name="application-name" content="Inglês do Zeu">
 <meta name="format-detection" content="telephone=no">
-<link rel="manifest" href="manifest.webmanifest">
-<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
-<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="manifest" href="manifest.webmanifest?v=3">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png?v=3">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=3">
 <title>Inglês do Zeu</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@500;800&display=swap');
@@ -839,7 +839,7 @@ button,.node,.nav,.lvltab,.chip,.act,.big,.grade{-webkit-user-select:none;user-s
   <div id="voice-warn" class="msg" hidden></div>
   <main id="view"></main>
 </div>
-<div class="splash" id="splash"><img src="icons/icon-192.png" alt=""></div>
+<div class="splash" id="splash"><img src="icons/icon-192.png?v=3" alt=""></div>
 <div id="toast" class="toast" hidden role="status" aria-live="polite"></div>
 <div id="celeb" class="celeb" hidden></div>
 <div id="certbox" class="certbox" hidden></div>
@@ -4299,19 +4299,23 @@ let installEvt=null;
 const isStandalone=()=> window.matchMedia('(display-mode: standalone)').matches || navigator.standalone===true;
 const isIOS=()=> /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform==='MacIntel' && navigator.maxTouchPoints>1);
 window.addEventListener('beforeinstallprompt', e=>{ e.preventDefault(); installEvt=e; if(state.mode==='hoje') render(); });
-window.addEventListener('appinstalled', ()=>{ installEvt=null; try{ localStorage.setItem('zeu:inst','1'); }catch(e){} toast('App instalado! Procure o ícone na tela inicial.'); render(); });
-function installDismissed(){ try{ return localStorage.getItem('zeu:instx')===today() || localStorage.getItem('zeu:inst')==='1'; }catch(e){ return false; } }
+window.addEventListener('appinstalled', ()=>{ installEvt=null; toast('App instalado! Procure o ícone na tela inicial.'); render(); });
+try{ localStorage.removeItem('zeu:inst'); }catch(e){}
+function installDismissed(){ try{ return localStorage.getItem('zeu:instx')===today(); }catch(e){ return false; } }
+const isAndroid=()=> /android/i.test(navigator.userAgent);
 function installHTML(){
   if(isStandalone() || installDismissed()) return '';
-  if(!installEvt && !isIOS()) return '';
-  return `<div class="install"><img class="install__ic" src="icons/icon-192.png" alt="">
+  if(!installEvt && !isIOS() && !isAndroid()) return '';
+  return `<div class="install"><img class="install__ic" src="icons/icon-192.png?v=3" alt="">
     <span class="install__t"><b>Instalar o app</b><small>Ícone na tela inicial e tela cheia, sem barra do navegador.</small></span>
     <button class="act act--main" data-install="1">Instalar</button><button class="install__x" data-installx="1" aria-label="Agora não">✕</button></div>`;
 }
 function iosHelp(){
   const d=document.createElement('div'); d.className='ios'; d.innerHTML=`<div class="ios__box" role="dialog" aria-modal="true">
-    <h3>Instalar no iPhone</h3><ol><li>Abra este site no <b>Safari</b>.</li><li>Toque no botão <b>Compartilhar</b> (quadrado com seta para cima).</li>
-    <li>Escolha <b>Adicionar à Tela de Início</b> e toque em <b>Adicionar</b>.</li></ol>
+    ${isIOS()?`<h3>Instalar no iPhone</h3><ol><li>Abra este site no <b>Safari</b>.</li><li>Toque no botão <b>Compartilhar</b> (quadrado com seta para cima).</li>
+    <li>Escolha <b>Adicionar à Tela de Início</b> e toque em <b>Adicionar</b>.</li></ol>`
+    :`<h3>Instalar no Android</h3><ol><li>Toque nos <b>três pontinhos ⋮</b> do Chrome, no canto de cima.</li><li>Escolha <b>Instalar app</b> (ou <b>Adicionar à tela inicial</b> → <b>Instalar</b>).</li>
+    <li>Confirme. O ícone aparece na tela inicial.</li></ol>`}
     <button class="big" data-iosok="1">Entendi</button></div>`;
   document.body.appendChild(d);
 }
@@ -4319,7 +4323,7 @@ const _hojeHTMLInst=hojeHTML;
 hojeHTML=function(){ const html=_hojeHTMLInst(); return state.open ? html : html.replace('<div class="unitbar">', installHTML()+'<div class="unitbar">'); };
 document.addEventListener('click', async e=>{
   const t=e.target.closest('[data-install],[data-installx],[data-iosok],.ios'); if(!t) return;
-  if(t.dataset.install){ if(installEvt){ installEvt.prompt(); const r=await installEvt.userChoice; installEvt=null; render(); } else if(isIOS()) iosHelp(); return; }
+  if(t.dataset.install){ if(installEvt){ installEvt.prompt(); const r=await installEvt.userChoice; installEvt=null; render(); } else iosHelp(); return; }
   if(t.dataset.installx){ try{ localStorage.setItem('zeu:instx', today()); }catch(err){} render(); return; }
   if(t.dataset.iosok || e.target===t){ document.querySelectorAll('.ios').forEach(x=>x.remove()); }
 });
