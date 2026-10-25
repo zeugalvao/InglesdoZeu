@@ -760,6 +760,17 @@ body[data-mode="col"] .bar,body[data-mode="tra"] .bar{display:flex}
 .banner{top:62px}
 [hidden]{display:none!important}
 
+.esc-lockmsg{color:#9A9A9A;font-weight:800;font-size:14px}
+.esc-lock .row__play{background:var(--signal)}
+.esc--hide .esc-txt{filter:blur(7px);user-select:none}
+.wr{margin-top:8px}
+.wr__row{display:flex;gap:8px;flex-wrap:wrap}
+.wr__in{flex:1 1 200px;padding:10px 12px;font-size:16px}
+.wr__fb{margin:6px 0 0;font-size:14px;font-weight:700}
+.wr__fb--ok{color:var(--green-d)}
+.wr__fb--no{color:var(--alert-d)}
+.wr__ok{display:inline-block;background:var(--green-l);color:var(--green-d);font-weight:900;font-size:13px;padding:4px 10px;border-radius:999px}
+
 /* ===== Zé, o ajudante ===== */
 .ze{display:block;width:100%;height:100%;overflow:visible}
 .ze--big{width:92px;height:92px;flex:0 0 auto;animation:zewave 1.6s ease-in-out 1}
@@ -1704,7 +1715,7 @@ function speakPhrase(p,rate){ say(p.text,rate,p.id); p.plays=(p.plays||0)+1; ren
 function dial(){ return state.accent==='en-GB'?'uk':'us'; }
 function cl(c){ return encodeURIComponent(String(c).replace(/["“”.?!,]/g,'').trim()); }
 function ygURL(c){ return `https://youglish.com/pronounce/${cl(c)}/english/${dial()}`; }
-function ppURL(c){ return `https://www.playphrase.me/#/search?q=${cl(c)}`; }
+function ppURL(c){ return `https://www.playphrase.me/#/search?q=${cl(c)}&language=en`; }
 function ytURL(f){ return `https://www.youtube.com/results?search_query=%22${encodeURIComponent(String(f).replace(/["“”]/g,'').trim())}%22`; }
 function miniLinks(c){
   return `<a class="mini" href="${ygURL(c)}" target="_blank" rel="noopener" title="YouGlish">YG</a>
@@ -1820,10 +1831,9 @@ function videoBlock(p){
         aria-pressed="${termo.toLowerCase()===t.term.toLowerCase()}">${esc(t.label)}</button>`).join('')}
     </div>
     <div class="acts acts--bare">
-      <button class="act act--main" data-vopen="${p.id}" data-vterm2="${esc(termo)}">▷ Assistir aqui</button>
-      <a class="act" href="${ygURL(termo)}" target="_blank" rel="noopener">YouGlish <span class="act__k">nova aba</span></a>
-      <a class="act" href="${ppURL(termo)}" target="_blank" rel="noopener">PlayPhrase <span class="act__k">filmes</span></a>
-      <a class="act" href="${ytURL(termo)}" target="_blank" rel="noopener">YouTube <span class="act__k">busca aberta</span></a>
+      <a class="act act--main" data-ppgo="1" href="${ppURL(termo)}" target="_blank" rel="noopener">▶ Assistir no PlayPhrase <span class="act__k">filmes e séries</span></a>
+      <button class="act" data-vopen="${p.id}" data-vterm2="${esc(termo)}">▷ Ver aqui dentro <span class="act__k">YouGlish</span></button>
+      <a class="act" href="${ytURL(termo)}" target="_blank" rel="noopener">YouTube <span class="act__k">busca</span></a>
     </div>
     ${aberto ? `
     <div class="vid">
@@ -2924,7 +2934,7 @@ function escKit(){
   const same=ks.filter(k=>k.lvl===trackLvl(curLvl()));
   return pickDay(dayNum()%2 && same.length ? same : ks) || KITS[0];
 }
-function escLines(k){ const out=[]; (k.hear||[]).forEach(x=>out.push(x)); k.steps.forEach(s=>s.lines.forEach(x=>out.push(x))); return out.slice(0,12); }
+function escLines(k){ const out=[]; (k.hear||[]).forEach(x=>out.push(x)); k.steps.forEach(s=>s.lines.forEach(x=>out.push(x))); return out.slice(0,6); }
 function stopEsc(){ escTok++; clearTimeout(escTimer); if('speechSynthesis' in window) speechSynthesis.cancel();
   document.querySelectorAll('.row--on').forEach(r=>r.classList.remove('row--on')); }
 function escPlay(){
@@ -2936,10 +2946,9 @@ function escPlay(){
   const next=()=>{
     if(tok!==escTok) return;
     if(i>=L.length){ i=0; lap++;
-      if(lap===1){ const b=document.getElementById('esc-box'); if(b) b.classList.remove('esc--hide'); }
-      if(lap>=state.esc.reps){ hi(-1); const s=st(); if(s) s.textContent='Fim das voltas. Na última, você repetiu junto? Pode concluir a missão.'; gain(8,'escuta completa'); return; } }
+      if(lap>=state.esc.reps){ hi(-1); const s=st(); if(s) s.textContent='Fim das voltas. Agora toque em Mostrar texto e escreva cada frase 3 vezes.'; gain(8,'escuta completa'); return; } }
     hi(i);
-    const s=st(); if(s) s.textContent=`volta ${lap+1} de ${state.esc.reps}${lap===0?' · sem texto, só ouvindo':lap===state.esc.reps-1?' · repita junto (shadowing)':' · com texto'} · frase ${i+1} de ${L.length}`;
+    const s=st(); if(s) s.textContent=`volta ${lap+1} de ${state.esc.reps}${lap===0?' · só ouvindo':lap===state.esc.reps-1?' · repita junto (shadowing)':' · ouvindo de novo'} · frase ${i+1} de ${L.length}`;
     const u=new SpeechSynthesisUtterance(L[i].en); u.lang=state.accent; u.rate=state.esc.rate;
     const v=pickVoice(state.accent); if(v) u.voice=v;
     let fired=false; const go=()=>{ if(fired||tok!==escTok) return; fired=true; i++; escTimer=setTimeout(next, lap===state.esc.reps-1?2600:1300); };
@@ -2948,19 +2957,61 @@ function escPlay(){
   logEvent('listen', 'escuta'); save();
   next();
 }
+function escRowHTML(x, i){
+  const k=normT(x.en), dp=dayRec().plays||{}, wr=dayRec().writes||{};
+  const n=Math.min(3,dp[k]||0), w=Math.min(3,wr[k]||0), open=n>=3;
+  return `<div class="row esc-row ${open?'':'esc-lock'}" data-escl="${i}">
+    <button class="row__play" data-sayraw="${esc(x.en)}" aria-label="Ouvir">▶</button>
+    <div class="row__body">
+      ${open?`<p class="row__en esc-txt">${esc(x.en)}</p><p class="row__pt esc-txt">${esc(x.pt||'')}</p>`
+            :`<p class="row__en esc-lockmsg">🔒 Ouça ${3-n}× mais para ver esta frase</p>`}
+      ${open?`<div class="wr">${w>=3?'<span class="wr__ok">✍️ Escrita 3× ✓</span>'
+        :`<div class="wr__row"><input class="field wr__in" data-wr="${i}" placeholder="Escreva a frase (${w+1} de 3)" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false">
+           <button class="act act--main" data-wrok="${i}">Conferir</button></div><p class="wr__fb" id="wrfb-${i}"></p>`}</div>`:''}
+    </div></div>`;
+}
 function escutaHTML(){
   const k=escKit(), L=escLines(k);
-  return `<p class="sec__d"><b>${esc(k.title)}</b> · ${L.length} frases. Ponha o fone e dê o play: a 1ª volta é sem texto, a 2ª com texto, e na última você repete junto, em voz alta ou sussurrando.</p>
+  if(state.esc.reps<3) state.esc.reps=3;
+  return `<p class="sec__d"><b>${esc(k.title)}</b> · ${L.length} frases. Ponha o fone e toque em <b>Tocar as voltas</b>. Cada frase só aparece depois de ouvida 3 vezes. Aí você escreve cada uma 3 vezes.</p>
     <div class="auto__row" style="margin:12px 0">
-      <span class="auto__l" style="margin-left:0">voltas</span>${[2,3,5].map(n=>`<button class="chip chip--sm" data-escreps="${n}" aria-pressed="${state.esc.reps===n}">${n}×</button>`).join('')}
+      <span class="auto__l" style="margin-left:0">voltas</span>${[3,5].map(n=>`<button class="chip chip--sm" data-escreps="${n}" aria-pressed="${state.esc.reps===n}">${n}×</button>`).join('')}
       <span class="auto__l">velocidade</span>${[[0.75,'lenta'],[0.9,'média'],[1,'normal']].map(([r,l])=>`<button class="chip chip--sm" data-escrate="${r}" aria-pressed="${state.esc.rate===r}">${l}</button>`).join('')}
     </div>
-    <div class="acts acts--bare"><button class="act act--main" data-escplay="1">▶ Tocar as voltas</button><button class="act" data-escstop="1">■ Parar</button><button class="act" data-esctxt="1">Mostrar/ocultar texto</button></div>
+    <div class="acts acts--bare"><button class="act act--main" data-escplay="1">▶ Tocar as voltas</button><button class="act" data-escstop="1">■ Parar</button><button class="act" data-esctxt="1">${state.esc.show?'Ocultar texto':'Mostrar texto'}</button></div>
     <p class="auto__st" id="esc-st">Parado.</p>
-    <div id="esc-box" class="esc--hide" style="margin-top:8px">${L.map((x,i)=>`<div class="row" data-escl="${i}">
-      <button class="row__play" data-sayraw="${esc(x.en)}" aria-label="Ouvir">▶</button>
-      <div class="row__body"><p class="row__en">${esc(x.en)}</p><p class="row__pt">${esc(x.pt||'')}</p></div></div>`).join('')}</div>`;
+    <div id="esc-box" class="${state.esc.show?'':'esc--hide'}" style="margin-top:8px">${L.map((x,i)=>escRowHTML(x,i)).join('')}</div>`;
 }
+function paintEsc(){
+  const box=document.getElementById('esc-box'); if(!box) return;
+  const L=escLines(escKit()), dp=dayRec().plays||{};
+  box.querySelectorAll('.esc-lock').forEach(row=>{
+    const i=+row.dataset.escl, x=L[i]; if(!x) return;
+    const n=Math.min(3,dp[normT(x.en)]||0);
+    if(n>=3){ const on=row.classList.contains('row--on'); row.outerHTML=escRowHTML(x,i); if(on){ const r=box.querySelector(`[data-escl="${i}"]`); if(r) r.classList.add('row--on'); } }
+    else { const m=row.querySelector('.esc-lockmsg'); if(m) m.textContent=`🔒 Ouça ${3-n}× mais para ver esta frase`; }
+  });
+}
+function normW(s){ return String(s).toLowerCase().replace(/[’‘`]/g,"'").replace(/[^a-z0-9'\s]/g,' ').replace(/\s+/g,' ').trim(); }
+function checkWrite(i){
+  const L=escLines(escKit()), x=L[i]; if(!x) return;
+  const inp=document.querySelector(`[data-wr="${i}"]`), fb=document.getElementById('wrfb-'+i); if(!inp) return;
+  const typed=inp.value.trim(); if(!typed) return;
+  if(normW(typed)===normW(x.en)){
+    const r=dayRec(); if(!r.writes) r.writes={}; const k=normT(x.en); r.writes[k]=Math.min(3,(r.writes[k]||0)+1);
+    gain(2,'frase escrita'); save();
+    const row=document.querySelector(`[data-escl="${i}"]`);
+    if(r.writes[k]>=3){ if(row) row.outerHTML=escRowHTML(x,i); if(typeof paintPlays==='function') paintPlays(); }
+    else { inp.value=''; inp.placeholder=`Escreva a frase (${r.writes[k]+1} de 3)`; if(fb){ fb.className='wr__fb wr__fb--ok'; fb.textContent=`✓ Certo! ${r.writes[k]} de 3`; } inp.focus(); }
+    if(typeof checkTasks==='function') checkTasks();
+  } else {
+    const tw=toks(x.en), got=toks(typed), pool=got.slice();
+    const marks=tw.map(w=>{ const j=pool.indexOf(w); if(j>=0){ pool.splice(j,1); return `<span class="sc__w sc__w--ok">${esc(w)}</span>`; } return `<span class="sc__w sc__w--no">${esc(w)}</span>`; }).join('');
+    if(fb){ fb.className='wr__fb wr__fb--no'; fb.innerHTML=`Quase. Confira as palavras em vermelho: ${marks}`; }
+  }
+}
+document.addEventListener('click', e=>{ const b=e.target.closest('[data-wrok]'); if(b) checkWrite(+b.dataset.wrok); });
+document.addEventListener('keydown', e=>{ if(e.key==='Enter' && e.target.matches && e.target.matches('[data-wr]')){ e.preventDefault(); checkWrite(+e.target.dataset.wr); } });
 
 /* ---------------- frase do dia + shadowing ---------------- */
 function podPhrase(force){
@@ -3320,7 +3371,7 @@ view.addEventListener('click', async e=>{
 
   if(d.escplay){ escPlay(); return; }
   if(d.escstop){ stopEsc(); const s=document.getElementById('esc-st'); if(s) s.textContent='Parado.'; return; }
-  if(d.esctxt){ const b=document.getElementById('esc-box'); if(b) b.classList.toggle('esc--hide'); return; }
+  if(d.esctxt){ state.esc.show=!state.esc.show; const b=document.getElementById('esc-box'); if(b) b.classList.toggle('esc--hide', !state.esc.show); t.textContent=state.esc.show?'Ocultar texto':'Mostrar texto'; return; }
   if(d.escreps){ state.esc.reps=+d.escreps; stopEsc(); render(); return; }
   if(d.escrate){ state.esc.rate=+d.escrate; stopEsc(); render(); return; }
 
@@ -4097,7 +4148,7 @@ function countPlay(text){
   const k=normT(text); if(!k) return;
   const r=dayRec(); if(!r.plays) r.plays={}; r.plays[k]=(r.plays[k]||0)+1;
   const h=H(); if((h[k]||0)<3) h[k]=(h[k]||0)+1;
-  paintPlays(); checkTasks();
+  if(typeof paintEsc==='function') paintEsc(); paintPlays(); checkTasks();
 }
 const _sayApp=say;
 say=function(text, rate, stripId){ _sayApp(text, rate, stripId); countPlay(text); };
@@ -4117,9 +4168,9 @@ function taskProg(id){
   const r=recDay(), dp=r.plays||{};
   switch(id){
     case 'rev1': case 'rev2': { const R=state.rv; if(R && R.ctx===id && R.q.length) return R.i/R.q.length; return 0; }
-    case 'escuta': { const L=escLines(escKit()); return L.reduce((a,x)=>a+Math.min(3,dp[normT(x.en)]||0),0)/(L.length*3); }
+    case 'escuta': { const L=escLines(escKit()), wr=r.writes||{}; return L.reduce((a,x)=>a+Math.min(3,dp[normT(x.en)]||0)+Math.min(3,wr[normT(x.en)]||0),0)/(L.length*6); }
     case 'shadow': { const id2=r.pod && find(r.pod); if(!id2) return 0; const n=Math.min(3,dp[normT(id2.text)]||0);
-      return (n + ((r.spoke[normT(id2.text)]||r.recd.shadow)?1:0))/4; }
+      return ((r.ppDone?3:n) + ((r.spoke[normT(id2.text)]||r.recd.shadow)?1:0))/4; }
     case 'fabrica': return Math.min(1,(r.rounds||0)/2);
     case 'narra': return r.narrated?1:0;
     case 'micro': return Math.min(1,Object.keys(r.micro).length/3);
@@ -4137,8 +4188,8 @@ function lessonProg(id){
 const TASK_HINT={
   rev1:'Termina quando acabarem as frases do dia ou o tempo completar.', rev2:'Termina quando acabarem as frases do dia ou o tempo completar.',
   narra:'Termina quando você narrar em voz alta pelo microfone, ou quando o tempo completar.',
-  escuta:'Termina quando cada frase tiver tocado 3 vezes. O botão “Tocar as voltas” faz isso sozinho.',
-  shadow:'Termina quando você ouvir a frase 3 vezes e falar ou gravar uma vez.',
+  escuta:'Termina quando cada frase tocar 3 vezes e você escrever cada uma 3 vezes.',
+  shadow:'Termina quando você ouvir a frase 3 vezes (ou assistir no PlayPhrase) e falar ou gravar uma vez.',
   fabrica:'Termina com 2 rodadas completas ou quando o tempo completar.',
   video:'Abra um vídeo. Quando você voltar depois de alguns minutos, a missão fecha sozinha.',
   micro:'Termina quando você responder as 3 perguntas, gravando ou falando no microfone.',
@@ -4195,7 +4246,9 @@ window.onRecorded=function(key, secs){
 document.addEventListener('visibilitychange', ()=>{
   if(document.visibilityState!=='visible' || !state.profile) return;
   const r=dayRec(); if(r.vidT0 && !r.done.video && taskProg('video')>=1) completeMission('video');
+  if(r.ppT0 && Date.now()-r.ppT0>=30000){ r.ppDone=1; r.ppT0=0; save(); checkTasks(); toast('Bem-vindo de volta! Agora grave a sua versão.'); }
 });
+document.addEventListener('click', e=>{ if(e.target.closest('[data-ppgo]')){ recDay().ppT0=Date.now(); save(); } });
 
 /* ---------------- tela de lição ---------------- */
 function lessonShell(o){
@@ -4523,15 +4576,15 @@ const HELP={
     'Use os <b>modelos</b> de frase: toque neles para ouvir.',
     'Toque em 🎤 <b>Falar e transcrever</b> e fale do seu jeito. Pode pausar, eu espero. Toque em Parar no fim.',
     'Faltou uma palavra? Escreva em português no campo de baixo que eu traduzo e salvo.']},
-  escuta:{tip:'Só ouvir: toque em “Tocar as voltas”.', steps:[
-    'Coloque o fone, se puder.',
-    'Toque em <b>▶ Tocar as voltas</b>.',
-    '1ª volta: só ouvindo, sem texto. 2ª: lendo junto. 3ª: <b>repita junto</b>, mesmo sussurrando.',
-    'Termina sozinho quando cada frase tocar 3 vezes. Não precisa marcar nada.']},
+  escuta:{tip:'Ouça cada frase 3 vezes e depois escreva.', steps:[
+    'Coloque o fone e toque em <b>▶ Tocar as voltas</b>. Na última volta, <b>repita junto</b>.',
+    'A frase fica escondida 🔒 até você ouvir 3 vezes. Depois ela libera.',
+    'Toque em <b>Mostrar texto</b>, leia a frase e <b>escreva ela 3 vezes</b> no campo embaixo. Toque em Conferir.',
+    'Errou alguma palavra? Ela aparece em vermelho. Quando todas estiverem ouvidas e escritas 3×, a missão fecha sozinha.']},
   shadow:{tip:'Repita junto com o áudio, copiando o ritmo.', steps:[
     'Toque em <b>▶ Devagar</b> duas vezes e repare nos sons em vermelho.',
     'Toque em <b>▶ Ouvir</b> e fale <b>junto</b>, por cima do áudio.',
-    'Toque em <b>Assistir aqui</b>: 3 vídeos de pessoas reais. Na pausa, é a sua vez de repetir.',
+    'Toque em <b>▶ Assistir no PlayPhrase</b>: vários trechos de filmes e séries com a sua frase, um atrás do outro. Repita junto e depois volte ao app.',
     'No fim, grave sua voz ou toque em 🎤 <b>Falar e conferir</b>.']},
   fabrica:{tip:'Monte a frase em inglês e fale em voz alta.', steps:[
     'Veja a <b>estrutura</b> em azul (ex.: “I want to ___”) e a dica amarela.',
