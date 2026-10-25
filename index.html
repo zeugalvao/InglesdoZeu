@@ -4652,15 +4652,33 @@ const _placeHTMLZe=placeHTML;
 placeHTML=function(){ return zeTipHTML('place')+_placeHTMLZe(); };
 
 /* ao abrir o app: direto para a próxima missão + ajuda automática na 1ª vez de cada passo */
-let zeAutoOpened=false;
+let zeAutoOpened=false, zeAutoId=null, zeTouched=false, zeHiddenAt=0, zeLastView='';
+document.addEventListener('pointerdown', ()=>{ zeTouched=true; }, {capture:true, passive:true});
+document.addEventListener('visibilitychange', ()=>{
+  if(document.visibilityState==='hidden'){ zeHiddenAt=Date.now(); return; }
+  /* voltou para o app depois de 1 min fora: leva para a tarefa da vez (se não estiver no meio de uma lição) */
+  if(zeHiddenAt && Date.now()-zeHiddenAt>60000 && !inLesson() && !precisaPortao() && !document.getElementById('zesheet')){
+    zeAutoOpened=false; zeTouched=false; state.mode='hoje'; setModeBtn('hoje'); render();
+  }
+});
 const _renderZe=render;
 render=function(){
-  if(!zeAutoOpened && state.profile && !state.placing && state.mode==='hoje' && !precisaPortao()){
-    zeAutoOpened=true;
-    const nx=nextMission(); if(nx && !state.open){ state.open=nx.id; }
+  if(state.profile && !state.placing && state.mode==='hoje' && !precisaPortao()){
+    if(!zeAutoOpened){
+      zeAutoOpened=true;
+      const nx=nextMission(); if(nx && !state.open){ state.open=nx.id; zeAutoId=nx.id; }
+    } else if(zeAutoId && state.open===zeAutoId && !zeTouched && dayRec().done[zeAutoId]){
+      /* os dados da nuvem chegaram depois e essa missão já estava feita: pula para a certa */
+      const nx=nextMission(); state.open = nx ? nx.id : null; zeAutoId = nx ? nx.id : null;
+    }
   }
   _renderZe();
   paintZeFab();
+  const view_ = state.mode==='hoje' && !state.open ? 'path' : state.mode+':'+(state.open||state.triPat||state.triKit||'');
+  if(view_==='path' && zeLastView!=='path'){
+    requestAnimationFrame(()=>{ const n=document.querySelector('.node--cur'); if(n) n.scrollIntoView({block:'center'}); });
+  }
+  zeLastView=view_;
   const id=helpId(); const seen=state.game.helpSeen||(state.game.helpSeen={});
   if(id && HELP[id] && !seen[id] && !document.getElementById('zesheet') && !document.querySelector('#celeb:not([hidden])')){
     seen[id]=today(); setTimeout(()=>{ if(helpId()===id && !document.getElementById('zesheet')) openHelp(id); }, 500);
