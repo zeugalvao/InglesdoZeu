@@ -625,13 +625,14 @@ body[data-mode="col"] .bar,body[data-mode="tra"] .bar{display:flex}
 .path{display:flex;flex-direction:column;align-items:center;gap:10px;padding:22px 0 10px}
 .pnode{display:flex;flex-direction:column;align-items:center;transform:translateX(var(--off));position:relative;width:180px;text-align:center}
 .node{--p:0;position:relative;width:76px;height:76px;border-radius:50%;display:grid;place-items:center;
-  background:radial-gradient(circle at 50% 50%, var(--green) 0 34px, transparent 35px),conic-gradient(var(--green) calc(var(--p)*1%), #E5E5E5 0);
-  box-shadow:0 7px 0 var(--green-d);margin-bottom:10px}
-.node::before{content:"";position:absolute;inset:6px;border-radius:50%;background:var(--green);box-shadow:inset 0 -5px 0 rgba(0,0,0,.12)}
+  background:conic-gradient(var(--green) calc(var(--p)*1%), #E5E5E5 0);
+  box-shadow:0 7px 0 var(--chalk-d);margin-bottom:10px}
+.node::before{content:"";position:absolute;inset:6px;border-radius:50%;background:var(--chalk);box-shadow:inset 0 -5px 0 rgba(0,0,0,.12)}
 .node__ic{position:relative;font-size:32px;line-height:1;color:#fff;font-weight:900}
-.node:active{box-shadow:0 3px 0 var(--green-d)}
-.node--done{background:var(--chalk);box-shadow:0 7px 0 var(--chalk-d)}
-.node--done::before{background:var(--chalk)}
+.node:active{box-shadow:0 3px 0 var(--chalk-d)}
+.node--done{background:var(--green);box-shadow:0 7px 0 var(--green-d)}
+.node--done::before{background:var(--green)}
+.node--done:active{box-shadow:0 3px 0 var(--green-d)}
 .node--cur{animation:nodepulse 1.8s ease-in-out infinite}
 @keyframes nodepulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
 .pnode__l{font-weight:900;font-size:14px;line-height:1.2}
@@ -759,6 +760,23 @@ body[data-mode="col"] .bar,body[data-mode="tra"] .bar{display:flex}
 @keyframes toastin{from{opacity:0;transform:translate(-50%,-10px)}to{opacity:1;transform:translate(-50%,0)}}
 .banner{top:62px}
 [hidden]{display:none!important}
+
+.mq__dots{display:flex;gap:6px;align-items:center;margin:10px 0 6px}
+.mq__dots span{width:12px;height:12px;border-radius:50%;background:var(--line)}
+.mq__dots span.on{background:var(--green)}
+.mq__dots span.cur{background:#84D8FF}
+.mq__dots small{margin-left:6px;color:var(--ink-soft);font-weight:800;font-size:12px}
+.ms{border-radius:14px;padding:10px 12px;margin-top:8px}
+.ms--ok{display:flex;gap:10px;align-items:center;background:var(--green-l)}
+.ms--ok > span:nth-child(2){flex:1;display:flex;flex-direction:column}
+.ms--ok b{color:var(--green-d)}
+.ms--ok small{color:var(--ink-soft);font-weight:700}
+.ms__ck{width:26px;height:26px;border-radius:50%;background:var(--green);color:#fff;font-weight:900;display:grid;place-items:center;flex:0 0 auto}
+.ms--cur{border:2px solid #84D8FF;background:#F7FCFF}
+.ms__k{font-weight:900;font-size:12px;letter-spacing:.04em;text-transform:uppercase;color:var(--signal)}
+.ms__pt{font-size:20px;font-weight:900;margin:4px 0 0;line-height:1.25}
+.ms__en{font-size:18px;font-weight:800;margin:6px 0 0;color:var(--ink)}
+.ms--all{background:var(--green-l);color:var(--green-d);font-weight:900}
 
 .esc-lockmsg{color:#9A9A9A;font-weight:800;font-size:14px}
 .esc-lock .row__play{background:var(--signal)}
@@ -2509,7 +2527,7 @@ const MISSIONS=[
  {id:'shadow', slot:'Meio da manhã', t:'Shadowing da frase do dia', min:10, r:'LPI', why:'Repetir junto com o nativo, no mesmo ritmo e tom, treina a entonação e acostuma a boca a fazer os sons.'},
  {id:'fabrica', slot:'Fim da manhã', t:'Fábrica de frases', min:10, r:'LPI', why:'É o seu ponto de travamento: montar frases. Uma estrutura, cinco trocas, você falando em voz alta antes de ver a resposta.'},
  {id:'video', slot:'Almoço', t:'Vídeo do seu nível', min:10, minI:20, r:'PI', why:'Escuta por prazer, com legenda em inglês. Se entender menos de 70%, troque por algo mais fácil.'},
- {id:'micro', slot:'Tarde', t:'3 microdesafios de fala', min:6, r:'PI', why:'Perguntas reais de entrevista e de trabalho. Responder em voz alta, sem roteiro, é o treino de fluência.'},
+ {id:'micro', slot:'Tarde', t:'3 microdesafios de fala', min:10, r:'PI', why:'Perguntas reais de entrevista e de trabalho. Para cada uma você monta 3 frases e fala em voz alta, no seu ritmo.'},
  {id:'diario', slot:'Noite', t:'Diário falado', min:5, r:'PI', why:'Dois minutos falando do seu dia, gravando. Ouvir a própria voz mostra onde você trava.'},
  {id:'rev2', slot:'Antes de dormir', t:'Revisão da noite', min:5, r:'LPI', why:'Segunda passada do dia. O que você errou de manhã volta aqui.'},
  {id:'reconto', slot:'Fim de semana', t:'Resumo falado de um vídeo', min:20, r:'LPI', weekend:true, maxLvl:'A2', why:'No A2, conversa livre ainda trava. Aqui você treina a mesma coisa com apoio: assiste um vídeo curto, escreve um resumo com frases-modelo e depois fala o seu resumo em voz alta.'},
@@ -2693,6 +2711,21 @@ async function micBloqueado(){
   try{ const p=await navigator.permissions.query({name:'microphone'}); return p.state==='denied'; }catch(e){ return true; }
 }
 let listenSess=null;
+/* junta os pedaços sem repetir: o Android às vezes devolve o texto anterior junto com o novo */
+function mergeSeg(segs, t){
+  t=String(t||'').trim(); if(!t) return;
+  const nw=s=>String(s).toLowerCase().replace(/[’‘`]/g,"'").replace(/[^a-z0-9'\s]/g,' ').replace(/\s+/g,' ').trim();
+  const last=segs[segs.length-1]||'', nl=nw(last), nt=nw(t);
+  if(!nt) return;
+  if(last && nt.startsWith(nl)){ segs[segs.length-1]=t; return; }
+  if(last && (nl.endsWith(nt) || nl===nt)) return;
+  const all=nw(segs.join(' ')).split(' ').filter(Boolean), tw=t.split(/\s+/), twn=nt.split(' ');
+  if(all.length && nw(segs.join(' ')).endsWith(nt)) return;
+  let k=Math.min(all.length, twn.length);
+  while(k>0 && all.slice(-k).join(' ')!==twn.slice(0,k).join(' ')) k--;
+  if(k>=2 || (k>=1 && twn.length===k)){ const rest=tw.slice(k).join(' '); if(rest) segs.push(rest); return; }
+  segs.push(t);
+}
 function stopListen(){ if(listenSess) listenSess.finish('other'); }
 function runListen(btn){
   const key=btn.dataset.listen, target=btn.dataset.target, out=document.getElementById('sc-'+key);
@@ -2700,7 +2733,7 @@ function runListen(btn){
   if(listenSess) listenSess.finish('other');
   if(mediaRec){ try{ mediaRec.stop(); }catch(e){} setTimeout(()=>runListen(btn), 450); return; }
   const label = btn.dataset.label || btn.textContent; btn.dataset.label = label;
-  const S={ key, target, segs:[], interim:'', t0:Date.now(), last:Date.now(), done:false, inst:null, best:null, passed:null };
+  const S={ key, target, segs:[], interim:'', t0:Date.now(), last:Date.now(), done:false, inst:null, best:null, passed:null, passAt:(+btn.dataset.pass||0.85), cum:btn.dataset.cum==='1' };
   listenSess=S;
   const IDLE = target ? 9000 : 15000, MAX = target ? 60000 : 240000;
   btn.classList.add('act--live');
@@ -2711,7 +2744,7 @@ function runListen(btn){
     if(!out || S.done) return;
     if(target){
       const cum=cmpSpeech(target, (S.segs.join(' ')+' '+S.interim).trim());
-      const tudo = cum.score>=0.85 && !S.passed;
+      const tudo = cum.score>=S.passAt && !S.passed;
       out.className='sc sc--live';
       out.innerHTML=`<p class="sc__v">🎙️ Ouvindo… pode falar em pedaços</p>
         <p>${cum.marks.map(m=>`<span class="sc__w sc__w--${m.ok?'ok':'todo'}">${esc(m.w)}</span>`).join('')}</p>
@@ -2733,8 +2766,8 @@ function runListen(btn){
       const cum = cmpSpeech(target, S.segs.join(' '));
       const pct = Math.round(best.score*100);
       let v, cls;
-      if(S.passed){ v='Mandou bem'; cls='ok'; }
-      else if(cum.score>=0.85){ v='Todas as partes certas 👏 Falta juntar: toque e diga a frase inteira de uma vez'; cls='mid'; }
+      if(S.passed){ v=/^mq/.test(key)?'Frase completa! ✓':'Mandou bem'; cls='ok'; }
+      else if(cum.score>=S.passAt){ v='Todas as partes certas 👏 Falta juntar: toque e diga a frase inteira de uma vez'; cls='mid'; }
       else if(pct>=60){ v='Quase lá'; cls='mid'; }
       else { v='Ainda não — ouça e tente de novo'; cls='no'; }
       const marks = S.passed ? best.marks : cum.marks;
@@ -2744,7 +2777,7 @@ function runListen(btn){
         <p class="sc__l" style="margin-top:6px">O que eu entendi: ${S.passed?`“${esc(best.said)}”`:S.segs.map(s=>`“${esc(s)}”`).join(' · ')}</p>`;
       scCls[key]=out.className; scMem[key]=out.innerHTML;
       logEvent('speak', target);
-      const sc = S.passed ? best.score : Math.min(best.score, 0.84);
+      const sc = S.passed ? best.score : Math.min(best.score, S.passAt-0.01);
       if(window.onSpeakScore) onSpeakScore(sc);
       if(window.onSpeakPass) onSpeakPass(key, sc);
       if(window.onSpeakPassApp) onSpeakPassApp(key, Math.max(sc, cum.score>=0.85?0.6:0), target);
@@ -2770,18 +2803,19 @@ function runListen(btn){
     S.last=Date.now();
     if(target){
       const sc=alts.map(a=>cmpSpeech(target,a)).sort((x,y)=>y.score-x.score)[0];
-      S.segs.push(sc.said.trim());
+      mergeSeg(S.segs, sc.said);
       if(!S.best || sc.score>S.best.score) S.best=sc;
-      if(sc.score>=0.85){ S.passed=sc; S.finish('pass'); return; }
+      if(sc.score>=S.passAt){ S.passed=sc; S.finish('pass'); return; }
+      if(S.cum){ const c=cmpSpeech(target, S.segs.join(' ')); if(c.score>=S.passAt){ S.passed=c; S.finish('pass'); return; } }
     } else {
-      S.segs.push(alts[0]);
+      mergeSeg(S.segs, alts[0]);
       if(window.onTranscribe) onTranscribe(key, S.segs.join(' '));
     }
     paint();
   }
   function startInst(){
     const r=new SRec(); S.inst=r; recog=r; recogKey=key;
-    r.lang=state.accent; r.continuous=true; r.interimResults=true; r.maxAlternatives=3;
+    r.lang=state.accent; r.continuous=false; r.interimResults=true; r.maxAlternatives=3;
     r.onresult=e=>{
       if(S.done || S.inst!==r) return;
       let interim='';
@@ -4173,7 +4207,7 @@ function taskProg(id){
       return ((r.ppDone?3:n) + ((r.spoke[normT(id2.text)]||r.recd.shadow)?1:0))/4; }
     case 'fabrica': return Math.min(1,(r.rounds||0)/2);
     case 'narra': return r.narrated?1:0;
-    case 'micro': return Math.min(1,Object.keys(r.micro).length/3);
+    case 'micro': { const qs=microQs(); let t=0,d=0; qs.forEach(q=>{ const n=(MICRO_S[q.q]||[1,1,1]).length; t+=n; d+=Math.min(n,((r.micro2||{})[normT(q.q)]||0)); }); return t?d/t:0; }
     case 'diario': return Math.min(1,(r.recd.diarioSecs||0)/60);
     case 'reconto': { const n=sentencesOf(r.recontoTxt||'').length; const fal=(r.recontoWords||0)>=15||r.recd.reconto?1:0; return Math.min(1, Math.min(n,3)/3*0.5 + fal*0.5); }
     case 'video': { if(!r.vidT0) return 0; const m=MISSIONS.find(x=>x.id==='video'); return Math.min(1,(Date.now()-r.vidT0)/(mMin(m)*60*1000*0.7)); }
@@ -4192,7 +4226,7 @@ const TASK_HINT={
   shadow:'Termina quando você ouvir a frase 3 vezes (ou assistir no PlayPhrase) e falar ou gravar uma vez.',
   fabrica:'Termina com 2 rodadas completas ou quando o tempo completar.',
   video:'Abra um vídeo. Quando você voltar depois de alguns minutos, a missão fecha sozinha.',
-  micro:'Termina quando você responder as 3 perguntas, gravando ou falando no microfone.',
+  micro:'Termina quando você completar as 3 frases de cada uma das 3 perguntas.',
   diario:'Termina quando você gravar pelo menos 1 minuto.',
   conversa:'Essa acontece fora do app. Quando fizer, toque no botão abaixo.',
   reconto:'Termina quando você escrever pelo menos 3 frases e falar o resumo (pelo microfone ou gravando 20 segundos).'
@@ -4606,11 +4640,11 @@ const HELP={
     'Use legenda <b>em inglês</b>, não em português.',
     'Entendeu menos da metade? Troque por um mais fácil.',
     'Volte para o app depois: a missão fecha sozinha. Ouviu uma frase legal? Salve no campo de baixo.']},
-  micro:{tip:'Responda 3 perguntas em voz alta.', steps:[
+  micro:{tip:'Monte 3 frases para cada pergunta.', steps:[
     'Toque em <b>▶</b> para ouvir a pergunta.',
-    'Use os <b>modelos</b> de começo de resposta.',
-    'Toque em <b>● Gravar</b> ou 🎤 e responda em até 30 segundos. Errar faz parte.',
-    'Travou? Abra <b>Ver uma resposta modelo</b>, ouça e tente de novo.']},
+    'Leia a frase em <b>português</b> e toque em 🎤 <b>Falar a frase</b>.',
+    'Fale em inglês no seu ritmo: pode ir <b>em pedaços</b> e pausar. As palavras certas ficam verdes e eu vou juntando.',
+    'Quando estiver certa, aparece <b>Frase completa!</b> e vem a próxima. Travou? Toque em <b>Mostrar em inglês</b>, ouça e fale.']},
   diario:{tip:'Conte seu dia em inglês por 1 minuto.', steps:[
     'Leia o tema do dia.',
     'Toque em <b>● Gravar minha voz</b> e fale 1 minuto, do seu jeito.',
@@ -4736,6 +4770,82 @@ render=function(){
   if(id && HELP[id] && !seen[id] && !document.getElementById('zesheet') && !document.querySelector('#celeb:not([hidden])')){
     seen[id]=today(); setTimeout(()=>{ if(helpId()===id && !document.getElementById('zesheet')) openHelp(id); }, 500);
   }
+};
+
+/* ---------------- microdesafios guiados: 3 frases por pergunta ---------------- */
+const MICRO_S={
+'What do you do?':[["I work in sales.","Eu trabalho com vendas."],["I sell products to small companies.","Eu vendo produtos para empresas pequenas."],["I like my job because I talk to people.","Eu gosto do meu trabalho porque eu falo com pessoas."]],
+'Where do you live?':[["I live in a small city in Brazil.","Eu moro numa cidade pequena no Brasil."],["It is quiet and very hot.","É tranquila e muito quente."],["I live with my family.","Eu moro com a minha família."]],
+'What did you do yesterday?':[["Yesterday I worked all day.","Ontem eu trabalhei o dia todo."],["Then I watched a movie with my family.","Depois eu assisti um filme com a minha família."],["I went to bed early.","Eu fui dormir cedo."]],
+'What are you going to do this weekend?':[["I'm going to rest.","Eu vou descansar."],["Maybe I will visit my parents.","Talvez eu visite meus pais."],["On Sunday I'm going to study English.","No domingo eu vou estudar inglês."]],
+'Why are you learning English?':[["I want to get a better job.","Eu quero conseguir um emprego melhor."],["I need English for meetings.","Eu preciso de inglês para reuniões."],["I also want to travel abroad.","Eu também quero viajar para fora."]],
+'What do you like about your job?':[["I like my job because I help people.","Eu gosto do meu trabalho porque eu ajudo pessoas."],["I learn something new every day.","Eu aprendo algo novo todo dia."],["My team is very good.","Meu time é muito bom."]],
+'What is a normal day for you?':[["I usually wake up at six.","Eu normalmente acordo às seis."],["I start work at eight.","Eu começo a trabalhar às oito."],["After work I study English.","Depois do trabalho eu estudo inglês."]],
+'Tell me about yourself.':[["I've worked in sales for six years.","Eu trabalho com vendas há seis anos."],["Right now I manage small clients.","Hoje eu cuido de clientes pequenos."],["I'm looking for a role where I can grow.","Eu estou procurando uma vaga onde eu possa crescer."]],
+'What does a normal day at work look like?':[["I usually start by checking my emails.","Eu normalmente começo olhando meus e-mails."],["Most of my time goes to calls with clients.","A maior parte do meu tempo vai para ligações com clientes."],["In the afternoon I prepare reports.","À tarde eu preparo relatórios."]],
+'Tell me about a problem you solved at work.':[["There was a problem with late deliveries.","Tinha um problema com entregas atrasadas."],["So I decided to call the supplier every Monday.","Então eu decidi ligar para o fornecedor toda segunda."],["In the end, the delays stopped.","No fim, os atrasos pararam."]],
+'Why do you want this job?':[["The reason I applied is that I want to grow.","O motivo de eu me candidatar é que eu quero crescer."],["I want to work with bigger clients.","Eu quero trabalhar com clientes maiores."],["I think I can help with new sales.","Eu acho que posso ajudar com vendas novas."]],
+'What are your strengths?':[["I'm good at building relationships.","Eu sou bom em construir relacionamentos."],["I'm organized and I meet deadlines.","Eu sou organizado e cumpro prazos."],["For example, my clients stay with me for years.","Por exemplo, meus clientes ficam comigo por anos."]],
+'Can you describe your last project?':[["I was responsible for opening a new region.","Eu fui responsável por abrir uma região nova."],["I worked with a team of five people.","Eu trabalhei com um time de cinco pessoas."],["The result was thirty new clients in six months.","O resultado foi trinta clientes novos em seis meses."]],
+"What's your biggest weakness?":[["I used to take on too much work.","Eu costumava pegar trabalho demais."],["Now I prioritize and say no when I need to.","Agora eu priorizo e digo não quando preciso."],["It has made me much more productive.","Isso me deixou muito mais produtivo."]],
+'Tell me about a time you disagreed with your manager.':[["My manager wanted to cut prices.","Meu gestor queria baixar os preços."],["I saw it differently because the data showed another trend.","Eu vi de outro jeito porque os dados mostravam outra tendência."],["We agreed to run a small test first.","Nós combinamos de fazer um teste pequeno primeiro."]],
+'Where do you see yourself in five years?':[["I'd like to be leading a small team.","Eu gostaria de estar liderando um time pequeno."],["I want to grow into a management role.","Eu quero crescer para uma posição de gestão."],["I also want to speak English fluently at work.","Eu também quero falar inglês fluente no trabalho."]],
+'What are your salary expectations?':[["Based on my research, I'm looking for around ten thousand.","Com base na minha pesquisa, eu procuro algo perto de dez mil."],["I'd be open to discussing the full package.","Eu estaria aberto a discutir o pacote completo."],["Benefits and growth are also important to me.","Benefícios e crescimento também são importantes para mim."]],
+'How do you handle pressure?':[["When things get tight, I break the work into small steps.","Quando aperta, eu divido o trabalho em passos pequenos."],["I talk to the team early.","Eu converso com o time cedo."],["I focus on what matters most.","Eu foco no que mais importa."]],
+'Walk me through your biggest achievement.':[["We increased sales by twenty percent in one year.","Nós aumentamos as vendas em vinte por cento em um ano."],["The key was focusing on existing clients.","O segredo foi focar nos clientes atuais."],["I trained the team to follow up every week.","Eu treinei o time para fazer follow-up toda semana."]],
+'How would you handle an underperforming team member?':[["First, I would have a private conversation.","Primeiro, eu teria uma conversa em particular."],["I'd try to understand what's going on.","Eu tentaria entender o que está acontecendo."],["Then we would agree on clear goals and check in every week.","Depois a gente combinaria metas claras e conversaria toda semana."]],
+'Tell me about a decision you made with incomplete information.':[["We had to decide whether to enter a new market.","Nós tínhamos que decidir se entrávamos num mercado novo."],["The data wasn't complete yet.","Os dados ainda não estavam completos."],["In hindsight, moving early gave us an edge.","Olhando para trás, ir cedo nos deu vantagem."]],
+'What would you change about our industry?':[["If it were up to me, I'd make pricing more transparent.","Se dependesse de mim, eu deixaria os preços mais transparentes."],["Customers want to understand what they pay for.","Os clientes querem entender pelo que pagam."],["The bottom line is that trust drives repeat business.","No fim das contas, a confiança traz clientes de volta."]],
+"How do you influence people you don't manage?":[["I try to understand what they care about first.","Eu tento entender primeiro o que importa para eles."],["What usually works is showing how my request helps their goals.","O que normalmente funciona é mostrar como meu pedido ajuda as metas deles."],["I also share credit when things go well.","Eu também divido o mérito quando dá certo."]],
+'Describe a failure and what it taught you.':[["Looking back, I launched a product too fast.","Olhando para trás, eu lancei um produto rápido demais."],["We didn't test it with real customers.","Nós não testamos com clientes reais."],["What I learned is that small pilots save a lot of pain.","O que eu aprendi é que pilotos pequenos evitam muita dor de cabeça."]]
+};
+const MICRO_PASS=0.75;
+function microQs(){ const L=MICRO[trackLvl(curLvl())]; return [0,1,2].map(i=>pickDay(L, i*2)); }
+function microDone(q){ const m=dayRec().micro2||{}; return Math.min(3, m[normT(q.q)]||0); }
+function microHTML(){
+  const qs=microQs(); if(!state.msShow) state.msShow={};
+  return `<p class="sec__d">Para cada pergunta, monte <b>3 frases</b>. Leia em português e fale em inglês: pode ir em pedaços e pausar, o microfone espera e vai juntando. Quando a frase estiver certa, aparece <b>“Frase completa!”</b>.</p>
+    ${qs.map((q,i)=>{
+      const S=MICRO_S[q.q]||[[q.ex,'(diga a resposta modelo)']], done=microDone(q), cur=S[done];
+      return `<div class="q mq" id="mq-${i}">
+      <p class="q__en"><button class="row__play" data-sayraw="${esc(q.q)}" aria-label="Ouvir a pergunta">▶</button>${esc(q.q)}</p>
+      <p class="q__pt">${esc(q.pt)}</p>
+      <div class="mq__dots">${S.map((_,j)=>`<span class="${j<done?'on':j===done?'cur':''}"></span>`).join('')}<small>${done} de ${S.length} frases</small></div>
+      ${S.slice(0,done).map(s=>`<div class="ms ms--ok"><span class="ms__ck">✓</span><span><b>${esc(s[0])}</b><small>${esc(s[1])}</small></span><button class="mini" data-sayraw="${esc(s[0])}" aria-label="Ouvir">▶</button></div>`).join('')}
+      ${cur?`<div class="ms ms--cur">
+          <small class="ms__k">Frase ${done+1} de ${S.length} · diga em inglês:</small>
+          <p class="ms__pt">${esc(cur[1])}</p>
+          ${state.msShow[q.q+done]?`<p class="ms__en">${markedHTML(cur[0])} <button class="mini" data-sayraw="${esc(cur[0])}">▶</button></p>`:''}
+          ${framesHTML(q.f)}
+          <div class="acts acts--bare" style="margin-top:10px">
+            ${SRec?`<button class="act act--main" data-listen="mq${i}" data-target="${esc(cur[0])}" data-pass="${MICRO_PASS}" data-cum="1">🎤 Falar a frase</button>`:''}
+            ${state.msShow[q.q+done]?'':`<button class="act" data-msshow="${i}">Mostrar em inglês</button>`}
+          </div>${listenOut('mq'+i)}
+        </div>`
+      :`<div class="ms ms--all">🎉 Resposta completa! Agora, se quiser, grave a resposta inteira de uma vez:${recHTML('mic'+i,{max:45})}</div>`}
+    </div>`; }).join('')}`;
+}
+document.addEventListener('click', e=>{
+  const b=e.target.closest('[data-msshow]'); if(!b) return;
+  const i=+b.dataset.msshow, q=microQs()[i]; if(!q) return;
+  const S=MICRO_S[q.q]; const done=microDone(q); if(!S||!S[done]) return;
+  state.msShow[q.q+done]=true; render(); say(S[done][0],1,null);
+});
+const _passAppMicro=window.onSpeakPassApp;
+window.onSpeakPassApp=function(key, score, target){
+  if(_passAppMicro) _passAppMicro(key, score, target);
+  const m=/^mq(\d)$/.exec(key); if(!m || score<MICRO_PASS) return;
+  const i=+m[1], q=microQs()[i]; if(!q) return;
+  const out=document.getElementById('sc-'+key);
+  if(out) out.insertAdjacentHTML('beforeend','<p class="sc__go">✓ Frase completa! Indo para a próxima…</p>');
+  setTimeout(()=>{
+    const r=dayRec(); if(!r.micro2) r.micro2={}; const k=normT(q.q);
+    const S=MICRO_S[q.q]||[]; if((r.micro2[k]||0)>=S.length) return;
+    r.micro2[k]=(r.micro2[k]||0)+1; gain(5,'frase completa'); scMem[key]=''; save();
+    render(); if(typeof checkTasks==='function') checkTasks();
+    const el=document.getElementById('mq-'+i); if(el) el.scrollIntoView({block:'center', behavior:'smooth'});
+    if(r.micro2[k]<S.length) maosLivres(key);
+  }, 1300);
 };
 
 /* ---------------- início ---------------- */
