@@ -759,6 +759,41 @@ body[data-mode="col"] .bar,body[data-mode="tra"] .bar{display:flex}
 @keyframes toastin{from{opacity:0;transform:translate(-50%,-10px)}to{opacity:1;transform:translate(-50%,0)}}
 .banner{top:62px}
 [hidden]{display:none!important}
+
+/* ===== Zé, o ajudante ===== */
+.ze{display:block;width:100%;height:100%;overflow:visible}
+.ze--big{width:92px;height:92px;flex:0 0 auto;animation:zewave 1.6s ease-in-out 1}
+@keyframes zewave{0%,100%{transform:rotate(0)}20%{transform:rotate(-8deg)}40%{transform:rotate(7deg)}60%{transform:rotate(-4deg)}}
+.zetip{display:flex;align-items:flex-start;gap:10px;margin:14px 0 4px}
+.zetip__m{width:54px;height:54px;flex:0 0 auto;padding:0}
+.zetip__m:hover .ze{transform:scale(1.06)}
+.zetip__b{position:relative;flex:1;background:#fff;border:2px solid var(--line);border-radius:16px;padding:10px 14px;font-weight:800;font-size:15px;display:flex;flex-wrap:wrap;gap:4px 10px;align-items:center}
+.zetip__b::before{content:"";position:absolute;left:-9px;top:18px;width:14px;height:14px;background:#fff;border-left:2px solid var(--line);border-bottom:2px solid var(--line);transform:rotate(45deg)}
+.zetip__q{color:var(--signal);font-weight:900;font-size:14px;text-decoration:underline;text-underline-offset:3px}
+.zefab{position:fixed;right:16px;bottom:84px;z-index:35;width:62px;height:62px;padding:4px;border-radius:50%;background:#fff;border:2px solid var(--line);box-shadow:0 8px 20px rgba(20,33,61,.18);animation:zebob 3s ease-in-out infinite}
+.zefab__q{position:absolute;top:-4px;right:-4px;width:22px;height:22px;border-radius:50%;background:var(--green);color:#fff;font-weight:900;font-size:14px;display:grid;place-items:center;border:2px solid #fff}
+@keyframes zebob{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+@media (min-width:980px){.zefab{bottom:24px;right:24px}}
+.zesheet{position:fixed;inset:0;z-index:90;background:rgba(20,33,61,.45);display:flex;align-items:flex-end;justify-content:center}
+.zesheet__box{background:#fff;width:100%;max-width:560px;border-radius:26px 26px 0 0;padding:20px 20px calc(20px + env(safe-area-inset-bottom));animation:slideup .3s ease;max-height:88vh;overflow:auto}
+@media (min-width:700px){.zesheet{align-items:center}.zesheet__box{border-radius:26px}}
+.zesheet__top{display:flex;gap:14px;align-items:center}
+.zesheet__say{position:relative;flex:1;background:#F1F9FF;border:2px solid #84D8FF;border-radius:18px;padding:12px 14px;display:flex;flex-direction:column;gap:2px}
+.zesheet__say::before{content:"";position:absolute;left:-10px;top:50%;margin-top:-8px;width:16px;height:16px;background:#F1F9FF;border-left:2px solid #84D8FF;border-bottom:2px solid #84D8FF;transform:rotate(45deg)}
+.zesheet__say small{font-weight:900;color:var(--signal);font-size:12px;letter-spacing:.04em;text-transform:uppercase}
+.zesheet__say b{font-size:18px;line-height:1.25}
+.zesheet__steps{margin:18px 0 0;padding-left:0;list-style:none;counter-reset:z;display:grid;gap:10px}
+.zesheet__steps li{counter-increment:z;display:flex;gap:12px;align-items:flex-start;font-size:15.5px;font-weight:600;line-height:1.45}
+.zesheet__steps li::before{content:counter(z);flex:0 0 auto;width:28px;height:28px;border-radius:50%;background:var(--green);color:#fff;font-weight:900;display:grid;place-items:center;font-size:14px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.12)}
+.zesheet__end{margin:14px 0 0;background:var(--green-l);color:var(--green-d);border-radius:14px;padding:10px 12px;font-weight:800;font-size:14px}
+.zesheet__acts{display:grid;grid-template-columns:auto 1fr;gap:10px;margin-top:18px;align-items:center}
+
+.sc--live{background:#F1F9FF;color:var(--ink)}
+.sc__w--todo{background:#EDEDED;color:#9A9A9A}
+.sc__hint{margin:8px 0 0;font-weight:900;color:var(--green-d)}
+.steps--big{padding-left:22px}
+.steps--big > li{margin:0 0 18px;padding-left:4px}
+.rtxt{width:100%;margin-top:10px;font-size:16px;line-height:1.5;resize:vertical;min-height:120px;box-sizing:border-box}
 .wm{display:flex;flex-direction:column;font-family:'Outfit',system-ui,sans-serif;line-height:1}
 .wm__a{font-size:10px;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:#5A6478}
 .wm__b{font-size:24px;font-weight:800;letter-spacing:-.03em;color:#14213D;margin-top:2px}
@@ -2467,7 +2502,8 @@ const MISSIONS=[
  {id:'micro', slot:'Tarde', t:'3 microdesafios de fala', min:6, r:'PI', why:'Perguntas reais de entrevista e de trabalho. Responder em voz alta, sem roteiro, é o treino de fluência.'},
  {id:'diario', slot:'Noite', t:'Diário falado', min:5, r:'PI', why:'Dois minutos falando do seu dia, gravando. Ouvir a própria voz mostra onde você trava.'},
  {id:'rev2', slot:'Antes de dormir', t:'Revisão da noite', min:5, r:'LPI', why:'Segunda passada do dia. O que você errou de manhã volta aqui.'},
- {id:'conversa', slot:'Fim de semana', t:'Conversa com gente de verdade', min:30, r:'LPI', weekend:true, why:'O site não substitui conversa real. Uma por semana já acelera muito.'}
+ {id:'reconto', slot:'Fim de semana', t:'Resumo falado de um vídeo', min:20, r:'LPI', weekend:true, maxLvl:'A2', why:'No A2, conversa livre ainda trava. Aqui você treina a mesma coisa com apoio: assiste um vídeo curto, escreve um resumo com frases-modelo e depois fala o seu resumo em voz alta.'},
+ {id:'conversa', slot:'Fim de semana', t:'Conversa guiada com gente de verdade', min:30, r:'LPI', weekend:true, minLvl:'B1', why:'A partir do B1, conversar com gente de verdade é o que mais acelera. Prepare antes as respostas que você vai usar: assim a conversa flui em vez de travar.'}
 ];
 const RITMOS={leve:{n:'Leve',k:'L'},padrao:{n:'Padrão',k:'P'},intenso:{n:'Intenso',k:'I'}};
 
@@ -2492,7 +2528,8 @@ const MESES=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','
 function dayRec(d){ d=d||today(); if(!state.days[d]) state.days[d]={done:{}, min:0, ext:0}; return state.days[d]; }
 function totalMin(){ return Object.values(state.days).reduce((a,r)=>a+(r.min||0)+(r.ext||0),0); }
 function hoursDone(){ const p=state.profile; if(!p) return 0; return p.base + Math.max(0,totalMin()-(p.minAtPlace||0))/60; }
-function missionsToday(){ const k=RITMOS[(state.profile&&state.profile.ritmo)||'padrao'].k; return MISSIONS.filter(m=>m.r.includes(k) && (!m.weekend||isWeekend())); }
+function missionsToday(){ const k=RITMOS[(state.profile&&state.profile.ritmo)||'padrao'].k, L=lvlIdx(curLvl());
+  return MISSIONS.filter(m=>m.r.includes(k) && (!m.weekend||isWeekend()) && (!m.minLvl||L>=lvlIdx(m.minLvl)) && (!m.maxLvl||L<=lvlIdx(m.maxLvl))); }
 function mMin(m){ return (state.profile && state.profile.ritmo==='intenso' && m.minI) ? m.minI : m.min; }
 function metaMin(){ return missionsToday().filter(m=>!m.weekend).reduce((a,m)=>a+mMin(m),0); }
 function avgDaily(){
@@ -2645,50 +2682,119 @@ function micHelp(tipo){
 async function micBloqueado(){
   try{ const p=await navigator.permissions.query({name:'microphone'}); return p.state==='denied'; }catch(e){ return true; }
 }
+let listenSess=null;
+function stopListen(){ if(listenSess) listenSess.finish('other'); }
 function runListen(btn){
   const key=btn.dataset.listen, target=btn.dataset.target, out=document.getElementById('sc-'+key);
-  if(recog){ const same=recogKey===key; try{ recog.abort(); }catch(e){} recog=null; recogKey=null; if(same) return; }
+  if(listenSess && listenSess.key===key){ listenSess.finish('user'); return; }
+  if(listenSess) listenSess.finish('other');
   if(mediaRec){ try{ mediaRec.stop(); }catch(e){} setTimeout(()=>runListen(btn), 450); return; }
-  const r=new SRec(); recog=r; recogKey=key;
-  r.lang=state.accent; r.interimResults=false; r.maxAlternatives=3; r.continuous=!target;
-  const label=btn.textContent;
-  btn.textContent = target ? '● ouvindo… fale agora' : '● ouvindo… toque para parar';
+  const label = btn.dataset.label || btn.textContent; btn.dataset.label = label;
+  const S={ key, target, segs:[], interim:'', t0:Date.now(), last:Date.now(), done:false, inst:null, best:null, passed:null };
+  listenSess=S;
+  const IDLE = target ? 9000 : 15000, MAX = target ? 60000 : 240000;
   btn.classList.add('act--live');
-  let got=false, ended=false; const parts=[];
-  const fim=()=>{ if(ended) return; ended=true; clearTimeout(wd); if(recog===r){ recog=null; recogKey=null; } btn.textContent=label; btn.classList.remove('act--live'); };
-  const wd=setTimeout(()=>{ if(ended) return; try{ r.abort(); }catch(e){} fim(); if(!got && out) out.innerHTML='<p class="sc__l">Não captei sua voz. Toque e fale de novo.</p>'; }, target?12000:120000);
-  r.onresult=e=>{
-    got=true;
+  btn.textContent = '■ Parar · pode pausar, eu espero';
+  const tick=setInterval(()=>{ if(S.done) return; const n=Date.now(); if(n-S.last>IDLE || n-S.t0>MAX) S.finish('idle'); }, 400);
+
+  function paint(){
+    if(!out || S.done) return;
     if(target){
-      const alts=Array.from(e.results[0]).map(a=>a.transcript);
-      const best=alts.map(a=>cmpSpeech(target,a)).sort((x,y)=>y.score-x.score)[0];
-      const pct=Math.round(best.score*100);
-      const v = pct>=85 ? 'Mandou bem' : pct>=60 ? 'Quase lá' : 'Ainda não — ouça e tente de novo';
-      if(out) out.innerHTML=`<p class="sc__v">${pct}% · ${v}</p>
-        <p>${best.marks.map(m=>`<span class="sc__w sc__w--${m.ok?'ok':'no'}">${esc(m.w)}</span>`).join('')}</p>
-        <p class="sc__l" style="margin-top:6px">O que eu entendi: “${esc(best.said)}”</p>`;
-      logEvent('speak', target); if(window.onSpeakScore) onSpeakScore(best.score);
-      if(out){ out.className='sc sc--'+(pct>=85?'ok':pct>=60?'mid':'no'); scCls[key]=out.className; scMem[key]=out.innerHTML; }
-      if(window.onSpeakPass) onSpeakPass(key, best.score); if(window.onSpeakPassApp) onSpeakPassApp(key, best.score, target);
+      const cum=cmpSpeech(target, (S.segs.join(' ')+' '+S.interim).trim());
+      const tudo = cum.score>=0.85 && !S.passed;
+      out.className='sc sc--live';
+      out.innerHTML=`<p class="sc__v">🎙️ Ouvindo… pode falar em pedaços</p>
+        <p>${cum.marks.map(m=>`<span class="sc__w sc__w--${m.ok?'ok':'todo'}">${esc(m.w)}</span>`).join('')}</p>
+        ${S.segs.length||S.interim?`<p class="sc__l" style="margin-top:6px">Pedaços: ${S.segs.map(s=>`“${esc(s)}”`).join(' · ')}${S.interim?` <i>${esc(S.interim)}…</i>`:''}</p>`:'<p class="sc__l" style="margin-top:6px">Fale no seu ritmo. Pausas não cortam.</p>'}
+        ${tudo?'<p class="sc__hint">Você já falou todas as partes! Agora diga a frase inteira de uma vez.</p>':''}`;
     } else {
-      for(let i=e.resultIndex;i<e.results.length;i++) if(e.results[i].isFinal) parts.push(e.results[i][0].transcript);
-      const txt=parts.join(' ').trim();
-      if(out){ out.className='sc'; out.innerHTML=`<p class="sc__l">O que o reconhecimento entendeu · ${words(txt).length} palavras</p><p class="sc__said">${esc(txt)}</p>`; }
-      if(window.onTranscribe) onTranscribe(key, txt);
+      const txt=(S.segs.join(' ')+' '+S.interim).trim();
+      out.className='sc sc--live';
+      out.innerHTML=`<p class="sc__v">🎙️ Ouvindo… pode pausar, eu espero</p>
+        <p class="sc__said">${esc(S.segs.join(' '))}${S.interim?` <i>${esc(S.interim)}</i>`:''}</p>
+        <p class="sc__l">${words(txt).length} palavras · toque em Parar quando terminar</p>`;
     }
+  }
+  function finalize(why){
+    if(!out) return;
+    if(target){
+      if(!S.segs.length){ out.className='sc'; out.innerHTML='<p class="sc__l">Não captei sua voz. Toque e fale de novo.</p>'; return; }
+      const best = S.passed || S.best;
+      const cum = cmpSpeech(target, S.segs.join(' '));
+      const pct = Math.round(best.score*100);
+      let v, cls;
+      if(S.passed){ v='Mandou bem'; cls='ok'; }
+      else if(cum.score>=0.85){ v='Todas as partes certas 👏 Falta juntar: toque e diga a frase inteira de uma vez'; cls='mid'; }
+      else if(pct>=60){ v='Quase lá'; cls='mid'; }
+      else { v='Ainda não — ouça e tente de novo'; cls='no'; }
+      const marks = S.passed ? best.marks : cum.marks;
+      out.className='sc sc--'+cls;
+      out.innerHTML=`<p class="sc__v">${S.passed?pct+'% · ':''}${v}</p>
+        <p>${marks.map(m=>`<span class="sc__w sc__w--${m.ok?'ok':'no'}">${esc(m.w)}</span>`).join('')}</p>
+        <p class="sc__l" style="margin-top:6px">O que eu entendi: ${S.passed?`“${esc(best.said)}”`:S.segs.map(s=>`“${esc(s)}”`).join(' · ')}</p>`;
+      scCls[key]=out.className; scMem[key]=out.innerHTML;
+      logEvent('speak', target);
+      const sc = S.passed ? best.score : Math.min(best.score, 0.84);
+      if(window.onSpeakScore) onSpeakScore(sc);
+      if(window.onSpeakPass) onSpeakPass(key, sc);
+      if(window.onSpeakPassApp) onSpeakPassApp(key, Math.max(sc, cum.score>=0.85?0.6:0), target);
+    } else {
+      const txt=S.segs.join(' ').trim();
+      out.className='sc';
+      out.innerHTML = txt ? `<p class="sc__l">O que o reconhecimento entendeu · ${words(txt).length} palavras</p><p class="sc__said">${esc(txt)}</p>`
+                          : '<p class="sc__l">Não captei sua voz. Toque e fale de novo.</p>';
+      if(txt && window.onTranscribe) onTranscribe(key, txt);
+    }
+  }
+  S.finish=(why, errHtml)=>{
+    if(S.done) return; S.done=true; clearInterval(tick);
+    if(listenSess===S) listenSess=null;
+    const r=S.inst; S.inst=null; if(recog===r){ recog=null; recogKey=null; }
+    try{ r && r.abort(); }catch(e){}
+    btn.textContent=label; btn.classList.remove('act--live');
+    if(errHtml && out){ out.className='sc'; out.innerHTML=errHtml; }
+    else if(why!=='other') finalize(why);
+    save();
   };
-  r.onerror=async e=>{
-    got=true; fim();
-    if(!out || e.error==='aborted') return;
-    out.className='sc';
-    if(e.error==='not-allowed'||e.error==='service-not-allowed') out.innerHTML = micHelp(await micBloqueado() ? 'blocked' : 'busy');
-    else if(e.error==='audio-capture') out.innerHTML = micHelp('busy');
-    else if(e.error==='network') out.innerHTML = micHelp('net');
-    else if(e.error==='no-speech') out.innerHTML = '<p class="sc__l">Não ouvi nada. Fale mais perto do microfone e toque de novo.</p>';
-    else out.innerHTML = '<p class="sc__l">O reconhecimento falhou ('+esc(e.error)+'). Toque de novo.</p>';
-  };
-  r.onend=()=>{ fim(); if(!got && out) out.innerHTML='<p class="sc__l">Não captei sua voz. Toque e fale de novo.</p>'; save(); };
-  try{ r.start(); }catch(e){ fim(); if(out) out.innerHTML=micHelp('busy'); }
+  function onSeg(alts){
+    S.last=Date.now();
+    if(target){
+      const sc=alts.map(a=>cmpSpeech(target,a)).sort((x,y)=>y.score-x.score)[0];
+      S.segs.push(sc.said.trim());
+      if(!S.best || sc.score>S.best.score) S.best=sc;
+      if(sc.score>=0.85){ S.passed=sc; S.finish('pass'); return; }
+    } else {
+      S.segs.push(alts[0]);
+      if(window.onTranscribe) onTranscribe(key, S.segs.join(' '));
+    }
+    paint();
+  }
+  function startInst(){
+    const r=new SRec(); S.inst=r; recog=r; recogKey=key;
+    r.lang=state.accent; r.continuous=true; r.interimResults=true; r.maxAlternatives=3;
+    r.onresult=e=>{
+      if(S.done || S.inst!==r) return;
+      let interim='';
+      for(let i=e.resultIndex;i<e.results.length;i++){
+        const res=e.results[i];
+        if(res.isFinal){ const alts=Array.from(res).map(a=>String(a.transcript||'').trim()).filter(Boolean); if(alts.length){ onSeg(alts); if(S.done) return; } }
+        else interim+=res[0].transcript;
+      }
+      if(interim) S.last=Date.now();
+      S.interim=interim.trim(); paint();
+    };
+    r.onerror=async e=>{
+      if(S.done || S.inst!==r) return;
+      if(e.error==='no-speech' || e.error==='aborted') return;
+      if(e.error==='not-allowed'||e.error==='service-not-allowed') S.finish('error', micHelp(await micBloqueado() ? 'blocked' : 'busy'));
+      else if(e.error==='audio-capture') S.finish('error', micHelp('busy'));
+      else if(e.error==='network') S.finish('error', micHelp('net'));
+    };
+    r.onend=()=>{ if(S.done || S.inst!==r) return; S.interim=''; setTimeout(()=>{ if(!S.done && S.inst===r) startInst(); }, 150); };
+    try{ r.start(); }catch(e){ S.finish('error', micHelp('busy')); }
+  }
+  paint();
+  startInst();
 }
 
 /* ---------------- gravador ---------------- */
@@ -2706,7 +2812,7 @@ function recInner(key){
 function paintRec(key){ const b=document.querySelector(`[data-recbox="${key}"]`); if(b) b.innerHTML=recInner(key); }
 async function toggleRec(key){
   if(mediaRec){ const same=mrKey===key; mediaRec.stop(); if(same) return; }
-  if(recog){ try{ recog.abort(); }catch(e){} recog=null; recogKey=null; await new Promise(r=>setTimeout(r,400)); }
+  if(listenSess){ stopListen(); await new Promise(r=>setTimeout(r,400)); }
   try{
     const stream=await navigator.mediaDevices.getUserMedia({audio:true});
     const chunks=[]; const mr=new MediaRecorder(stream); mediaRec=mr; mrKey=key; mrT0=Date.now();
@@ -2730,6 +2836,44 @@ async function toggleRec(key){
     if(b) b.innerHTML=`<div class="sc">${micHelp(tipo)}</div><button class="act" data-rec="${esc(key)}">● Tentar gravar de novo</button>`;
   }
 }
+
+
+/* ---------------- reconto: resumo falado de um vídeo (A2) ---------------- */
+const RECONTO_FRAMES=['The video is about ___.','First, ___.','Then, ___.','I learned that ___.','My favorite part was ___.','I think ___ because ___.'];
+function sentencesOf(t){ return String(t).split(/[.!?\n]+/).map(s=>s.trim()).filter(s=>words(s).length>=3); }
+function recontoHTML(){
+  const r=dayRec(), L=VIDEOS[trackLvl(curLvl())], q=pickDay(L,1), txt=r.recontoTxt||'', n=sentencesOf(txt).length;
+  return `<ol class="steps steps--big">
+    <li><b>Assista</b> a um vídeo curto (até 5 min). 1ª vez sem legenda, 2ª com legenda <b>em inglês</b>.
+      <div class="acts acts--bare" style="margin-top:8px"><a class="act act--main" target="_blank" rel="noopener" href="https://www.youtube.com/results?search_query=${encodeURIComponent(q)}">▶ Buscar: ${esc(q)} ↗</a></div></li>
+    <li><b>Escreva o resumo</b> em 3 a 5 frases simples. Toque num modelo para começar a frase:
+      ${`<div class="frames">${RECONTO_FRAMES.map(f=>`<button class="frame" data-recframe="${esc(f)}">${esc(f)}</button>`).join('')}</div>`}
+      <textarea class="field rtxt" id="rec-txt" rows="5" placeholder="The video is about...">${esc(txt)}</textarea>
+      <p class="sc__l" id="rec-n">${n} de 3 frases</p></li>
+    <li><b>Fale o seu resumo</b> em voz alta. Pode ler olhando o texto e pode pausar: o microfone espera.
+      <div class="acts acts--bare" style="margin-top:8px">${listenBtn('recontosc','')}</div>${listenOut('recontosc')}
+      ${recHTML('reconto',{max:120})}</li>
+    <li><b>Opcional:</b> mande as suas frases para a revisão espaçada.
+      <div class="acts acts--bare" style="margin-top:8px"><button class="act" data-recsave="1">+ Salvar minhas frases</button></div><p class="msg" id="rec-msg"></p></li>
+  </ol>`;
+}
+let recT=null;
+document.addEventListener('input', e=>{
+  if(e.target.id!=='rec-txt') return;
+  const r=dayRec(); r.recontoTxt=e.target.value;
+  const el=document.getElementById('rec-n'); if(el) el.textContent=sentencesOf(r.recontoTxt).length+' de 3 frases';
+  clearTimeout(recT); recT=setTimeout(()=>{ save(); if(typeof checkTasks==='function') checkTasks(); }, 600);
+});
+document.addEventListener('click', e=>{
+  const f=e.target.closest('[data-recframe]');
+  if(f){ const ta=document.getElementById('rec-txt'); if(!ta) return; const frame=f.dataset.recframe;
+    const pos=frame.indexOf('___'); const base=ta.value.trim(); const pre=base?(base+(/[.!?]$/.test(base)?' ':'. ')):'';
+    ta.value=pre+frame.replace('___',''); ta.focus(); const c=pre.length+(pos>=0?pos:frame.length); ta.setSelectionRange(c,c);
+    ta.dispatchEvent(new Event('input',{bubbles:true})); return; }
+  const s=e.target.closest('[data-recsave]');
+  if(s){ const ss=sentencesOf(dayRec().recontoTxt||''); let k=0; ss.forEach(x=>{ if(keep(x.replace(/\s+/g,' ')+'.', '', coreOf(x), 'meu resumo de vídeo')) k++; });
+    save(); renderStats(); const m=document.getElementById('rec-msg'); if(m) m.textContent = k?`${k} frase${k>1?'s':''} na revisão.`:'Escreva frases primeiro (ou elas já estavam salvas).'; }
+});
 
 /* ---------------- fábrica de frases ---------------- */
 function patsFor(l){ return PATTERNS.filter(p=>p.lvl===trackLvl(l)); }
@@ -2898,7 +3042,10 @@ function videoHTML(){
 }
 function conversaHTML(){
   const week=state.phrases.filter(p=>p.added>Date.now()-7*864e5).slice(0,10);
-  return `<ul class="steps">
+  const prep=(MICRO[trackLvl(curLvl())]||[]).slice(0,3);
+  return `<div class="block" style="margin-top:0;border:0;padding:0"><p class="block__l">Prepare antes (5 min)</p>
+      ${prep.map(q=>`<div class="row"><button class="row__play" data-sayraw="${esc(q.q)}">▶</button><div class="row__body"><p class="row__en">${esc(q.q)}</p><p class="row__pt">Comece com: ${esc(q.f.join(' / '))}</p></div></div>`).join('')}</div>
+    <ul class="steps" style="margin-top:14px">
       <li>Marque 30 minutos com um professor online (italki e Preply são os mais conhecidos), um grupo de conversação ou um colega que fale inglês.</li>
       <li>Avise no começo: <i>“I'm practicing for job interviews. Please correct me.”</i></li>
       <li>Tente encaixar as frases da sua semana, listadas abaixo.</li>
@@ -2916,6 +3063,7 @@ function missionBody(m){
     case 'micro': return microHTML();
     case 'diario': return diarioHTML();
     case 'conversa': return conversaHTML();
+    case 'reconto': return recontoHTML();
   }
   return '';
 }
@@ -3941,7 +4089,7 @@ document.addEventListener('keydown', e=>{
 function H(){ return state.game.heard || (state.game.heard={}); }
 function KD(){ return state.game.kitDone || (state.game.kitDone={}); }
 function normT(t){ return String(t||'').trim().toLowerCase().replace(/\s+/g,' '); }
-const ICON={rev1:'🧠', narra:'💭', escuta:'🎧', shadow:'🗣️', fabrica:'🧩', video:'📺', micro:'🎤', diario:'📓', rev2:'🌙', conversa:'☎️'};
+const ICON={rev1:'🧠', narra:'💭', escuta:'🎧', shadow:'🗣️', fabrica:'🧩', video:'📺', micro:'🎤', diario:'📓', rev2:'🌙', conversa:'☎️', reconto:'📝'};
 const PATH_OFF=[0,46,70,46,0,-46,-70,-46];
 
 /* ---------------- contagem de áudios ouvidos ---------------- */
@@ -3976,6 +4124,7 @@ function taskProg(id){
     case 'narra': return r.narrated?1:0;
     case 'micro': return Math.min(1,Object.keys(r.micro).length/3);
     case 'diario': return Math.min(1,(r.recd.diarioSecs||0)/60);
+    case 'reconto': { const n=sentencesOf(r.recontoTxt||'').length; const fal=(r.recontoWords||0)>=15||r.recd.reconto?1:0; return Math.min(1, Math.min(n,3)/3*0.5 + fal*0.5); }
     case 'video': { if(!r.vidT0) return 0; const m=MISSIONS.find(x=>x.id==='video'); return Math.min(1,(Date.now()-r.vidT0)/(mMin(m)*60*1000*0.7)); }
   }
   return 0;
@@ -3994,7 +4143,8 @@ const TASK_HINT={
   video:'Abra um vídeo. Quando você voltar depois de alguns minutos, a missão fecha sozinha.',
   micro:'Termina quando você responder as 3 perguntas, gravando ou falando no microfone.',
   diario:'Termina quando você gravar pelo menos 1 minuto.',
-  conversa:'Essa acontece fora do app. Quando fizer, toque no botão abaixo.'
+  conversa:'Essa acontece fora do app. Quando fizer, toque no botão abaixo.',
+  reconto:'Termina quando você escrever pelo menos 3 frases e falar o resumo (pelo microfone ou gravando 20 segundos).'
 };
 
 /* ---------------- conclusão automática ---------------- */
@@ -4030,6 +4180,7 @@ window.onTranscribe=function(key, txt){
   const r=recDay(), n=words(txt).length;
   if(key==='narrasc' && n>=4) r.narrated=1;
   if(/^micsc\d$/.test(key) && n>=4) r.micro[key.replace('sc','')]=1;
+  if(key==='recontosc') r.recontoWords=Math.max(r.recontoWords||0, n);
   if(key==='diariosc' && n>=40) r.recd.diarioSecs=Math.max(r.recd.diarioSecs||0,60);
   save(); checkTasks();
 };
@@ -4037,6 +4188,7 @@ window.onRecorded=function(key, secs){
   const r=recDay();
   if(key==='shadow' && secs>=1) r.recd.shadow=1;
   if(/^mic\d$/.test(key) && secs>=4) r.micro[key]=1;
+  if(key==='reconto' && secs>=20) r.recd.reconto=1;
   if(key==='diario') r.recd.diarioSecs=Math.max(r.recd.diarioSecs||0, Math.round(secs));
   save(); checkTasks();
 };
@@ -4331,6 +4483,189 @@ if('serviceWorker' in navigator && /^https?:$/.test(location.protocol)){
   window.addEventListener('load', ()=>{ navigator.serviceWorker.register('sw.js').catch(()=>{}); });
 }
 setTimeout(()=>{ const s=document.getElementById('splash'); if(s){ s.classList.add('splash--off'); setTimeout(()=>s.remove(),400); } }, isStandalone()?650:150);
+
+
+/* ---------------- Zé, o ajudante do Inglês do Zeu ---------------- */
+function zeSVG(cls){ return `<svg class="${cls||''}" viewBox="0 0 120 120" aria-hidden="true">
+  <path d="M34 86 L24 110 L56 90 Z" fill="#14213D"></path>
+  <rect x="8" y="12" width="104" height="80" rx="36" fill="#14213D"></rect>
+  <path d="M50 12 h20" stroke="#2BD47D" stroke-width="7" stroke-linecap="round"></path>
+  <circle cx="42" cy="48" r="13" fill="#FFFFFF"></circle><circle cx="78" cy="48" r="13" fill="#FFFFFF"></circle>
+  <circle class="ze__eye" cx="45" cy="50" r="6.5" fill="#14213D"></circle><circle class="ze__eye" cx="81" cy="50" r="6.5" fill="#14213D"></circle>
+  <circle cx="47" cy="47" r="2" fill="#FFFFFF"></circle><circle cx="83" cy="47" r="2" fill="#FFFFFF"></circle>
+  <path d="M44 68 Q60 81 76 68" fill="none" stroke="#2BD47D" stroke-width="6" stroke-linecap="round"></path>
+  <circle cx="30" cy="66" r="5" fill="#2BD47D" opacity=".35"></circle><circle cx="90" cy="66" r="5" fill="#2BD47D" opacity=".35"></circle>
+</svg>`; }
+
+const HELP={
+  'path-hoje':{tip:'Toque na bolinha que pisca para começar.', steps:[
+    'Cada bolinha é uma <b>missão do dia</b>, na ordem do seu dia: manhã, almoço, tarde e noite.',
+    'A bolinha que pisca com o balão <b>Começar</b> é a próxima. Quando você abre o app, eu já te levo direto para ela.',
+    'Bolinha <b>amarela com ✓</b> = missão feita. O anel verde em volta mostra quanto falta.',
+    'Fez todas? O <b>baú do dia</b> abre e você ganha XP de bônus.']},
+  'path-tri':{tip:'Cada bolinha é uma lição desta etapa.', steps:[
+    '🧩 é uma <b>estrutura de frase</b> (ex.: “I want to ___”). Faça 3 rodadas e ela vira 👑.',
+    '💬 é uma <b>situação real</b> (entrevista, reunião…). Ouça cada frase 3 vezes e ela vira ⭐.',
+    'Toque na bolinha que pisca para continuar de onde parou.',
+    'Em cima dá para trocar de etapa (A2, B1, B2, C1).']},
+  place:{tip:'Responda com sinceridade, sem esforço.', steps:[
+    'Marque <b>Sim</b> só no que você já consegue fazer hoje, de verdade.',
+    'Na dúvida, marque <b>Não</b>: é melhor começar fácil e subir rápido.',
+    'Escolha a <b>meta</b> (B2 é o que a maioria das vagas pede) e quanto tempo por dia você tem.',
+    'Toque em <b>Calcular meu nível</b>. Dá para refazer o teste quando quiser.']},
+  rev1:{tip:'Lembre a frase em inglês antes de ver a resposta.', steps:[
+    'Leia a frase em <b>português</b>.',
+    'Tente falar em inglês <b>em voz alta</b>. Pode tocar em 🎤 <b>Falar e conferir</b>: se acertar, passa sozinho.',
+    'Não lembrou? Toque em <b>Mostrar resposta</b> e ouça.',
+    'Seja sincero: <b>Errei, Difícil, Lembrei ou Fácil</b>. Eu decido quando a frase volta: a que você erra volta ainda hoje.']},
+  narra:{tip:'Fale em inglês o que você está fazendo agora.', steps:[
+    'Leia a tarefa em cima (ex.: “narre o que está fazendo”).',
+    'Use os <b>modelos</b> de frase: toque neles para ouvir.',
+    'Toque em 🎤 <b>Falar e transcrever</b> e fale do seu jeito. Pode pausar, eu espero. Toque em Parar no fim.',
+    'Faltou uma palavra? Escreva em português no campo de baixo que eu traduzo e salvo.']},
+  escuta:{tip:'Só ouvir: toque em “Tocar as voltas”.', steps:[
+    'Coloque o fone, se puder.',
+    'Toque em <b>▶ Tocar as voltas</b>.',
+    '1ª volta: só ouvindo, sem texto. 2ª: lendo junto. 3ª: <b>repita junto</b>, mesmo sussurrando.',
+    'Termina sozinho quando cada frase tocar 3 vezes. Não precisa marcar nada.']},
+  shadow:{tip:'Repita junto com o áudio, copiando o ritmo.', steps:[
+    'Toque em <b>▶ Devagar</b> duas vezes e repare nos sons em vermelho.',
+    'Toque em <b>▶ Ouvir</b> e fale <b>junto</b>, por cima do áudio.',
+    'Toque em <b>Assistir aqui</b>: 3 vídeos de pessoas reais. Na pausa, é a sua vez de repetir.',
+    'No fim, grave sua voz ou toque em 🎤 <b>Falar e conferir</b>.']},
+  fabrica:{tip:'Monte a frase em inglês e fale em voz alta.', steps:[
+    'Veja a <b>estrutura</b> em azul (ex.: “I want to ___”) e a dica amarela.',
+    'Leia a frase em <b>português</b> e pense como fica em inglês.',
+    'Toque em 🎤 e fale. Pode ir <b>em pedaços</b> (“I want”… “to learn”…). Depois diga a frase inteira.',
+    'Acertou? Passa sozinho. Não sabe? Toque em <b>Mostrar inglês</b>, ouça e repita.']},
+  'tri-pat':{tip:'Monte cada frase com a mesma estrutura.', steps:[
+    'A estrutura fica em cima (ex.: “I need to ___”). Só muda o final.',
+    'Leia a frase em português e fale em inglês no 🎤. Pode falar em pedaços e depois inteira.',
+    'Acertou, passa sozinho. Ligue o <b>Modo contínuo</b> para nem precisar tocar na tela.',
+    'Cada rodada tem 5 frases. Com <b>3 rodadas</b> a estrutura vira 👑 dominada.']},
+  kit:{tip:'Ouça cada frase 3 vezes.', steps:[
+    'Toque em <b>▶</b> em cada frase e repita em voz alta.',
+    'O número no botão mostra quantas vezes você ouviu. Na 3ª vez ele fica verde ✓.',
+    'Leia também “O que você vai ouvir de volta”: é o que a outra pessoa responde.',
+    'Todas com ✓? A situação se conclui sozinha e as frases vão para a sua revisão.']},
+  video:{tip:'Assista a um vídeo curto com legenda em inglês.', steps:[
+    'Toque num dos vídeos sugeridos.',
+    'Use legenda <b>em inglês</b>, não em português.',
+    'Entendeu menos da metade? Troque por um mais fácil.',
+    'Volte para o app depois: a missão fecha sozinha. Ouviu uma frase legal? Salve no campo de baixo.']},
+  micro:{tip:'Responda 3 perguntas em voz alta.', steps:[
+    'Toque em <b>▶</b> para ouvir a pergunta.',
+    'Use os <b>modelos</b> de começo de resposta.',
+    'Toque em <b>● Gravar</b> ou 🎤 e responda em até 30 segundos. Errar faz parte.',
+    'Travou? Abra <b>Ver uma resposta modelo</b>, ouça e tente de novo.']},
+  diario:{tip:'Conte seu dia em inglês por 1 minuto.', steps:[
+    'Leia o tema do dia.',
+    'Toque em <b>● Gravar minha voz</b> e fale 1 minuto, do seu jeito.',
+    'Ouça a gravação uma vez.',
+    'Anote uma palavra que faltou para usar amanhã.']},
+  reconto:{tip:'Assista, escreva 3 frases e fale o resumo.', steps:[
+    'Toque em <b>Buscar</b> e assista a um vídeo curto, 2 vezes.',
+    'Escreva 3 a 5 frases tocando nos <b>modelos</b> (“The video is about…”).',
+    'Toque em 🎤 e leia o seu resumo em voz alta. Pode pausar.',
+    'Se quiser, mande suas frases para a revisão.']},
+  conversa:{tip:'Prepare as respostas e depois converse.', steps:[
+    'Ouça as 3 perguntas de preparação e pense nas respostas.',
+    'Marque 30 minutos com um professor online, um grupo ou um colega.',
+    'Comece dizendo: “I\'m practicing for job interviews. Please correct me.”',
+    'Fez? Toque em <b>Fiz a conversa</b>.']},
+  con:{tip:'Aqui ficam os seus prêmios.', steps:[
+    'Cada atividade dá <b>XP</b>. Com XP você sobe de <b>patente</b> e libera temas de cor.',
+    'A cada 7 dias seguidos você ganha um <b>escudo</b> 🛡️ que protege a sequência num dia sem treino.',
+    'Quando o teste de nível mostrar que você subiu, sai um <b>certificado</b> da etapa.']},
+  col:{tip:'Suas frases salvas ficam aqui.', steps:[
+    'Escreva em português no campo de cima para achar ou traduzir uma frase.',
+    'Toque em ▶ para ouvir. Os sons difíceis ficam em vermelho.',
+    'Tudo o que você salva entra na <b>revisão espaçada</b>.']},
+  tra:{tip:'Treino livre com as suas frases.', steps:['Ouça, repita e passe para a próxima no seu ritmo.','Use quando quiser treinar fora das missões.']},
+  his:{tip:'Seu histórico de prática.', steps:['As barras mostram quanto você treinou em cada dia.','Embaixo ficam as frases mais praticadas.']},
+  sit:{tip:'Escolha uma situação real para treinar.', steps:['Toque numa situação para abrir.','Ouça cada frase 3 vezes: ela se conclui sozinha.']}
+};
+HELP.rev2=HELP.rev1;
+
+function helpId(){
+  if(precisaPortao()) return null;
+  if(state.mode==='hoje'){ if(!state.profile||state.placing) return 'place'; return state.open||'path-hoje'; }
+  if(state.mode==='tri') return state.triKit?'kit':(state.triOpen&&state.triPat)?'tri-pat':'path-tri';
+  if(state.mode==='sit') return state.kit?'kit':'sit';
+  if(state.mode==='rev') return 'rev1';
+  return HELP[state.mode]?state.mode:null;
+}
+function zeTipHTML(id){
+  const h=HELP[id]; if(!h) return '';
+  return `<div class="zetip"><button class="zetip__m" data-zehelp="${id}" aria-label="Ajuda do Zé">${zeSVG('ze')}</button>
+    <div class="zetip__b"><span>${esc(h.tip)}</span><button class="zetip__q" data-zehelp="${id}">Como faço?</button></div></div>`;
+}
+function openHelp(id){
+  const h=HELP[id]; if(!h) return;
+  closeHelp();
+  const first=!state.game.zeHello;
+  const d=document.createElement('div'); d.className='zesheet'; d.id='zesheet';
+  d.innerHTML=`<div class="zesheet__box" role="dialog" aria-modal="true" aria-label="Ajuda do Zé">
+    <div class="zesheet__top">${zeSVG('ze ze--big')}
+      <div class="zesheet__say"><small>${first?'Oi! Eu sou o Zé 👋':'Zé explica'}</small><b>${esc(h.tip)}</b></div></div>
+    <ol class="zesheet__steps">${h.steps.map(s=>`<li><span>${s}</span></li>`).join('')}</ol>
+    ${typeof TASK_HINT!=='undefined'&&TASK_HINT[id]?`<p class="zesheet__end">✓ ${esc(TASK_HINT[id])}</p>`:''}
+    <div class="zesheet__acts"><button class="act" data-zespeak="${id}">🔊 Ouvir explicação</button><button class="big" data-zeok="1" style="margin:0">Entendi!</button></div>
+  </div>`;
+  document.body.appendChild(d);
+  state.game.zeHello=true;
+  const b=d.querySelector('[data-zeok]'); if(b) b.focus();
+}
+function closeHelp(){ if('speechSynthesis' in window && zeSpeaking){ speechSynthesis.cancel(); zeSpeaking=false; } document.querySelectorAll('.zesheet').forEach(x=>x.remove()); }
+let zeSpeaking=false;
+function zeSpeak(id){
+  const h=HELP[id]; if(!h || !('speechSynthesis' in window)) return;
+  const txt=[h.tip].concat(h.steps.map(s=>s.replace(/<[^>]+>/g,''))).join('. ').replace(/[🧩💬👑⭐🎤▶●✓🛡️🔊👋]/gu,'');
+  speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(txt); u.lang='pt-BR'; u.rate=1.02;
+  const v=speechSynthesis.getVoices().find(x=>/^pt(-|_)BR/i.test(x.lang))||speechSynthesis.getVoices().find(x=>/^pt/i.test(x.lang)); if(v) u.voice=v;
+  u.onend=u.onerror=()=>{ zeSpeaking=false; };
+  zeSpeaking=true; speechSynthesis.speak(u);
+}
+function paintZeFab(){
+  let f=document.getElementById('zefab');
+  const id=helpId();
+  if(!f){ f=document.createElement('button'); f.id='zefab'; f.className='zefab'; f.setAttribute('aria-label','Ajuda do Zé'); f.innerHTML=zeSVG('ze')+'<span class="zefab__q">?</span>'; document.body.appendChild(f); }
+  f.dataset.zehelp=id||''; f.hidden = !id || inLesson();
+}
+document.addEventListener('click', e=>{
+  const t=e.target.closest('[data-zehelp],[data-zeok],[data-zespeak],.zesheet'); if(!t) return;
+  if(t.dataset.zehelp){ openHelp(t.dataset.zehelp); return; }
+  if(t.dataset.zespeak){ zeSpeak(t.dataset.zespeak); return; }
+  if(t.dataset.zeok || e.target===t){ closeHelp(); save(); }
+});
+document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeHelp(); });
+
+/* dica do Zé dentro de cada lição */
+const _lessonShellZe=lessonShell;
+lessonShell=function(o){
+  const id=helpId();
+  return _lessonShellZe(Object.assign({}, o, { why:'' })).replace('<div class="lesson__body">', zeTipHTML(id)+'<div class="lesson__body">');
+};
+/* placement e caminhos: Zé no topo */
+const _placeHTMLZe=placeHTML;
+placeHTML=function(){ return zeTipHTML('place')+_placeHTMLZe(); };
+
+/* ao abrir o app: direto para a próxima missão + ajuda automática na 1ª vez de cada passo */
+let zeAutoOpened=false;
+const _renderZe=render;
+render=function(){
+  if(!zeAutoOpened && state.profile && !state.placing && state.mode==='hoje' && !precisaPortao()){
+    zeAutoOpened=true;
+    const nx=nextMission(); if(nx && !state.open){ state.open=nx.id; }
+  }
+  _renderZe();
+  paintZeFab();
+  const id=helpId(); const seen=state.game.helpSeen||(state.game.helpSeen={});
+  if(id && HELP[id] && !seen[id] && !document.getElementById('zesheet') && !document.querySelector('#celeb:not([hidden])')){
+    seen[id]=today(); setTimeout(()=>{ if(helpId()===id && !document.getElementById('zesheet')) openHelp(id); }, 500);
+  }
+};
 
 /* ---------------- início ---------------- */
 (async()=>{
