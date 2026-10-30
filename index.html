@@ -761,6 +761,51 @@ body[data-mode="col"] .bar,body[data-mode="tra"] .bar{display:flex}
 .banner{top:62px}
 [hidden]{display:none!important}
 
+/* ===== provas e reembolso ===== */
+.provacta{border:2px solid #84D8FF;background:#F1F9FF;border-radius:16px;padding:14px 16px;margin:0 0 16px;font-weight:700}
+.provacta--ok{border-color:var(--green);background:var(--green-l);color:var(--green-d);font-weight:900}
+.provacta--lock{border-color:var(--line);background:#F7F7F7;color:var(--ink-soft)}
+.prova__intro{border:2px solid var(--line);border-radius:16px;padding:16px 18px}
+.prova__lead{font-size:20px;font-weight:900;margin:0 0 10px}
+.prova__rules{margin:0;padding-left:20px;display:grid;gap:8px;font-size:15.5px;font-weight:600}
+.prova__msg{margin:16px 0 0;font-size:15px;font-weight:700;line-height:1.5}
+.pq__k{font-weight:900;color:var(--signal);font-size:13px;letter-spacing:.04em;text-transform:uppercase;margin:0}
+.pq__q{font-size:24px;font-weight:900;line-height:1.3;margin:8px 0 12px}
+.pq__gap{display:inline-block;min-width:44px;border-bottom:3px solid var(--signal);color:transparent}
+.pq__apoio{color:var(--ink-soft);font-weight:700;margin:-4px 0 12px}
+.pq__in{width:100%;box-sizing:border-box;font-size:17px;resize:vertical}
+.pq__opts{display:grid;gap:10px}
+.pq__opt{border:2px solid var(--line);border-bottom-width:4px;border-radius:14px;padding:14px 16px;text-align:left;font-weight:800;font-size:16px;background:#fff}
+.pq__opt[aria-pressed="true"]{border-color:#84D8FF;background:#DDF4FF;color:var(--signal-d)}
+.pq__nav{display:flex;gap:10px;align-items:center}
+.pq__nav .big{margin:0;flex:1}
+.pc{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border-radius:12px;margin-top:8px}
+.pc--ok{background:var(--green-l)}.pc--no{background:#FFF0F0}
+.pc__ic{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-weight:900;color:#fff;flex:0 0 auto}
+.pc--ok .pc__ic{background:var(--green)}.pc--no .pc__ic{background:var(--alert)}
+.pc__b{display:flex;flex-direction:column;gap:2px;font-size:15px}
+.pc__b small{color:var(--ink-soft);font-weight:700}
+.pc__b s{color:var(--alert-d)}
+.rcard{display:flex;gap:12px;align-items:center;width:100%;text-align:left;border:2px solid #FFD666;background:#FFF8E1;border-radius:16px;padding:12px 14px;margin:14px 0 0}
+.rcard--c{margin:14px 0 0}
+.rcard__ic{font-size:30px}
+.rcard__b{flex:1;display:flex;flex-direction:column;gap:3px}
+.rcard__b small{color:#7A5A00;font-weight:800;font-size:12.5px}
+.rcard__b b{font-size:20px;font-weight:900;color:#5C4300}
+.rcard__b b i{font-style:normal;font-size:14px;color:#8A6A00;font-weight:800}
+.rcard__bar{height:10px;border-radius:999px;background:#FFE7A3;position:relative;overflow:hidden}
+.rcard__bar span{position:absolute;left:0;top:0;bottom:0;background:var(--chalk-d);border-radius:999px}
+.pix{margin-top:16px}
+.paylist{display:grid;gap:10px;margin-top:12px}
+.payrow{border:2px solid var(--line);border-radius:14px;padding:12px 14px}
+.payrow__h{display:flex;flex-direction:column}
+.payrow__h small{color:var(--ink-soft);font-weight:700}
+.payrow__g{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-top:10px}
+.payrow__g > span{display:flex;flex-direction:column;gap:3px;align-items:flex-start}
+.payrow__g small{color:var(--ink-soft);font-weight:800;font-size:11px;text-transform:uppercase;letter-spacing:.05em}
+.payrow__g b.ok{color:var(--green-d)}.payrow__g b.no{color:var(--alert-d)}
+.payrow__ok{margin:10px 0 0;background:var(--green-l);color:var(--green-d);border-radius:10px;padding:8px 10px;font-weight:800;font-size:14px}
+
 .mq__dots{display:flex;gap:6px;align-items:center;margin:10px 0 6px}
 .mq__dots span{width:12px;height:12px;border-radius:50%;background:var(--line)}
 .mq__dots span.on{background:var(--green)}
@@ -4847,6 +4892,335 @@ window.onSpeakPassApp=function(key, score, target){
     if(r.micro2[k]<S.length) maosLivres(key);
   }, 1300);
 };
+
+
+/* ==================================================================
+   PROVAS DAS LIÇÕES + REEMBOLSO (corrigidas no servidor)
+   ================================================================== */
+const brl=v=>'R$ '+Number(v||0).toFixed(2).replace('.',',');
+const MESES_LONGO=['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
+const mesNome=m=>{ if(!m) return ''; const [y,mm]=m.split('-'); return MESES_LONGO[+mm-1]+(String(new Date().getFullYear())===y?'':' de '+y); };
+function aprovSet(){
+  const a=(cloud.mes&&cloud.mes.aprovadas_todas)||state.game.aprovCache||[];
+  return new Set(a);
+}
+function licaoId(it){ return it.type==='pat' ? 'pat:'+it.p.id : 'kit:'+it.k.id; }
+function praticaOk(id){ const [t,x]=id.split(':'); return t==='pat' ? (state.fabDone[x]||0)>=3 : !!KD()[x]; }
+function licaoTitulo(id){ const [t,x]=id.split(':'); if(t==='pat'){ const p=PATTERNS.find(p=>p.id===x); return p?p.en:x; } const k=KITS.find(k=>k.id===x); return k?k.title:x; }
+function valorPorProva(){ const m=cloud.mes; return m ? m.valor_max/m.meta : 0; }
+
+async function carregarMes(){
+  if(!cloud.sb || !cloud.user) return;
+  const r=await cloud.sb.rpc('meu_mes');
+  if(!r.error && r.data){ cloud.mes=r.data; state.game.aprovCache=r.data.aprovadas_todas||[]; save(); if(['hoje','tri','conta'].includes(state.mode) && !state.prova) render(); }
+}
+const _afterLoginProva=afterLogin;
+afterLogin=async function(){ await _afterLoginProva(); await carregarMes(); };
+
+/* ---------- abrir, responder e entregar a prova ---------- */
+async function abrirProva(licao){
+  stopEsc && stopEsc(); state.fab=null;
+  state.prova={ licao, loading:true, i:-1, resp:{} };
+  state.mode='tri'; setModeBtn('tri'); render(); window.scrollTo({top:0});
+  if(!cloud.sb || !cloud.user){ state.prova={licao, err:'Para fazer a prova você precisa estar na sua conta e com internet.'}; render(); return; }
+  const r=await cloud.sb.rpc('iniciar_prova',{ p_licao:licao });
+  if(r.error){
+    const m=String(r.error.message||'');
+    const w=/ESPERA:(\d+)/.exec(m);
+    state.prova={ licao, err: w ? `Você poderá tentar de novo em ${w[1]} min. Até lá, refaça a prática da lição: é isso que faz você passar.` : m };
+    render(); return;
+  }
+  const d=r.data; let saved={};
+  try{ saved=JSON.parse(localStorage.getItem('zeu:prova:'+d.id)||'{}'); }catch(e){}
+  state.prova={ licao, id:d.id, perguntas:d.perguntas, expira:new Date(d.expira_em).getTime(), i: d.retomada?0:-1, resp:saved };
+  render();
+}
+function guardarResp(){ const P=state.prova; if(!P||!P.id) return; try{ localStorage.setItem('zeu:prova:'+P.id, JSON.stringify(P.resp)); }catch(e){} }
+async function entregarProva(){
+  const P=state.prova; if(!P || P.sending || P.res) return;
+  P.sending=true; render();
+  const r=await cloud.sb.rpc('entregar_prova',{ p_tentativa:P.id, p_respostas:P.resp });
+  P.sending=false;
+  if(r.error){ P.sendErr=String(r.error.message||'Não consegui entregar. Confira a internet e tente de novo.'); render(); return; }
+  P.res=r.data; try{ localStorage.removeItem('zeu:prova:'+P.id); }catch(e){}
+  if(r.data.mes){ cloud.mes=r.data.mes; state.game.aprovCache=r.data.mes.aprovadas_todas||[]; }
+  const [t,x]=P.licao.split(':');
+  if(r.data.aprovado){ gain(50,'prova aprovada'); }
+  else { if(t==='pat') state.fabDone[x]=0; else { delete KD()[x]; const k=KITS.find(k=>k.id===x); if(k) kitLines(k).forEach(l=>{ H()[normT(l.en)]=0; }); } }
+  save(); render(); window.scrollTo({top:0});
+}
+let provaTick=null;
+function provaTimer(){
+  clearInterval(provaTick);
+  provaTick=setInterval(()=>{
+    const P=state.prova; if(!P || !P.expira || P.res){ clearInterval(provaTick); return; }
+    const s=Math.max(0, Math.round((P.expira-Date.now())/1000));
+    const el=document.getElementById('lmin'); if(el) el.textContent='⏱ '+fmtT(s);
+    if(s<=0 && P.i>=0){ clearInterval(provaTick); entregarProva(); }
+  },1000);
+}
+
+function provaHTML(){
+  const P=state.prova, tit=esc(licaoTitulo(P.licao));
+  const shell=(o)=>lessonShell(Object.assign({ close:'data-provax="1"', prog:0, right:'', kick:'📝 Prova da lição', title:tit, foot:'' }, o));
+  if(P.loading) return shell({ body:'<div class="empty"><h2>Preparando sua prova…</h2><p>Sorteando as perguntas.</p></div>' });
+  if(P.err) return shell({ body:`<div class="empty"><h2>Ainda não dá</h2><p>${esc(P.err)}</p><button class="big" data-provax="1">Voltar</button></div>` });
+  const Q=P.perguntas, n=Q.length, min=cloud.mes?Math.round(cloud.mes.nota_minima*100):80;
+  if(P.res){
+    const R=P.res, pct=Math.round(R.nota*100), m=cloud.mes;
+    const corr=R.correcao.map((c,i)=>`<div class="pc ${c.ok?'pc--ok':'pc--no'}"><span class="pc__ic">${c.ok?'✓':'✗'}</span><span class="pc__b">
+        <small>${i+1}. ${c.tipo==='traduzir'?'Traduzir':c.tipo==='lacuna'?'Completar':'Ouvir e escolher'}: ${esc(c.tipo==='ouvir'?'':c.enunciado)}</small>
+        ${c.ok?`<b>${esc(c.sua)}</b>`:`<span>Você: <s>${esc(c.sua||'(em branco)')}</s></span><b>Certo: ${esc(c.certa)}</b>`}</span></div>`).join('');
+    return shell({ prog:1, right:pct+'%', body:`
+      <div class="donecard">
+        <div class="donecard__ic">${R.aprovado?'🏅':'📚'}</div>
+        <h3 class="donecard__t" style="color:${R.aprovado?'var(--green-d)':'var(--alert-d)'}">${R.aprovado?'Aprovado!':'Ainda não foi desta vez'}</h3>
+        <div class="donecard__stats">
+          <span class="ds ds--g"><small>Nota</small><b>${pct}%</b></span>
+          <span class="ds ds--b"><small>Acertos</small><b>${R.acertos}/${R.total}</b></span>
+          <span class="ds ds--y"><small>${R.aprovado?'Reembolso':'Mínimo'}</small><b>${R.aprovado?'+'+brl(valorPorProva()):min+'%'}</b></span></div>
+        ${R.aprovado ? `<p class="prova__msg">Esta lição conta para o seu reembolso de <b>${mesNome(m&&m.mes)}</b>: ${m?m.aprovadas:''} de ${m?m.meta:''} provas · ${brl(m&&m.valor_ganho)} de ${brl(m&&m.valor_max)}.${m&&!m.mensalidade_paga?' <i>O reembolso vale depois que a mensalidade do mês for confirmada.</i>':''}</p>`
+          : `<p class="prova__msg">Você precisa de <b>${min}%</b> para passar. A prática desta lição foi reiniciada: refaça e tente de novo daqui a <b>${R.espera_min||30} min</b>. Veja abaixo o que errou.</p>`}
+      </div>
+      <p class="block__l" style="margin-top:22px">Correção</p>${corr}`,
+      foot:`<button class="big" data-provafim="1">${R.aprovado?'Continuar':'Voltar à lição'}</button>` });
+  }
+  if(P.i<0){
+    return shell({ body:`
+      <div class="prova__intro">
+        <p class="prova__lead">Hora de provar que você aprendeu.</p>
+        <ul class="prova__rules">
+          <li><b>${n} perguntas</b>: traduzir para o inglês, completar lacunas e ouvir e escolher.</li>
+          <li>Você precisa de <b>${min}%</b> de acerto para passar.</li>
+          <li>Tempo: <b>${Math.round((P.expira-Date.now())/60000)} min</b>. Erro de digitação pequeno não conta; maiúscula e pontuação também não.</li>
+          <li>Não passou? A lição recomeça e você tenta de novo depois de praticar.</li>
+          ${cloud.mes?`<li>Cada prova aprovada no mês vale <b>${brl(valorPorProva())}</b> de reembolso (até ${brl(cloud.mes.valor_max)}).</li>`:''}
+        </ul>
+      </div>`, foot:`<button class="big" data-provago="1">Começar a prova</button>` });
+  }
+  const q=Q[P.i], v=P.resp[q.id]||'', last=P.i===n-1;
+  const answered=Q.filter(x=>(P.resp[x.id]||'').trim()).length;
+  let body='';
+  if(q.tipo==='traduzir') body=`<p class="pq__k">Escreva em inglês:</p><p class="pq__q">${esc(q.enunciado)}</p>
+      <textarea class="field pq__in" data-presp="${esc(q.id)}" rows="3" placeholder="Digite a frase em inglês" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false">${esc(v)}</textarea>`;
+  else if(q.tipo==='lacuna') body=`<p class="pq__k">Complete com as palavras que faltam:</p><p class="pq__q">${esc(q.enunciado).replace(/___/g,'<span class="pq__gap">____</span>')}</p>
+      <p class="pq__apoio">${esc(q.apoio||'')}</p>
+      <input class="field pq__in" data-presp="${esc(q.id)}" value="${esc(v)}" placeholder="Só as palavras que faltam, na ordem" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false">`;
+  else body=`<p class="pq__k">Ouça e escolha o que significa:</p>
+      <div class="acts acts--bare" style="margin:6px 0 14px"><button class="act act--main" data-sayraw="${esc(q.audio)}">🔊 Ouvir</button><button class="act" data-sayslow="${esc(q.audio)}">🐢 Devagar</button></div>
+      <div class="pq__opts">${(q.opcoes||[]).map(o=>`<button class="pq__opt" data-popt="${esc(q.id)}" data-val="${esc(o)}" aria-pressed="${v===o}">${esc(o)}</button>`).join('')}</div>`;
+  return shell({ prog:P.i/n, right:'⏱ '+fmtT(Math.max(0,Math.round((P.expira-Date.now())/1000))), kick:`📝 Pergunta ${P.i+1} de ${n}`,
+    body:`<div class="pq">${body}</div>${P.sendErr?`<p class="msg" style="color:var(--alert-d)">${esc(P.sendErr)}</p>`:''}`,
+    foot:`<div class="pq__nav">${P.i>0?'<button class="act" data-pprev="1">← Voltar</button>':''}
+      ${last?`<button class="big" data-pentregar="1" ${P.sending?'disabled':''}>${P.sending?'Corrigindo…':`Entregar prova (${answered}/${n} respondidas)`}</button>`
+            :`<button class="big" data-pnext="1">${v.trim()?'Próxima':'Pular'}</button>`}</div>` });
+}
+
+/* ---------- integração com a Trilha ---------- */
+const _inLessonProva=inLesson;
+inLesson=function(){ return (state.mode==='tri' && !!state.prova) || _inLessonProva(); };
+const _triHTMLProva=triHTML;
+triHTML=function(){
+  if(state.prova){ setTimeout(provaTimer,0); return provaHTML(); }
+  const A=aprovSet();
+  const html=_triHTMLProva();
+  if(state.triKit || (state.triOpen && state.triPat)) return html;
+  /* redesenha os nós: verde só com prova aprovada */
+  const L=state.triLvl || trackLvl(curLvl()), items=triItems(L);
+  const cur=items.find(it=>!A.has(licaoId(it)));
+  const nodes=items.map((it,i)=>{
+    const id=licaoId(it), ok=A.has(id), pr=praticaOk(id);
+    if(it.type==='pat'){ const n=state.fabDone[it.p.id]||0;
+      return nodeHTML({ t:it.p.en, s: ok?`${it.p.pt} · aprovada`: pr?'📝 prova liberada':`${it.p.pt} · ${Math.min(3,n)}/3`, ic: pr&&!ok?'📝':'🧩', done:ok, crown:'👑', cur:cur===it,
+        prog: ok?1: pr?0.9 : n/3*0.85, attr:`data-tnpat="${it.p.id}"`, cta: pr?'Fazer prova':n?'Continuar':'Começar' }, i); }
+    const p=kitProg(it.k);
+    return nodeHTML({ t:it.k.title, s: ok?'situação · aprovada': pr?'📝 prova liberada':`situação · ${Math.round(p*100)}%`, ic: pr&&!ok?'📝':'💬', done:ok, crown:'⭐', cur:cur===it,
+      prog: ok?1: pr?0.9 : p*0.85, attr:`data-tnkit="${it.k.id}"`, cta: pr?'Fazer prova':p?'Continuar':'Começar' }, i);
+  }).join('');
+  const nOk=items.filter(it=>A.has(licaoId(it))).length;
+  return html.replace(/<div class="path">[\s\S]*?(<div class="pnode pnode--end")/, `<div class="path">${nodes}$1`)
+             .replace(/<p class="unitbar__t">\d+ de (\d+) lições<\/p>/, `<p class="unitbar__t">${nOk} de $1 lições aprovadas</p>`)
+             .replace('<div class="unitbar unitbar--tri">', reembolsoCardHTML(true)+'<div class="unitbar unitbar--tri">');
+};
+/* cartão da prova dentro da lição praticada */
+function provaCTA(id){
+  if(aprovSet().has(id)) return `<div class="provacta provacta--ok">🏅 Prova aprovada nesta lição.</div>`;
+  if(!praticaOk(id)) return `<div class="provacta provacta--lock">📝 A prova é liberada quando você terminar a prática desta lição.</div>`;
+  return `<div class="provacta"><span><b>Prática concluída!</b> Agora prove que aprendeu: ${cloud.mes?`vale ${brl(valorPorProva())} de reembolso.`:'80% para passar.'}</span><button class="big" data-provaopen="${id}" style="margin-top:10px">📝 Fazer a prova</button></div>`;
+}
+const _kitHTMLProva=kitHTML;
+kitHTML=function(k){
+  const html=_kitHTMLProva(k), id='kit:'+k.id;
+  if(state.mode!=='tri') return html;
+  return html.replace('<div class="lesson__body">', '<div class="lesson__body">'+provaCTA(id));
+};
+kitDoneHTML=function(k){
+  const id='kit:'+k.id, ok=aprovSet().has(id);
+  if(state.mode!=='tri' || ok) return `<div class="okpanel"><span class="okpanel__ic">✓</span><span><b>${ok?'Situação aprovada!':'Prática concluída!'}</b><small>As frases foram para a sua revisão</small></span></div>
+    <button class="big" data-kclose="1">Continuar</button>`;
+  return `<div class="okpanel"><span class="okpanel__ic">✓</span><span><b>Prática concluída!</b><small>+30 XP · agora falta a prova</small></span></div>
+    <button class="big" data-provaopen="${id}">📝 Fazer a prova</button>`;
+};
+const _fabHTMLProva=fabHTML;
+fabHTML=function(ctx, pid){
+  let html=_fabHTMLProva(ctx, pid);
+  const id='pat:'+pid, n=state.fabDone[pid]||0, F=state.fab;
+  if(ctx!=='tri') return html;
+  if(F && F.i>=F.order.length && n>=3 && !aprovSet().has(id)){
+    html=html.replace(/<button class="big" data-fabcont="[^"]*" data-ctx="[^"]*">[^<]*<\/button>/, `<button class="big" data-provaopen="${id}">📝 Fazer a prova</button>`)
+             .replace('Estrutura dominada!','Prática concluída!');
+  }
+  if(!F || F.i===0) html=provaCTA(id)+html;
+  return html;
+};
+const _helpIdProva=helpId;
+helpId=function(){ if(state.mode==='tri' && state.prova) return 'prova'; return _helpIdProva(); };
+HELP.prova={tip:'Responda sem consultar. 80% para passar.', steps:[
+  'Cada lição da Trilha termina com uma <b>prova de 10 perguntas</b>, sorteadas e corrigidas no servidor.',
+  '<b>Traduzir:</b> escreva a frase em inglês. <b>Completar:</b> digite só as palavras que faltam. <b>Ouvir:</b> toque em 🔊 e escolha o significado.',
+  'Erro pequeno de digitação, maiúscula e pontuação não contam. Contrações valem (I\'m = I am).',
+  'Passou com 80%? A lição fica verde e conta para o seu <b>reembolso do mês</b>. Não passou? Refaça a prática e tente de novo em 30 min.']};
+HELP.reembolso={tip:'Cada prova aprovada devolve parte da mensalidade.', steps:[
+  'A mensalidade é paga por Pix. Você recebe de volta até <b>50%</b> no seu Pix (chave CPF).',
+  'O valor é <b>proporcional</b>: cada prova de lição aprovada no mês soma uma parte, até a meta do mês.',
+  'Só conta prova aprovada (80% ou mais). Cada lição conta uma vez.',
+  'Cadastre sua <b>chave Pix</b> em Minha conta. O reembolso é enviado depois do fechamento do mês.']};
+
+/* ---------- cartão do reembolso ---------- */
+function reembolsoCardHTML(compact){
+  const m=cloud.mes; if(!m || !cloud.user) return '';
+  const pct=Math.min(100, m.aprovadas/m.meta*100);
+  const semPix=cloud.aluno && !cloud.aluno.chave_pix;
+  return `<button class="rcard ${compact?'rcard--c':''}" data-gomode="${compact?'conta':'tri'}">
+    <span class="rcard__ic">💰</span>
+    <span class="rcard__b"><small>Reembolso de ${mesNome(m.mes)}</small>
+      <b>${brl(m.valor_ganho)} <i>de ${brl(m.valor_max)}</i></b>
+      <span class="rcard__bar"><span style="width:${pct.toFixed(1)}%"></span></span>
+      <small>${Math.min(m.aprovadas,m.meta)} de ${m.meta} provas aprovadas${m.reembolso_pago?' · ✓ Pix enviado':!m.mensalidade_paga?' · aguardando confirmação da mensalidade':''}${semPix?' · <u>cadastre sua chave Pix</u>':''}</small></span></button>`;
+}
+const _hojeHTMLProva=hojeHTML;
+hojeHTML=function(){ const h=_hojeHTMLProva(); return state.open ? h : h.replace('<div class="unitbar">', reembolsoCardHTML(false)+'<div class="unitbar">'); };
+const _perfilHTMLProva=perfilHTML;
+perfilHTML=function(){
+  const a=cloud.aluno||{};
+  return _perfilHTMLProva().replace('<div class="kit__foot">', `${reembolsoCardHTML(false)}
+    <div class="pix">
+      <p class="block__l">Chave Pix para receber o reembolso</p>
+      <div class="compose__row"><input class="field" id="pix-in" inputmode="numeric" placeholder="Seu CPF (só números)" value="${esc(a.chave_pix||'')}" autocomplete="off">
+        <button class="btn" data-pixsave="1">Salvar</button></div>
+      <p class="msg" id="pix-msg">${a.chave_pix?'':'Use a chave Pix do tipo CPF, no seu nome.'}</p>
+    </div>
+    <div class="kit__foot">`);
+};
+function cpfValido(c){
+  c=String(c).replace(/\D/g,''); if(c.length!==11 || /^(\d)\1+$/.test(c)) return false;
+  const dv=n=>{ let s=0; for(let i=0;i<n;i++) s+=(+c[i])*(n+1-i); const r=(s*10)%11; return r===10?0:r; };
+  return dv(9)===+c[9] && dv(10)===+c[10];
+}
+
+/* ---------- painel do professor: mensalidades e reembolsos ---------- */
+function mesAnt(m){ let [y,mm]=m.split('-').map(Number); mm--; if(!mm){ mm=12; y--; } return y+'-'+String(mm).padStart(2,'0'); }
+async function carregarPay(mes){
+  cloud.pay={ mes, loading:true }; render();
+  const r=await cloud.sb.rpc('resumo_mes',{ p_mes:mes });
+  cloud.pay = r.error ? { mes, err:String(r.error.message) } : { mes, data:r.data };
+  render();
+}
+function payHTML(){
+  const P=cloud.pay; const atual=(cloud.mes&&cloud.mes.mes)||isoLocal(new Date()).slice(0,7);
+  if(!P){ setTimeout(()=>carregarPay(atual),0); return `<section class="hist"><h2 class="hist__t">💰 Mensalidades e reembolsos</h2><p class="hist__d">Carregando…</p></section>`; }
+  const head=`<section class="hist pay">
+    <h2 class="hist__t">💰 Mensalidades e reembolsos</h2>
+    <div class="chips" style="margin:8px 0 6px">${[atual, mesAnt(atual)].map(m=>`<button class="chip" data-paymes="${m}" aria-pressed="${P.mes===m}">${mesNome(m)}</button>`).join('')}</div>`;
+  if(P.loading) return head+'<p class="hist__d">Carregando…</p></section>';
+  if(P.err) return head+`<p class="msg" style="color:var(--alert-d)">${esc(P.err)}</p><p class="hist__d">Rodou o script novo de provas e reembolso no Supabase?</p></section>`;
+  const C=P.data.config, A=P.data.alunos||[];
+  const pagos=A.filter(a=>a.mensalidade), devolver=A.reduce((s,a)=>s+Math.max(0, a.valor-(a.reembolso?a.reembolso.valor:0)),0);
+  const enviados=A.reduce((s,a)=>s+(a.reembolso?a.reembolso.valor:0),0);
+  return head+`
+    <div class="stats" style="margin:10px 0 4px">
+      <div><div class="stat__n">${pagos.length}/${A.length}</div><div class="stat__l">mensalidades pagas</div></div>
+      <div><div class="stat__n">${brl(pagos.reduce((s,a)=>s+a.mensalidade.valor,0))}</div><div class="stat__l">recebido</div></div>
+      <div><div class="stat__n">${brl(devolver)}</div><div class="stat__l">a devolver</div></div>
+      <div><div class="stat__n">${brl(enviados)}</div><div class="stat__l">já devolvido</div></div>
+    </div>
+    <p class="hist__d">Regra: ${brl(C.valor_mensal)} por mês · devolve até ${Math.round(C.pct_reembolso*100)}% (${brl(C.valor_mensal*C.pct_reembolso)}) · proporcional a ${C.meta_mensal} provas aprovadas · ${brl(C.valor_mensal*C.pct_reembolso/C.meta_mensal)} por prova.</p>
+    <div class="paylist">${A.map(a=>{
+      const pago=a.reembolso, dif=Math.max(0, a.valor-(pago?pago.valor:0));
+      return `<div class="payrow">
+        <div class="payrow__h"><b>${esc(a.nome||a.email)}</b><small>${esc(a.email)}</small></div>
+        <div class="payrow__g">
+          <span><small>Mensalidade</small>${a.mensalidade?`<b class="ok">✓ paga</b>`:`<b class="no">pendente</b>`}
+            <button class="mini" data-paymens="${a.aluno_id}" data-on="${a.mensalidade?0:1}">${a.mensalidade?'desfazer':'Registrar Pix recebido'}</button></span>
+          <span><small>Provas</small><b>${Math.min(a.aprovadas,a.meta)}/${a.meta}</b>${a.aprovadas>a.meta?` <small>(+${a.aprovadas-a.meta})</small>`:''}</span>
+          <span><small>Devolver</small><b>${brl(a.valor)}</b></span>
+          <span><small>Chave Pix</small>${a.chave_pix?`<b>${esc(a.chave_pix)}</b> <button class="mini" data-copy="${esc(a.chave_pix)}">copiar</button>`:'<b class="no">não cadastrou</b>'}</span>
+        </div>
+        ${pago?`<p class="payrow__ok">✓ Pix enviado: ${brl(pago.valor)} em ${new Date(pago.pago_em).toLocaleDateString('pt-BR')}${pago.comprovante?' · '+esc(pago.comprovante):''}${dif>0.004?` · <b>diferença de ${brl(dif)} a pagar</b>`:''}</p>`:''}
+        ${a.mensalidade && a.valor>0 && (!pago || dif>0.004) ? `<div class="compose__row" style="margin-top:8px">
+            <input class="field" data-comp="${a.aluno_id}" placeholder="ID do Pix / comprovante (opcional)">
+            <button class="btn" data-paypix="${a.aluno_id}">Marcar ${brl(pago?dif:a.valor)} como enviado</button></div>`:''}
+      </div>`; }).join('')}</div>
+    <details class="ex" style="margin-top:16px"><summary>Alterar regra (valor, % de reembolso, meta de provas)</summary>
+      <div class="compose__row" style="margin-top:10px">
+        <input class="field" id="cfg-val" value="${C.valor_mensal}" inputmode="decimal" aria-label="Mensalidade">
+        <input class="field" id="cfg-pct" value="${Math.round(C.pct_reembolso*100)}" inputmode="numeric" aria-label="Percentual de reembolso">
+        <input class="field" id="cfg-meta" value="${C.meta_mensal}" inputmode="numeric" aria-label="Meta de provas no mês">
+        <button class="btn" data-cfgregra="1">Salvar regra</button></div>
+      <p class="hist__d" style="margin-top:6px">Mensalidade (R$) · % devolvido · provas para o reembolso máximo. Vale para os cálculos ainda não pagos.</p></details>
+  </section>`;
+}
+const _profHTMLProva=profHTML;
+profHTML=function(){ const h=_profHTMLProva(); return cloud.prof && cloud.profData ? payHTML()+h : h; };
+
+/* ---------- eventos ---------- */
+document.addEventListener('input', e=>{
+  const t=e.target; if(!t.dataset || !t.dataset.presp || !state.prova) return;
+  state.prova.resp[t.dataset.presp]=t.value; guardarResp();
+  const b=document.querySelector('[data-pnext]'); if(b) b.textContent=t.value.trim()?'Próxima':'Pular';
+});
+document.addEventListener('click', async e=>{
+  const t=e.target.closest('[data-provaopen],[data-provago],[data-provax],[data-provafim],[data-pnext],[data-pprev],[data-pentregar],[data-popt],[data-sayslow],[data-pixsave],[data-paymes],[data-paymens],[data-paypix],[data-copy],[data-cfgregra]');
+  if(!t) return; const d=t.dataset, P=state.prova;
+  if(d.provaopen){ abrirProva(d.provaopen); return; }
+  if(d.provago){ P.i=0; render(); window.scrollTo({top:0}); return; }
+  if(d.provax){ if(P && P.i>=0 && !P.res && !P.err && !confirm('Sair da prova? Suas respostas ficam guardadas, mas o tempo continua contando.')) return;
+    clearInterval(provaTick); state.prova=null; render(); window.scrollTo({top:0}); return; }
+  if(d.provafim){ const ok=P.res.aprovado; state.prova=null; if(ok){ state.triOpen=false; state.triPat=null; state.triKit=null; } render(); window.scrollTo({top:0}); return; }
+  if(d.pnext){ P.i=Math.min(P.perguntas.length-1, P.i+1); render(); window.scrollTo({top:0}); const i=document.querySelector('.pq__in'); if(i) i.focus(); return; }
+  if(d.pprev){ P.i=Math.max(0,P.i-1); render(); return; }
+  if(d.pentregar){
+    const vazias=P.perguntas.filter(x=>!(P.resp[x.id]||'').trim()).length;
+    if(vazias && !confirm(`Você deixou ${vazias} pergunta${vazias>1?'s':''} em branco. Entregar assim mesmo?`)) return;
+    entregarProva(); return; }
+  if(d.popt){ P.resp[d.popt]=d.val; guardarResp(); document.querySelectorAll(`[data-popt="${d.popt}"]`).forEach(b=>b.setAttribute('aria-pressed', b===t));
+    const b=document.querySelector('[data-pnext]'); if(b) b.textContent='Próxima'; return; }
+  if(d.sayslow){ say(d.sayslow,0.65,null); return; }
+  if(d.pixsave){
+    const v=(document.getElementById('pix-in').value||'').replace(/\D/g,''), msg=document.getElementById('pix-msg');
+    if(!cpfValido(v)){ msg.textContent='CPF inválido. Confira os números.'; msg.style.color='var(--alert-d)'; return; }
+    const r=await cloud.sb.from('alunos').update({ chave_pix:v }).eq('id',cloud.user.id);
+    if(r.error){ msg.textContent=traduzErro(r.error); return; }
+    cloud.aluno.chave_pix=v; msg.style.color=''; msg.textContent='✓ Chave Pix salva.'; toast('Chave Pix salva'); return; }
+  if(d.paymes){ carregarPay(d.paymes); return; }
+  if(d.paymens){ const r=await cloud.sb.rpc('registrar_mensalidade',{ p_aluno:d.paymens, p_mes:cloud.pay.mes, p_pago:d.on==='1' });
+    if(r.error) toast(traduzErro(r.error)); carregarPay(cloud.pay.mes); return; }
+  if(d.paypix){ const c=document.querySelector(`[data-comp="${d.paypix}"]`);
+    if(!confirm('Confirma que você já enviou o Pix para este aluno?')) return;
+    const r=await cloud.sb.rpc('marcar_reembolso',{ p_aluno:d.paypix, p_mes:cloud.pay.mes, p_comprovante:c?c.value:'' });
+    if(r.error) toast(traduzErro(r.error)); else toast('Reembolso registrado'); carregarPay(cloud.pay.mes); return; }
+  if(d.copy){ try{ await navigator.clipboard.writeText(d.copy); toast('Chave copiada'); }catch(err){ toast(d.copy); } return; }
+  if(d.cfgregra){ const v=parseFloat(String(document.getElementById('cfg-val').value).replace(',','.')), p=parseFloat(document.getElementById('cfg-pct').value)/100, m=parseInt(document.getElementById('cfg-meta').value,10);
+    const r=await cloud.sb.rpc('salvar_config',{ p_valor:v, p_pct:p, p_meta:m }); if(r.error) toast(traduzErro(r.error)); else toast('Regra salva'); carregarMes(); carregarPay(cloud.pay.mes); return; }
+});
+/* tocar num nó com a prática feita abre a prova direto */
+document.addEventListener('click', e=>{
+  const n=e.target.closest('[data-tnpat],[data-tnkit]'); if(!n || state.mode!=='tri') return;
+  const id=n.dataset.tnpat ? 'pat:'+n.dataset.tnpat : 'kit:'+n.dataset.tnkit;
+  if(praticaOk(id) && !aprovSet().has(id)){ e.stopImmediatePropagation(); e.preventDefault(); abrirProva(id); }
+}, true);
+const _helpIdReemb=helpId;
+helpId=function(){ if(state.mode==='conta' && cloud.user) return 'reembolso'; return _helpIdReemb(); };
 
 /* ---------------- início ---------------- */
 (async()=>{
