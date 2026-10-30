@@ -761,6 +761,25 @@ body[data-mode="col"] .bar,body[data-mode="tra"] .bar{display:flex}
 .banner{top:62px}
 [hidden]{display:none!important}
 
+/* ===== objetivos ===== */
+.tchoose{display:grid;gap:10px;margin-top:12px}
+.tcard{display:flex;gap:12px;align-items:center;text-align:left;border:2px solid var(--line);border-bottom-width:4px;border-radius:16px;padding:12px 14px;background:#fff;position:relative}
+.tcard[aria-pressed="true"]{border-color:#84D8FF;background:#F1F9FF}
+.tcard__ic{font-size:32px;flex:0 0 auto}
+.tcard__b{display:flex;flex-direction:column;gap:2px}
+.tcard__b b{font-size:17px}
+.tcard__b small{color:var(--ink-soft);font-weight:700;font-size:13px;line-height:1.35}
+.tcard__tag{position:absolute;top:8px;right:10px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.06em;color:var(--signal)}
+.tline{display:flex;gap:12px;align-items:center;width:100%;text-align:left;border:2px solid var(--line);border-radius:16px;padding:10px 14px;background:#fff;margin:14px 0 0}
+.tline > span:first-child{font-size:26px}
+.tline > span:nth-child(2){flex:1;display:flex;flex-direction:column}
+.tline small{color:var(--ink-soft);font-weight:800;font-size:12px}
+.tline b{font-size:16px}
+.tline__a{color:var(--signal);font-weight:900;font-size:13px;text-transform:uppercase;letter-spacing:.05em}
+.tsheet__t{margin:0 0 6px;font-size:22px}
+.tsheet__d{margin:0 0 6px;color:var(--ink-soft);font-weight:700}
+.tsheet__l{margin:10px 0 16px;padding-left:20px;display:grid;gap:8px;font-weight:600;line-height:1.45}
+
 /* ===== provas e reembolso ===== */
 .provacta{border:2px solid #84D8FF;background:#F1F9FF;border-radius:16px;padding:14px 16px;margin:0 0 16px;font-weight:700}
 .provacta--ok{border-color:var(--green);background:var(--green-l);color:var(--green-d);font-weight:900}
@@ -1692,7 +1711,7 @@ async function load(){
   if(v){ try{ const d=JSON.parse(v);
     state.phrases=d.phrases||[]; state.log=d.log||[]; state.logo=(d.logo && d.logo!=='ritmo' && LOGOS[d.logo])?d.logo:'ponte'; state.kit=d.kit||null;
     state.cache=d.cache||{}; state.mmEmail=d.mmEmail||'';
-    state.profile=d.profile||null; state.days=d.days||{}; state.fabDone=d.fabDone||{};
+    state.profile=d.profile||null; state.days=d.days||{}; state.fabDone=d.fabDone||{}; state.track=d.track||null; state.tracks=d.tracks||{};
     state.game=Object.assign(newGame(), d.game||{}); state.savedAt=d.savedAt||0;
     state.phrases.forEach(p=>{ if(typeof p.stage!=='number'){ p.stage=p.known?4:0; p.due=p.known?addDays(SRS_INT[4]):today(); } });
     if(d.auto) Object.assign(state.auto, {on:d.auto.on!==false, reps:d.auto.reps||3, tail:typeof d.auto.tail==='number'?d.auto.tail:10});
@@ -1705,7 +1724,7 @@ function save(){
   clearTimeout(saveTimer);
   saveTimer=setTimeout(()=>store.set(KEY, JSON.stringify({
     phrases:state.phrases, log:state.log.slice(-800), logo:state.logo, kit:state.kit,
-    cache:state.cache, mmEmail:state.mmEmail, profile:state.profile, days:state.days, fabDone:state.fabDone,
+    cache:state.cache, mmEmail:state.mmEmail, profile:state.profile, days:state.days, fabDone:state.fabDone, track:state.track, tracks:state.tracks,
     game:state.game, savedAt:(state.savedAt=Date.now()),
     auto:{on:state.auto.on, reps:state.auto.reps, tail:state.auto.tail}
   })).then(()=>{ if(typeof cloudSchedule==='function') cloudSchedule(); }),250);
@@ -3788,16 +3807,16 @@ if(CFG.uid) KEY='zeu:v1:u:'+CFG.uid;
 
 function resetState(){
   Object.assign(state, { phrases:[], log:[], profile:null, days:{}, fabDone:{}, kit:null, rv:null, fab:null, open:null,
-    video:null, idx:0, place:null, placing:false, savedAt:0, game:newGame() });
+    video:null, idx:0, place:null, placing:false, savedAt:0, game:newGame(), track:null, tracks:{} });
 }
 function snapshot(){
   return { phrases:state.phrases, log:state.log.slice(-800), logo:state.logo, kit:state.kit, profile:state.profile,
-    days:state.days, fabDone:state.fabDone, game:Object.assign({}, state.game, {outbox:[]}),
+    days:state.days, fabDone:state.fabDone, track:state.track, tracks:state.tracks, game:Object.assign({}, state.game, {outbox:[]}),
     auto:{on:state.auto.on, reps:state.auto.reps, tail:state.auto.tail}, savedAt:state.savedAt||Date.now() };
 }
 function applySnapshot(d){
   state.phrases=d.phrases||[]; state.log=d.log||[]; state.logo=(d.logo && d.logo!=='ritmo' && LOGOS[d.logo])?d.logo:'ponte'; state.kit=d.kit||null;
-  state.profile=d.profile||null; state.days=d.days||{}; state.fabDone=d.fabDone||{};
+  state.profile=d.profile||null; state.days=d.days||{}; state.fabDone=d.fabDone||{}; state.track=d.track||null; state.tracks=d.tracks||{}; if(typeof trackApplied!=='undefined') trackApplied=null;
   const ob=state.game.outbox||[]; state.game=Object.assign(newGame(), d.game||{}); state.game.outbox=ob;
   state.savedAt=d.savedAt||Date.now();
 }
@@ -3903,7 +3922,7 @@ window.addEventListener('online', ()=>{ if(CFG.url && !cloud.sb) cloudInit(); el
 /* ---------------- ações de conta ---------------- */
 function val(id){ const el=document.getElementById(id); return el ? el.value.trim() : ''; }
 async function ensureClient(){ if(!cloud.sb){ await cloudInit(); } return !!cloud.sb; }
-function keepDraft(){ state.authDraft={ nome:val('su-nome'), email:val('su-email')||val('lg-email'), obj:val('su-obj') }; }
+function keepDraft(){ state.authDraft=Object.assign({}, state.authDraft, { nome:val('su-nome'), email:val('su-email')||val('lg-email') }); }
 async function doLogin(){
   keepDraft(); const email=val('lg-email'), password=val('lg-pw');
   if(!email || !password){ cloud.msg='Preencha e-mail e senha.'; return render(); }
@@ -3918,10 +3937,11 @@ async function doLogin(){
 async function doSignup(){
   keepDraft();
   if(!await ensureClient()){ cloud.msg=cloud.err||'Não conectou.'; return render(); }
-  const nome=state.authDraft.nome, email=state.authDraft.email, pw=val('su-pw'), objetivo=state.authDraft.obj, meta=(document.querySelector('[data-sumeta][aria-pressed="true"]')||{dataset:{sumeta:'B2'}}).dataset.sumeta;
+  const nome=state.authDraft.nome, email=state.authDraft.email, pw=val('su-pw'), trilha=(state.authDraft.trilha||''), objetivo=(TRACKS[trilha]?TRACKS[trilha].n:''), meta=(document.querySelector('[data-sumeta][aria-pressed="true"]')||{dataset:{sumeta:'B2'}}).dataset.sumeta;
   if(!nome || !email || pw.length<6){ cloud.msg='Preencha nome, e-mail e uma senha com pelo menos 6 caracteres.'; return render(); }
+  if(!trilha){ cloud.msg='Escolha por que você quer aprender inglês.'; return render(); }
   cloud.busy=true; cloud.msg='criando sua matrícula…'; render();
-  const {data,error}=await cloud.sb.auth.signUp({ email, password:pw, options:{ data:{ nome, objetivo, meta } } });
+  const {data,error}=await cloud.sb.auth.signUp({ email, password:pw, options:{ data:{ nome, objetivo, meta, trilha } } });
   cloud.busy=false;
   if(error){ cloud.msg=traduzErro(error); return render(); }
   if(!data.session){ cloud.msg='Cadastro feito, mas o Supabase pediu confirmação por e-mail. Abra o link que chegou, ou desligue a confirmação (passo 4 do guia) e entre pela aba Entrar.'; cloud.tab='entrar'; return render(); }
@@ -4903,6 +4923,7 @@ window.onSpeakPassApp=function(key, score, target){
 /* ==================================================================
    PROVAS DAS LIÇÕES + REEMBOLSO (corrigidas no servidor)
    ================================================================== */
+function lid(b){ return (typeof curTrack==='function' ? curTrack()+'/' : '')+b; }
 const brl=v=>'R$ '+Number(v||0).toFixed(2).replace('.',',');
 const MESES_LONGO=['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
 const mesNome=m=>{ if(!m) return ''; const [y,mm]=m.split('-'); return MESES_LONGO[+mm-1]+(String(new Date().getFullYear())===y?'':' de '+y); };
@@ -4950,7 +4971,7 @@ async function entregarProva(){
   if(r.error){ P.sendErr=String(r.error.message||'Não consegui entregar. Confira a internet e tente de novo.'); render(); return; }
   P.res=r.data; try{ localStorage.removeItem('zeu:prova:'+P.id); }catch(e){}
   if(r.data.mes){ cloud.mes=r.data.mes; state.game.aprovCache=r.data.mes.aprovadas_todas||[]; }
-  const [t,x]=P.licao.split(':');
+  const [t,x]=baseOf(P.licao).split(':');
   if(r.data.aprovado){ gain(50,'prova aprovada'); }
   else { if(t==='pat') state.fabDone[x]=0; else { delete KD()[x]; const k=KITS.find(k=>k.id===x); if(k) kitLines(k).forEach(l=>{ H()[normT(l.en)]=0; }); } }
   save(); render(); window.scrollTo({top:0});
@@ -5056,12 +5077,12 @@ function provaCTA(id){
 }
 const _kitHTMLProva=kitHTML;
 kitHTML=function(k){
-  const html=_kitHTMLProva(k), id='kit:'+k.id;
+  const html=_kitHTMLProva(k), id=lid('kit:'+k.id);
   if(state.mode!=='tri') return html;
   return html.replace('<div class="lesson__body">', '<div class="lesson__body">'+provaCTA(id));
 };
 kitDoneHTML=function(k){
-  const id='kit:'+k.id, ok=aprovSet().has(id);
+  const id=lid('kit:'+k.id), ok=aprovSet().has(id);
   if(state.mode!=='tri' || ok) return `<div class="okpanel"><span class="okpanel__ic">✓</span><span><b>${ok?'Situação aprovada!':'Prática concluída!'}</b><small>As frases foram para a sua revisão</small></span></div>
     <button class="big" data-kclose="1">Continuar</button>`;
   return `<div class="okpanel"><span class="okpanel__ic">✓</span><span><b>Prática concluída!</b><small>+30 XP · agora falta a prova</small></span></div>
@@ -5070,7 +5091,7 @@ kitDoneHTML=function(k){
 const _fabHTMLProva=fabHTML;
 fabHTML=function(ctx, pid){
   let html=_fabHTMLProva(ctx, pid);
-  const id='pat:'+pid, n=state.fabDone[pid]||0, F=state.fab;
+  const id=lid('pat:'+pid), n=state.fabDone[pid]||0, F=state.fab;
   if(ctx!=='tri') return html;
   if(F && F.i>=F.order.length && n>=3 && !aprovSet().has(id)){
     html=html.replace(/<button class="big" data-fabcont="[^"]*" data-ctx="[^"]*">[^<]*<\/button>/, `<button class="big" data-provaopen="${id}">📝 Fazer a prova</button>`)
@@ -5154,7 +5175,7 @@ function payHTML(){
     <div class="paylist">${A.map(a=>{
       const pago=a.reembolso, dif=Math.max(0, a.valor-(pago?pago.valor:0));
       return `<div class="payrow">
-        <div class="payrow__h"><b>${esc(a.nome||a.email)}</b><small>${esc(a.email)}</small></div>
+        <div class="payrow__h"><b>${esc(a.nome||a.email)}</b><small>${esc(a.email)}${a.trilha&&typeof TRACKS!=='undefined'&&TRACKS[a.trilha]?' · '+TRACKS[a.trilha].ic+' '+esc(TRACKS[a.trilha].n):''}</small></div>
         <div class="payrow__g">
           <span><small>Mensalidade</small>${a.mensalidade?`<b class="ok">✓ paga</b>`:`<b class="no">pendente</b>`}
             <button class="mini" data-paymens="${a.aluno_id}" data-on="${a.mensalidade?0:1}">${a.mensalidade?'desfazer':'Registrar Pix recebido'}</button></span>
@@ -5222,7 +5243,7 @@ document.addEventListener('click', async e=>{
 /* tocar num nó com a prática feita abre a prova direto */
 document.addEventListener('click', e=>{
   const n=e.target.closest('[data-tnpat],[data-tnkit]'); if(!n || state.mode!=='tri') return;
-  const id=n.dataset.tnpat ? 'pat:'+n.dataset.tnpat : 'kit:'+n.dataset.tnkit;
+  const id=lid(n.dataset.tnpat ? 'pat:'+n.dataset.tnpat : 'kit:'+n.dataset.tnkit);
   if(praticaOk(id) && !aprovSet().has(id)){ e.stopImmediatePropagation(); e.preventDefault(); abrirProva(id); }
 }, true);
 const _helpIdReemb=helpId;
@@ -5291,6 +5312,684 @@ document.addEventListener('click', async e=>{
     if(error){ cloud.msg=/different from the old|same as/i.test(error.message)?'A senha nova precisa ser diferente da antiga.':traduzErro(error); render(); return; }
     cloud.msg=''; state.recovery='feito'; limparUrl(); toast('Senha nova salva! ✓');
     state.mode='hoje'; setModeBtn('hoje'); render(); return; }
+});
+
+/* ==================================================================
+   OBJETIVOS (trilhas por motivo): viagem, negócios, fluência
+   ================================================================== */
+const NEW_PATS=[
+/* ---- VIAGEM ---- */
+{id:'vwhere', lvl:'A2', en:'Where is ___?', pt:'Onde fica ___?', tip:'"Where is" + lugar. Na fala vira "Where\'s".', slots:[
+  {en:'the bathroom', pt:'o banheiro'},{en:'the train station', pt:'a estação de trem'},{en:'my gate', pt:'o meu portão de embarque'},
+  {en:'the nearest pharmacy', pt:'a farmácia mais próxima'},{en:'the exit', pt:'a saída'}]},
+{id:'vhowmuch', lvl:'A2', en:'How much is ___?', pt:'Quanto custa ___?', tip:'Para preço de uma coisa: "How much is". Para várias: "How much are".', slots:[
+  {en:'this jacket', pt:'esta jaqueta'},{en:'a ticket to the museum', pt:'um ingresso para o museu'},{en:'a taxi to the airport', pt:'um táxi para o aeroporto'},
+  {en:'the room per night', pt:'o quarto por noite'},{en:'this one', pt:'este aqui'}]},
+{id:'vlike', lvl:'A2', en:"I'd like ___, please.", pt:'Eu queria ___, por favor.', tip:'"I\'d like" é o jeito educado de pedir. Mais gentil que "I want".', slots:[
+  {en:'a table for two', pt:'uma mesa para dois'},{en:'a coffee with milk', pt:'um café com leite'},{en:'the check', pt:'a conta'},
+  {en:'a room with a view', pt:'um quarto com vista'},{en:'a map of the city', pt:'um mapa da cidade'}]},
+{id:'vhave', lvl:'A2', en:'Do you have ___?', pt:'Vocês têm ___?', tip:'Pergunta com "Do you have". Serve para loja, hotel e restaurante.', slots:[
+  {en:'a vegetarian option', pt:'uma opção vegetariana'},{en:'free wifi', pt:'wifi grátis'},{en:'this in a smaller size', pt:'isso num tamanho menor'},
+  {en:'any rooms available tonight', pt:'algum quarto disponível hoje à noite'},{en:'a phone charger', pt:'um carregador de celular'}]},
+{id:'vthere', lvl:'A2', en:'Is there ___ near here?', pt:'Tem ___ aqui perto?', tip:'"Tem" de existir = "Is there". Nunca "Have a ... near here".', slots:[
+  {en:'a supermarket', pt:'um supermercado'},{en:'an ATM', pt:'um caixa eletrônico'},{en:'a good restaurant', pt:'um restaurante bom'},
+  {en:'a bus stop', pt:'um ponto de ônibus'},{en:'a hospital', pt:'um hospital'}]},
+{id:'vget', lvl:'A2', en:'How do I get to ___?', pt:'Como eu chego ___?', tip:'"Get to" = chegar a um lugar.', slots:[
+  {en:'the city center', pt:'no centro'},{en:'the beach', pt:'na praia'},{en:'this address', pt:'neste endereço'},
+  {en:'the airport', pt:'no aeroporto'},{en:'the subway station', pt:'na estação de metrô'}]},
+{id:'vlooking', lvl:'B1', en:"I'm looking for ___.", pt:'Estou procurando ___.', tip:'"Look for" = procurar. O "for" é obrigatório.', slots:[
+  {en:'my hotel', pt:'o meu hotel'},{en:'a gift for my daughter', pt:'um presente para a minha filha'},{en:'the lost and found', pt:'os achados e perdidos'},
+  {en:'a cheap place to eat', pt:'um lugar barato para comer'},{en:'the check-in counter', pt:'o balcão de check-in'}]},
+{id:'vtime', lvl:'B1', en:'What time does ___?', pt:'Que horas ___?', tip:'Horário com "What time does" + sujeito + verbo puro.', slots:[
+  {en:'the museum open', pt:'o museu abre'},{en:'the last train leave', pt:'sai o último trem'},{en:'breakfast start', pt:'começa o café da manhã'},
+  {en:'the store close', pt:'a loja fecha'},{en:'the tour begin', pt:'começa o passeio'}]},
+{id:'vrecommend', lvl:'B1', en:'Could you recommend ___?', pt:'Você poderia recomendar ___?', tip:'Para pedir dica a quem é do lugar. Sempre bem recebido.', slots:[
+  {en:'a place to eat', pt:'um lugar para comer'},{en:'something to do tonight', pt:'algo para fazer hoje à noite'},{en:'a typical dish', pt:'um prato típico'},
+  {en:'a safe neighborhood', pt:'um bairro seguro'},{en:'a day trip', pt:'um passeio de um dia'}]},
+{id:'vbeen', lvl:'B1', en:"I've never been ___ before.", pt:'Eu nunca fui ___ antes.', tip:'Experiência de vida: "have been" (present perfect).', slots:[
+  {en:'to New York', pt:'a Nova York'},{en:'on a cruise', pt:'num cruzeiro'},{en:'to a baseball game', pt:'num jogo de beisebol'},
+  {en:'to Europe', pt:'para a Europa'},{en:'this far from home', pt:'tão longe de casa'}]},
+{id:'vsupposed', lvl:'B2', en:'I was supposed to ___.', pt:'Era para eu ___.', tip:'Algo combinado que não aconteceu. Ótimo para reclamar com educação.', slots:[
+  {en:'arrive yesterday', pt:'chegar ontem'},{en:'get a refund', pt:'receber um reembolso'},{en:'have a sea view', pt:'ter vista para o mar'},
+  {en:'be on that flight', pt:'estar naquele voo'},{en:'pick up the car at noon', pt:'pegar o carro ao meio-dia'}]},
+{id:'vmind', lvl:'B2', en:'Would you mind ___?', pt:'Você se importaria de ___?', tip:'Pedido muito educado. Depois de "mind", verbo com -ing.', slots:[
+  {en:'taking a picture of us', pt:'tirar uma foto nossa'},{en:'speaking more slowly', pt:'falar mais devagar'},{en:'watching my bag for a minute', pt:'olhar minha bolsa por um minuto'},
+  {en:'switching seats with me', pt:'trocar de lugar comigo'},{en:'calling me a taxi', pt:'chamar um táxi para mim'}]},
+{id:'vworth', lvl:'B2', en:'Is it worth ___?', pt:'Vale a pena ___?', tip:'"Worth" + verbo com -ing.', slots:[
+  {en:'visiting the old town', pt:'visitar a cidade velha'},{en:'paying for the tour', pt:'pagar pelo passeio'},{en:'taking the train', pt:'pegar o trem'},
+  {en:'waking up early for the sunrise', pt:'acordar cedo para o nascer do sol'},{en:'buying the city pass', pt:'comprar o passe da cidade'}]},
+{id:'vwish', lvl:'C1', en:'I wish we had ___.', pt:'Queria que a gente tivesse ___.', tip:'Arrependimento sobre o passado: "wish" + had + particípio.', slots:[
+  {en:'booked earlier', pt:'reservado antes'},{en:'stayed longer', pt:'ficado mais tempo'},{en:'rented a car', pt:'alugado um carro'},
+  {en:'checked the weather', pt:'olhado a previsão do tempo'},{en:'bought travel insurance', pt:'comprado seguro viagem'}]},
+{id:'vturned', lvl:'C1', en:'It turned out that ___.', pt:'No fim das contas, ___.', tip:'Para contar uma surpresa ou um desfecho.', slots:[
+  {en:'the hotel was overbooked', pt:'o hotel estava lotado'},{en:'the museum was closed', pt:'o museu estava fechado'},{en:'the flight was delayed', pt:'o voo estava atrasado'},
+  {en:'the restaurant was amazing', pt:'o restaurante era incrível'},{en:'we were in the wrong terminal', pt:'estávamos no terminal errado'}]},
+/* ---- FLUÊNCIA ---- */
+{id:'flike', lvl:'A2', en:'I really like ___.', pt:'Eu gosto muito de ___.', tip:'Depois de "like", verbo com -ing ou um nome.', slots:[
+  {en:'watching movies', pt:'assistir filmes'},{en:'cooking on weekends', pt:'cozinhar nos fins de semana'},{en:'playing soccer', pt:'jogar futebol'},
+  {en:'listening to music', pt:'ouvir música'},{en:'spending time with my family', pt:'passar tempo com a minha família'}]},
+{id:'fever', lvl:'B1', en:'Have you ever ___?', pt:'Você já ___?', tip:'Experiência de vida: "Have you ever" + particípio.', slots:[
+  {en:'been to another country', pt:'foi para outro país'},{en:'tried sushi', pt:'experimentou sushi'},{en:'seen a famous person', pt:'viu uma pessoa famosa'},
+  {en:'played an instrument', pt:'tocou um instrumento'},{en:'lost your phone', pt:'perdeu o seu celular'}]},
+{id:'fkid', lvl:'B1', en:'When I was a kid, I ___.', pt:'Quando eu era criança, eu ___.', tip:'Passado simples para contar a infância.', slots:[
+  {en:'lived on a farm', pt:'morava numa fazenda'},{en:'played outside all day', pt:'brincava fora o dia todo'},{en:'wanted to be a doctor', pt:'queria ser médico'},
+  {en:'watched cartoons every morning', pt:'assistia desenho toda manhã'},{en:'was afraid of dogs', pt:'tinha medo de cachorro'}]},
+{id:'fused', lvl:'B1', en:'I used to ___.', pt:'Eu costumava ___.', tip:'Hábito do passado que não existe mais.', slots:[
+  {en:'play video games all night', pt:'jogar videogame a noite toda'},{en:'live with my parents', pt:'morar com meus pais'},{en:'hate vegetables', pt:'odiar legumes'},
+  {en:'run every morning', pt:'correr toda manhã'},{en:'work on weekends', pt:'trabalhar nos fins de semana'}]},
+{id:'frather', lvl:'B2', en:"I'd rather ___.", pt:'Eu prefiro ___.', tip:'"I\'d rather" + verbo puro. Comparando: "rather ... than ...".', slots:[
+  {en:'stay home tonight', pt:'ficar em casa hoje à noite'},{en:'watch it with subtitles', pt:'assistir com legenda'},{en:'go to the beach than the mountains', pt:'ir para a praia do que para as montanhas'},
+  {en:'walk than take the bus', pt:'andar do que pegar o ônibus'},{en:'talk about something else', pt:'falar de outra coisa'}]},
+{id:'fremind', lvl:'B2', en:'It reminds me of ___.', pt:'Isso me lembra ___.', tip:'"Remind of" = lembrar alguém de algo. Nunca "remember me".', slots:[
+  {en:'my childhood', pt:'a minha infância'},{en:'a movie I saw', pt:'um filme que eu vi'},{en:"my grandmother's house", pt:'a casa da minha avó'},
+  {en:'my first job', pt:'o meu primeiro emprego'},{en:'a trip I took', pt:'uma viagem que eu fiz'}]},
+{id:'fif', lvl:'C1', en:"If I could go back, I'd ___.", pt:'Se eu pudesse voltar, eu ___.', tip:'Hipótese: "If I could" + "I would".', slots:[
+  {en:'study harder', pt:'estudaria mais'},{en:'travel more', pt:'viajaria mais'},{en:'learn English earlier', pt:'aprenderia inglês mais cedo'},
+  {en:'take more risks', pt:'me arriscaria mais'},{en:'spend more time with my friends', pt:'passaria mais tempo com meus amigos'}]}
+];
+
+const NEW_KITS=[
+/* ---- VIAGEM ---- */
+{ id:'aeroporto', lvl:'A2', tag:'Viagem', title:'Aeroporto: check-in e embarque',
+  brief:'No aeroporto as frases são curtas e se repetem muito. Tenha passaporte e reserva na mão e responda direto.',
+  steps:[
+    {step:'Check-in', lines:[
+      {en:"Hi, I'd like to check in, please.", pt:'Oi, eu queria fazer o check-in, por favor.', core:'check in'},
+      {en:"Here's my passport.", pt:'Aqui está o meu passaporte.', core:'my passport'},
+      {en:"Can I have a window seat?", pt:'Posso ficar na janela?', core:'window seat'}]},
+    {step:'Bagagem', lines:[
+      {en:"I have one bag to check.", pt:'Tenho uma mala para despachar.', core:'bag to check'},
+      {en:"This is my carry-on.", pt:'Esta é a minha bagagem de mão.', core:'carry-on'},
+      {en:"Is my bag overweight?", pt:'Minha mala está acima do peso?', core:'overweight'}]},
+    {step:'Embarque', lines:[
+      {en:"Which gate is it?", pt:'Qual é o portão?', core:'which gate'},
+      {en:"What time does boarding start?", pt:'Que horas começa o embarque?', core:'boarding'},
+      {en:"Is this flight on time?", pt:'Este voo está no horário?', core:'on time'}]}],
+  hear:[
+    {en:"Where are you flying to today?", pt:'Para onde você vai hoje?'},
+    {en:"Did you pack your bag yourself?", pt:'Foi você que fez a sua mala?'},
+    {en:"Please place it on the scale.", pt:'Por favor, coloque na balança.'},
+    {en:"Boarding starts at gate twelve.", pt:'O embarque começa no portão doze.'},
+    {en:"Have a nice flight.", pt:'Tenha um bom voo.'}]},
+{ id:'restaurante', lvl:'B1', tag:'Viagem', title:'Restaurante com garçom',
+  brief:'No restaurante com mesa, tudo tem uma ordem: mesa, pedido, conta. Lá fora a gorjeta costuma ser separada, então pergunte.',
+  steps:[
+    {step:'Chegando', lines:[
+      {en:"Do you have a table for two?", pt:'Vocês têm mesa para dois?', core:'table for two'},
+      {en:"We have a reservation under Silva.", pt:'Temos uma reserva no nome Silva.', core:'reservation under'},
+      {en:"Could we sit outside?", pt:'Podemos sentar lá fora?', core:'sit outside'}]},
+    {step:'Pedindo', lines:[
+      {en:"What do you recommend?", pt:'O que você recomenda?', core:'what do you recommend'},
+      {en:"I'll have the chicken, please.", pt:'Vou querer o frango, por favor.', core:"I'll have"},
+      {en:"Could I get it without onions?", pt:'Pode vir sem cebola?', core:'without onions'}]},
+    {step:'Pagando', lines:[
+      {en:"Could we have the check, please?", pt:'Pode trazer a conta, por favor?', core:'the check'},
+      {en:"Is the tip included?", pt:'A gorjeta está incluída?', core:'tip included'},
+      {en:"Can we split the bill?", pt:'Podemos dividir a conta?', core:'split the bill'}]}],
+  hear:[
+    {en:"Are you ready to order?", pt:'Já podem pedir?'},
+    {en:"How would you like your steak?", pt:'Como você quer o ponto da carne?'},
+    {en:"Can I get you anything else?", pt:'Posso trazer mais alguma coisa?'},
+    {en:"How was everything?", pt:'Estava tudo bem?'},
+    {en:"I'll be right back with your check.", pt:'Já volto com a sua conta.'}]},
+{ id:'farmacia', lvl:'B1', tag:'Viagem', title:'Farmácia e mal-estar',
+  brief:'Explicar o que sente é mais importante que o nome do remédio. Diga onde dói e há quanto tempo.',
+  steps:[
+    {step:'O que você sente', lines:[
+      {en:"I have a headache.", pt:'Estou com dor de cabeça.', core:'headache'},
+      {en:"My stomach hurts.", pt:'Minha barriga está doendo.', core:'stomach hurts'},
+      {en:"I think I have a fever.", pt:'Acho que estou com febre.', core:'a fever'}]},
+    {step:'Pedindo ajuda', lines:[
+      {en:"Do you have something for a cold?", pt:'Vocês têm algo para gripe?', core:'for a cold'},
+      {en:"I'm allergic to penicillin.", pt:'Sou alérgico a penicilina.', core:"I'm allergic to"},
+      {en:"How many times a day should I take it?", pt:'Quantas vezes por dia eu devo tomar?', core:'times a day'}]},
+    {step:'Se piorar', lines:[
+      {en:"Where is the nearest hospital?", pt:'Onde fica o hospital mais próximo?', core:'nearest hospital'},
+      {en:"Please call an ambulance.", pt:'Por favor, chame uma ambulância.', core:'call an ambulance'},
+      {en:"I need to see a doctor.", pt:'Preciso ver um médico.', core:'see a doctor'}]}],
+  hear:[
+    {en:"How long have you felt like this?", pt:'Há quanto tempo você se sente assim?'},
+    {en:"Are you taking any other medicine?", pt:'Você está tomando outro remédio?'},
+    {en:"Take one pill every eight hours.", pt:'Tome um comprimido a cada oito horas.'},
+    {en:"You need a prescription for that.", pt:'Para esse você precisa de receita.'},
+    {en:"I hope you feel better.", pt:'Espero que você melhore.'}]},
+{ id:'passeio', lvl:'B1', tag:'Viagem', title:'Passeios e ingressos',
+  brief:'Pergunte horário, preço e o que está incluído antes de pagar. Isso evita surpresa.',
+  steps:[
+    {step:'Comprando', lines:[
+      {en:"Two adult tickets, please.", pt:'Dois ingressos de adulto, por favor.', core:'adult tickets'},
+      {en:"Is there a student discount?", pt:'Tem desconto para estudante?', core:'student discount'},
+      {en:"What's included in the tour?", pt:'O que está incluído no passeio?', core:'included in the tour'}]},
+    {step:'No passeio', lines:[
+      {en:"How long does the tour take?", pt:'Quanto tempo dura o passeio?', core:'how long does'},
+      {en:"Can I take pictures here?", pt:'Posso tirar fotos aqui?', core:'take pictures'},
+      {en:"Where do we meet after lunch?", pt:'Onde a gente se encontra depois do almoço?', core:'where do we meet'}]},
+    {step:'Depois', lines:[
+      {en:"That was amazing!", pt:'Isso foi incrível!', core:'that was amazing'},
+      {en:"Thank you for the tour.", pt:'Obrigado pelo passeio.', core:'thank you for'},
+      {en:"Could you take a picture of us?", pt:'Você poderia tirar uma foto nossa?', core:'picture of us'}]}],
+  hear:[
+    {en:"The tour starts at nine sharp.", pt:'O passeio começa às nove em ponto.'},
+    {en:"Please stay with the group.", pt:'Por favor, fiquem com o grupo.'},
+    {en:"Tickets are non-refundable.", pt:'Os ingressos não são reembolsáveis.'},
+    {en:"We'll have a short break here.", pt:'Vamos fazer uma pausa curta aqui.'},
+    {en:"Watch your step.", pt:'Cuidado onde pisa.'}]},
+{ id:'reclamacao', lvl:'B2', tag:'Viagem', title:'Reclamar de um problema no hotel',
+  brief:'Reclame com calma e com fato: o que estava combinado, o que aconteceu e o que você quer. Educação resolve mais rápido.',
+  steps:[
+    {step:'O problema', lines:[
+      {en:"I'm afraid there's a problem with my room.", pt:'Infelizmente tem um problema com o meu quarto.', core:"I'm afraid"},
+      {en:"The air conditioning isn't working.", pt:'O ar-condicionado não está funcionando.', core:"isn't working"},
+      {en:"I booked a room with two beds.", pt:'Eu reservei um quarto com duas camas.', core:'I booked'}]},
+    {step:'O que você quer', lines:[
+      {en:"Could you move us to another room?", pt:'Vocês poderiam nos trocar de quarto?', core:'another room'},
+      {en:"I'd like to speak to the manager.", pt:'Eu gostaria de falar com o gerente.', core:'speak to the manager'},
+      {en:"Is there any way you could fix it today?", pt:'Tem algum jeito de resolver hoje?', core:'any way you could'}]},
+    {step:'Fechando', lines:[
+      {en:"I appreciate your help.", pt:'Agradeço a sua ajuda.', core:'appreciate your help'},
+      {en:"Could I get that in writing?", pt:'Pode me passar isso por escrito?', core:'in writing'},
+      {en:"That works for me, thanks.", pt:'Para mim está bom, obrigado.', core:'that works for me'}]}],
+  hear:[
+    {en:"I'm so sorry for the inconvenience.", pt:'Sinto muito pelo transtorno.'},
+    {en:"Let me see what I can do.", pt:'Deixa eu ver o que posso fazer.'},
+    {en:"We're fully booked tonight.", pt:'Estamos lotados hoje à noite.'},
+    {en:"I can offer you a free breakfast.", pt:'Posso te oferecer o café da manhã grátis.'},
+    {en:"Someone will be up in ten minutes.", pt:'Alguém vai subir em dez minutos.'}]},
+{ id:'carro', lvl:'B2', tag:'Viagem', title:'Alugar um carro',
+  brief:'Antes de assinar, confirme seguro, combustível e o horário de devolução. Fotografe o carro na retirada.',
+  steps:[
+    {step:'Retirada', lines:[
+      {en:"I have a reservation for a compact car.", pt:'Tenho uma reserva de um carro compacto.', core:'compact car'},
+      {en:"Does the price include insurance?", pt:'O preço inclui seguro?', core:'include insurance'},
+      {en:"Is it automatic or manual?", pt:'É automático ou manual?', core:'automatic or manual'}]},
+    {step:'Regras', lines:[
+      {en:"Do I need to return it with a full tank?", pt:'Preciso devolver com o tanque cheio?', core:'full tank'},
+      {en:"Can I drop it off at the airport?", pt:'Posso devolver no aeroporto?', core:'drop it off'},
+      {en:"What happens if I'm late?", pt:'O que acontece se eu atrasar?', core:"if I'm late"}]},
+    {step:'Na estrada', lines:[
+      {en:"Where is the nearest gas station?", pt:'Onde fica o posto de gasolina mais próximo?', core:'gas station'},
+      {en:"I think I have a flat tire.", pt:'Acho que o pneu furou.', core:'flat tire'},
+      {en:"Is there parking at the hotel?", pt:'Tem estacionamento no hotel?', core:'parking'}]}],
+  hear:[
+    {en:"Can I see your driver's license?", pt:'Posso ver a sua carteira de motorista?'},
+    {en:"There's a small scratch on the door.", pt:'Tem um arranhão pequeno na porta.'},
+    {en:"Would you like to upgrade?", pt:'Você quer trocar por uma categoria melhor?'},
+    {en:"We'll put a hold on your credit card.", pt:'Vamos bloquear um valor no seu cartão.'},
+    {en:"Drive safely.", pt:'Dirija com cuidado.'}]},
+{ id:'locais', lvl:'B2', tag:'Viagem', title:'Conversar com gente do lugar',
+  brief:'Pergunte o que os moradores fazem, não o que os turistas fazem. Elogio sincero abre conversa.',
+  steps:[
+    {step:'Puxando conversa', lines:[
+      {en:"Are you from around here?", pt:'Você é daqui?', core:'from around here'},
+      {en:"This city is beautiful.", pt:'Esta cidade é linda.', core:'this city is'},
+      {en:"It's my first time here.", pt:'É a minha primeira vez aqui.', core:'my first time'}]},
+    {step:'Pedindo dicas', lines:[
+      {en:"Where do locals like to eat?", pt:'Onde os moradores gostam de comer?', core:'where do locals'},
+      {en:"What should I avoid?", pt:'O que eu devo evitar?', core:'what should I avoid'},
+      {en:"Is it safe to walk at night?", pt:'É seguro andar à noite?', core:'safe to walk'}]},
+    {step:'Falando de você', lines:[
+      {en:"I'm from Brazil, in the middle of the country.", pt:'Sou do Brasil, do meio do país.', core:"I'm from Brazil"},
+      {en:"You should visit Brazil someday.", pt:'Você deveria visitar o Brasil um dia.', core:'you should visit'},
+      {en:"It was really nice talking to you.", pt:'Foi muito bom falar com você.', core:'nice talking to you'}]}],
+  hear:[
+    {en:"Oh, what brings you here?", pt:'Ah, o que te traz aqui?'},
+    {en:"You have to try the local beer.", pt:'Você tem que provar a cerveja local.'},
+    {en:"Skip the tourist traps.", pt:'Fuja das armadilhas de turista.'},
+    {en:"It gets pretty crowded on weekends.", pt:'Fica bem cheio nos fins de semana.'},
+    {en:"Enjoy your stay!", pt:'Aproveite a sua estadia!'}]},
+{ id:'imprevisto', lvl:'C1', tag:'Viagem', title:'Voo cancelado e imprevistos',
+  brief:'No imprevisto, pergunte seus direitos e opções com clareza. Peça alternativas concretas e confirmação por escrito.',
+  steps:[
+    {step:'Entendendo', lines:[
+      {en:"My flight has just been cancelled.", pt:'O meu voo acabou de ser cancelado.', core:'been cancelled'},
+      {en:"What are my options at this point?", pt:'Quais são as minhas opções agora?', core:'what are my options'},
+      {en:"Am I entitled to any compensation?", pt:'Tenho direito a alguma compensação?', core:'entitled to'}]},
+    {step:'Negociando', lines:[
+      {en:"Could you rebook me on the next available flight?", pt:'Você pode me remarcar no próximo voo disponível?', core:'rebook me'},
+      {en:"I have a connection I can't miss.", pt:'Tenho uma conexão que não posso perder.', core:"can't miss"},
+      {en:"Will the airline cover the hotel tonight?", pt:'A companhia vai pagar o hotel hoje?', core:'cover the hotel'}]},
+    {step:'Resolvendo', lines:[
+      {en:"Could you confirm that by email?", pt:'Pode confirmar isso por e-mail?', core:'confirm that'},
+      {en:"I understand it's not your fault.", pt:'Entendo que não é culpa sua.', core:'not your fault'},
+      {en:"Thanks for sorting this out.", pt:'Obrigado por resolver isso.', core:'sorting this out'}]}],
+  hear:[
+    {en:"Due to weather conditions, all flights are delayed.", pt:'Por causa do tempo, todos os voos estão atrasados.'},
+    {en:"The next available seat is tomorrow morning.", pt:'O próximo lugar disponível é amanhã de manhã.'},
+    {en:"Here's a voucher for dinner.", pt:'Aqui está um voucher para o jantar.'},
+    {en:"You'll need to collect your bags first.", pt:'Você vai precisar pegar suas malas antes.'},
+    {en:"We apologize for any inconvenience.", pt:'Pedimos desculpas por qualquer transtorno.'}]},
+/* ---- FLUÊNCIA ---- */
+{ id:'apresentar', lvl:'A2', tag:'Conversa', title:'Falar de você e da família',
+  brief:'É a conversa que mais se repete. Frases simples, no presente, já levam longe.',
+  steps:[
+    {step:'Você', lines:[
+      {en:"I'm thirty-five years old.", pt:'Tenho trinta e cinco anos.', core:'years old'},
+      {en:"I live in Brazil with my family.", pt:'Moro no Brasil com a minha família.', core:'with my family'},
+      {en:"I'm learning English to travel and work.", pt:'Estou aprendendo inglês para viajar e trabalhar.', core:"I'm learning English"}]},
+    {step:'Família', lines:[
+      {en:"I have a daughter.", pt:'Tenho uma filha.', core:'I have a'},
+      {en:"She is thirteen.", pt:'Ela tem treze anos.', core:'she is'},
+      {en:"My parents live in another city.", pt:'Meus pais moram em outra cidade.', core:'my parents'}]},
+    {step:'Perguntando', lines:[
+      {en:"What about you?", pt:'E você?', core:'what about you'},
+      {en:"Do you have kids?", pt:'Você tem filhos?', core:'have kids'},
+      {en:"Where are you from?", pt:'De onde você é?', core:'where are you from'}]}],
+  hear:[
+    {en:"Tell me a little about yourself.", pt:'Me fale um pouco sobre você.'},
+    {en:"How old is she?", pt:'Quantos anos ela tem?'},
+    {en:"Do you have any brothers or sisters?", pt:'Você tem irmãos?'},
+    {en:"That's nice.", pt:'Que legal.'},
+    {en:"I have two kids.", pt:'Eu tenho dois filhos.'}]},
+{ id:'rotina', lvl:'A2', tag:'Conversa', title:'Rotina e fim de semana',
+  brief:'Rotina usa presente simples; fim de semana passado usa o passado. Dois tempos verbais, muitas conversas.',
+  steps:[
+    {step:'Dia a dia', lines:[
+      {en:"I usually wake up at six.", pt:'Eu normalmente acordo às seis.', core:'wake up'},
+      {en:"I go to work by car.", pt:'Vou para o trabalho de carro.', core:'by car'},
+      {en:"I get home around seven.", pt:'Chego em casa por volta das sete.', core:'get home'}]},
+    {step:'Fim de semana', lines:[
+      {en:"On Saturdays I sleep late.", pt:'Aos sábados eu durmo até tarde.', core:'sleep late'},
+      {en:"Last weekend I went to the park.", pt:'No fim de semana passado eu fui ao parque.', core:'last weekend'},
+      {en:"We had a barbecue on Sunday.", pt:'A gente fez um churrasco no domingo.', core:'had a barbecue'}]},
+    {step:'Perguntando', lines:[
+      {en:"What do you usually do on weekends?", pt:'O que você costuma fazer nos fins de semana?', core:'on weekends'},
+      {en:"How was your weekend?", pt:'Como foi o seu fim de semana?', core:'how was your weekend'},
+      {en:"Did you do anything fun?", pt:'Você fez alguma coisa legal?', core:'anything fun'}]}],
+  hear:[
+    {en:"Nothing special, I just relaxed.", pt:'Nada de especial, só descansei.'},
+    {en:"I was really busy.", pt:'Eu estava muito ocupado.'},
+    {en:"Sounds fun!", pt:'Parece divertido!'},
+    {en:"I'm a morning person.", pt:'Eu sou uma pessoa da manhã.'},
+    {en:"I stayed in and watched TV.", pt:'Fiquei em casa e vi TV.'}]},
+{ id:'comida', lvl:'A2', tag:'Conversa', title:'Comida e gostos',
+  brief:'Falar de comida é a forma mais fácil de puxar conversa em qualquer país.',
+  steps:[
+    {step:'Do que você gosta', lines:[
+      {en:"My favorite food is rice and beans.", pt:'Minha comida favorita é arroz e feijão.', core:'my favorite food'},
+      {en:"I don't like spicy food.", pt:'Eu não gosto de comida apimentada.', core:'spicy food'},
+      {en:"I love Italian food.", pt:'Eu amo comida italiana.', core:'Italian food'}]},
+    {step:'Cozinhando', lines:[
+      {en:"I like to cook on weekends.", pt:'Eu gosto de cozinhar nos fins de semana.', core:'like to cook'},
+      {en:"I make a great barbecue.", pt:'Eu faço um ótimo churrasco.', core:'great barbecue'},
+      {en:"It's easy to make.", pt:'É fácil de fazer.', core:'easy to make'}]},
+    {step:'Perguntando', lines:[
+      {en:"What's your favorite dish?", pt:'Qual é o seu prato favorito?', core:'favorite dish'},
+      {en:"Have you tried Brazilian food?", pt:'Você já provou comida brasileira?', core:'Brazilian food'},
+      {en:"Do you like to cook?", pt:'Você gosta de cozinhar?', core:'like to cook'}]}],
+  hear:[
+    {en:"I'm a terrible cook.", pt:'Eu cozinho muito mal.'},
+    {en:"That sounds delicious.", pt:'Parece delicioso.'},
+    {en:"I'm vegetarian.", pt:'Eu sou vegetariano.'},
+    {en:"I eat out a lot.", pt:'Eu como fora bastante.'},
+    {en:"You should try it.", pt:'Você deveria provar.'}]},
+{ id:'hobbies', lvl:'B1', tag:'Conversa', title:'Hobbies e tempo livre',
+  brief:'Diga o que você faz, há quanto tempo e por que gosta. Isso transforma uma resposta em conversa.',
+  steps:[
+    {step:'O que você faz', lines:[
+      {en:"In my free time I play soccer.", pt:'No meu tempo livre eu jogo futebol.', core:'free time'},
+      {en:"I've been learning guitar for a year.", pt:'Estou aprendendo violão há um ano.', core:'for a year'},
+      {en:"I'm really into fishing.", pt:'Eu curto muito pescar.', core:'really into'}]},
+    {step:'Por que', lines:[
+      {en:"It helps me relax.", pt:'Isso me ajuda a relaxar.', core:'helps me relax'},
+      {en:"I like it because I can be outdoors.", pt:'Gosto porque posso ficar ao ar livre.', core:'outdoors'},
+      {en:"It's a good way to meet people.", pt:'É um bom jeito de conhecer pessoas.', core:'meet people'}]},
+    {step:'Perguntando', lines:[
+      {en:"What do you do for fun?", pt:'O que você faz para se divertir?', core:'for fun'},
+      {en:"How did you get into that?", pt:'Como você começou com isso?', core:'get into'},
+      {en:"How often do you do it?", pt:'Com que frequência você faz isso?', core:'how often'}]}],
+  hear:[
+    {en:"I'm not very sporty.", pt:'Eu não sou muito de esporte.'},
+    {en:"I picked it up during the pandemic.", pt:'Eu comecei durante a pandemia.'},
+    {en:"Maybe we could play together sometime.", pt:'Talvez a gente possa jogar junto um dia.'},
+    {en:"That's a cool hobby.", pt:'Que hobby legal.'},
+    {en:"I don't have much free time.", pt:'Eu não tenho muito tempo livre.'}]},
+{ id:'filmes', lvl:'B1', tag:'Conversa', title:'Filmes e séries',
+  brief:'Conte do que se trata, o que você achou e recomende. É assunto infinito.',
+  steps:[
+    {step:'Contando', lines:[
+      {en:"I'm watching a great series right now.", pt:'Estou vendo uma série ótima agora.', core:'great series'},
+      {en:"It's about a family in New York.", pt:'É sobre uma família em Nova York.', core:"it's about"},
+      {en:"It's based on a true story.", pt:'É baseado numa história real.', core:'true story'}]},
+    {step:'Opinando', lines:[
+      {en:"The ending was really surprising.", pt:'O final foi muito surpreendente.', core:'the ending'},
+      {en:"The first season was better.", pt:'A primeira temporada era melhor.', core:'first season'},
+      {en:"I couldn't stop watching.", pt:'Eu não conseguia parar de assistir.', core:"couldn't stop"}]},
+    {step:'Recomendando', lines:[
+      {en:"You should definitely watch it.", pt:'Você com certeza deveria assistir.', core:'should definitely'},
+      {en:"Have you seen anything good lately?", pt:'Você viu alguma coisa boa ultimamente?', core:'anything good lately'},
+      {en:"No spoilers, please!", pt:'Sem spoiler, por favor!', core:'no spoilers'}]}],
+  hear:[
+    {en:"I've heard good things about it.", pt:'Ouvi falar bem.'},
+    {en:"I'm not a big fan of horror movies.", pt:'Não sou muito fã de filme de terror.'},
+    {en:"Which streaming service is it on?", pt:'Está em qual streaming?'},
+    {en:"I binge-watched the whole thing.", pt:'Eu maratonei tudo.'},
+    {en:"It's worth it.", pt:'Vale a pena.'}]},
+{ id:'historia', lvl:'B1', tag:'Conversa', title:'Contar uma história',
+  brief:'Toda boa história tem começo, problema e final. Use "first, then, suddenly, in the end".',
+  steps:[
+    {step:'Começo', lines:[
+      {en:"Let me tell you what happened yesterday.", pt:'Deixa eu te contar o que aconteceu ontem.', core:'what happened'},
+      {en:"I was driving to work.", pt:'Eu estava dirigindo para o trabalho.', core:'I was driving'},
+      {en:"It was raining a lot.", pt:'Estava chovendo muito.', core:'it was raining'}]},
+    {step:'O problema', lines:[
+      {en:"Suddenly, the car stopped.", pt:'De repente, o carro parou.', core:'suddenly'},
+      {en:"I didn't know what to do.", pt:'Eu não sabia o que fazer.', core:'what to do'},
+      {en:"So I called my brother.", pt:'Então eu liguei para o meu irmão.', core:'so I called'}]},
+    {step:'Final', lines:[
+      {en:"In the end, everything was fine.", pt:'No fim, deu tudo certo.', core:'in the end'},
+      {en:"It was a funny day.", pt:'Foi um dia engraçado.', core:'funny day'},
+      {en:"Has anything like that ever happened to you?", pt:'Já aconteceu algo assim com você?', core:'happened to you'}]}],
+  hear:[
+    {en:"No way! What happened next?", pt:'Não acredito! E depois?'},
+    {en:"That's crazy.", pt:'Que loucura.'},
+    {en:"Oh no, were you okay?", pt:'Ah não, você ficou bem?'},
+    {en:"The same thing happened to me once.", pt:'A mesma coisa aconteceu comigo uma vez.'},
+    {en:"What a story!", pt:'Que história!'}]},
+{ id:'planos', lvl:'B2', tag:'Conversa', title:'Planos e sonhos',
+  brief:'Futuro com "going to" para planos, "would like" para desejos e "hope" para esperança.',
+  steps:[
+    {step:'Planos', lines:[
+      {en:"Next year I'm going to change jobs.", pt:'Ano que vem eu vou mudar de emprego.', core:'going to change'},
+      {en:"I'm planning to move to a bigger city.", pt:'Estou planejando me mudar para uma cidade maior.', core:'planning to'},
+      {en:"I'm saving money for a trip abroad.", pt:'Estou juntando dinheiro para uma viagem para fora.', core:'saving money'}]},
+    {step:'Sonhos', lines:[
+      {en:"One day I'd like to live abroad.", pt:'Um dia eu gostaria de morar fora.', core:"I'd like to"},
+      {en:"My dream is to speak English fluently.", pt:'Meu sonho é falar inglês fluente.', core:'my dream is'},
+      {en:"I hope my daughter can study abroad.", pt:'Espero que a minha filha possa estudar fora.', core:'I hope'}]},
+    {step:'Perguntando', lines:[
+      {en:"Where do you see yourself in a few years?", pt:'Onde você se vê daqui a alguns anos?', core:'see yourself'},
+      {en:"What's on your bucket list?", pt:'O que está na sua lista de sonhos?', core:'bucket list'},
+      {en:"What's stopping you?", pt:'O que está te impedindo?', core:"what's stopping you"}]}],
+  hear:[
+    {en:"Go for it!", pt:'Vai fundo!'},
+    {en:"I'm still figuring it out.", pt:'Ainda estou pensando nisso.'},
+    {en:"That's a big step.", pt:'Isso é um passo grande.'},
+    {en:"I've always wanted to do that.", pt:'Eu sempre quis fazer isso.'},
+    {en:"Keep me posted.", pt:'Me mantém informado.'}]},
+{ id:'expressoes', lvl:'C1', tag:'Conversa', title:'Expressões do dia a dia',
+  brief:'Nativos falam muito por expressões. Entender e usar algumas deixa a conversa natural.',
+  steps:[
+    {step:'Concordando', lines:[
+      {en:"You can say that again.", pt:'Você disse tudo.', core:'say that again'},
+      {en:"That makes two of us.", pt:'Somos dois.', core:'makes two of us'},
+      {en:"Fair enough.", pt:'Justo.', core:'fair enough'}]},
+    {step:'Reagindo', lines:[
+      {en:"It's not the end of the world.", pt:'Não é o fim do mundo.', core:'end of the world'},
+      {en:"I'll take your word for it.", pt:'Vou acreditar em você.', core:'take your word'},
+      {en:"That rings a bell.", pt:'Isso me soa familiar.', core:'rings a bell'}]},
+    {step:'Mudando de assunto', lines:[
+      {en:"Speaking of which, how's your new job?", pt:'Falando nisso, como está o emprego novo?', core:'speaking of which'},
+      {en:"Long story short, we made it.", pt:'Resumindo, a gente conseguiu.', core:'long story short'},
+      {en:"Anyway, it was great catching up.", pt:'Enfim, foi ótimo colocar o papo em dia.', core:'catching up'}]}],
+  hear:[
+    {en:"Break a leg!", pt:'Boa sorte!'},
+    {en:"I'm on the fence about it.", pt:'Estou em dúvida sobre isso.'},
+    {en:"It's a piece of cake.", pt:'É moleza.'},
+    {en:"Let's call it a day.", pt:'Vamos encerrar por hoje.'},
+    {en:"I'm all ears.", pt:'Sou todo ouvidos.'}]}
+];
+
+/* lições de cada objetivo, por nível */
+const TRACKS={
+  negocios:{ n:'Negócios e carreira', ic:'💼', d:'Entrevista, reuniões, ligações, vendas e negociação. Para conseguir vagas melhores e crescer no trabalho.',
+    pats:['want','need','can','work','usually','yesterday','going','because','doyou','problem','forYears','responsible','could','should','reason','ifwe','notsure','depends','trying','point','experience','increased','open','possible','fair','bottom','hadknown','workon'],
+    kits:['trabalho','social','entrevista','daily','call','salario','opiniao','palestra','vendas','lideranca'] },
+  viagem:{ n:'Viagem e férias', ic:'✈️', d:'Aeroporto, hotel, restaurante, compras, passeios e imprevistos. Para viajar sem travar.',
+    pats:['vwhere','vhowmuch','vlike','vhave','vthere','vget','can','need','vlooking','vtime','vrecommend','vbeen','could','vsupposed','vmind','vworth','possible','vwish','vturned','fair'],
+    kits:['aeroporto','imigra','hotel','fastfood','conta','rua','compras','uber','restaurante','farmacia','passeio','reclamacao','carro','locais','imprevisto'] },
+  fluencia:{ n:'Conversação e fluência', ic:'💬', d:'Falar de você, rotina, gostos, histórias e opiniões. Para conversar com naturalidade sobre qualquer assunto.',
+    pats:['want','usually','yesterday','going','because','doyou','flike','fever','fkid','fused','notsure','should','frather','fremind','trying','point','fif','fair','bottom'],
+    kits:['social','apresentar','rotina','comida','hobbies','filmes','historia','planos','opiniao','expressoes'] }
+};
+
+/* microdesafios, diário e vídeos por objetivo (negócios usa os que já existiam) */
+const MICRO_NEW={
+viagem:{
+ A2:[
+  {q:'Where are you from?', pt:'De onde você é?', f:["I'm from ___.",'I live in ___.'], ex:"I'm from Brazil. I live in a small city."},
+  {q:'How long are you staying?', pt:'Quanto tempo você vai ficar?', f:["I'm staying for ___.",'I leave on ___.'], ex:"I'm staying for one week. I leave on Sunday."},
+  {q:'What would you like to order?', pt:'O que você gostaria de pedir?', f:["I'd like ___.",'Can I have ___?'], ex:"I'd like the chicken, please. Can I have a water too?"},
+  {q:'Can I help you find something?', pt:'Posso te ajudar a achar algo?', f:["I'm looking for ___.",'Do you have ___?'], ex:"I'm looking for a jacket. Do you have it in medium?"},
+  {q:'Where do you want to go?', pt:'Para onde você quer ir?', f:['I want to go to ___.','How much is ___?'], ex:'I want to go to the airport. How much is it?'}],
+ B1:[
+  {q:'What is the purpose of your visit?', pt:'Qual é o motivo da sua visita?', f:["I'm here on vacation.","I'm visiting ___."], ex:"I'm here on vacation. I'm visiting some friends."},
+  {q:'How was your trip?', pt:'Como foi a sua viagem?', f:['It was ___.','The best part was ___.'], ex:'It was great. The best part was the beach.'},
+  {q:'Have you been here before?', pt:'Você já esteve aqui antes?', f:["I've never been ___.","It's my first time ___."], ex:"No, I've never been here before. It's my first time in this country."},
+  {q:'What are your plans for tomorrow?', pt:'Quais são seus planos para amanhã?', f:["I'm going to ___.",'Maybe I will ___.'], ex:"I'm going to visit the museum. Maybe I will go shopping."},
+  {q:'Is everything okay with your room?', pt:'Está tudo bem com o seu quarto?', f:["There's a problem with ___.",'Could you ___?'], ex:"There's a problem with the shower. Could you send someone?"}],
+ B2:[
+  {q:'What did you think of the city?', pt:'O que você achou da cidade?', f:['What I liked most was ___.','I was surprised by ___.'], ex:'What I liked most was the food. I was surprised by how friendly people were.'},
+  {q:'How can we make your stay better?', pt:'Como podemos melhorar a sua estadia?', f:["I was supposed to ___.",'Would it be possible to ___?'], ex:'I was supposed to have a sea view. Would it be possible to change rooms?'},
+  {q:'What would you recommend to a friend visiting Brazil?', pt:'O que você recomendaria a um amigo visitando o Brasil?', f:['You should ___.',"Don't miss ___."], ex:"You should visit the Pantanal. Don't miss the local food."}],
+ C1:[
+  {q:'Tell me about a trip that went wrong.', pt:'Conte sobre uma viagem que deu errado.', f:['It turned out that ___.','I wish we had ___.'], ex:'It turned out that our flight was cancelled. I wish we had bought travel insurance.'},
+  {q:'How do you choose where to travel?', pt:'Como você escolhe para onde viajar?', f:['I usually look for ___.','The bottom line is that ___.'], ex:'I usually look for places with good food and nature. The bottom line is that I want to relax.'},
+  {q:'What is the best trip you have ever taken?', pt:'Qual foi a melhor viagem que você já fez?', f:['The best trip I ever took was ___.','What made it special was ___.'], ex:'The best trip I ever took was to the beach with my family. What made it special was the time together.'}]},
+fluencia:{
+ A2:[
+  {q:'Tell me about your family.', pt:'Me fale da sua família.', f:['I have ___.','My ___ is ___.'], ex:'I have a daughter. She is thirteen and she loves music.'},
+  {q:'What do you do in your free time?', pt:'O que você faz no seu tempo livre?', f:['I really like ___.','I usually ___.'], ex:'I really like watching movies. I usually go to the park on Sundays.'},
+  {q:'What is your favorite food?', pt:'Qual é a sua comida favorita?', f:['My favorite food is ___.',"I don't like ___."], ex:"My favorite food is barbecue. I don't like spicy food."},
+  {q:'What did you do last weekend?', pt:'O que você fez no fim de semana passado?', f:['Last weekend I ___.','Then I ___.'], ex:'Last weekend I visited my parents. Then I watched a movie.'},
+  {q:'Describe your city.', pt:'Descreva a sua cidade.', f:['My city is ___.','There is a ___.'], ex:'My city is small and hot. There is a big park in the center.'}],
+ B1:[
+  {q:'What were you like as a kid?', pt:'Como você era quando criança?', f:['When I was a kid, I ___.','I used to ___.'], ex:'When I was a kid, I played outside all day. I used to love soccer.'},
+  {q:'Have you ever done something crazy?', pt:'Você já fez alguma loucura?', f:['Once I ___.','It was ___.'], ex:'Once I traveled alone without a plan. It was scary but fun.'},
+  {q:'What series are you watching?', pt:'Que série você está assistindo?', f:["I'm watching ___.","It's about ___."], ex:"I'm watching a crime series. It's about a detective in London."},
+  {q:'How has your life changed in the last five years?', pt:'Como a sua vida mudou nos últimos cinco anos?', f:['I used to ___, but now ___.','The biggest change was ___.'], ex:'I used to work all the time, but now I take more time for myself.'},
+  {q:'What makes you happy?', pt:'O que te deixa feliz?', f:['I feel happy when ___.','For me, the most important thing is ___.'], ex:'I feel happy when I spend time with my daughter. For me, the most important thing is family.'}],
+ B2:[
+  {q:'Do you prefer living in a big city or a small town?', pt:'Você prefere morar numa cidade grande ou pequena?', f:["I'd rather ___.",'On the other hand, ___.'], ex:"I'd rather live in a small town because it's quieter. On the other hand, big cities have more jobs."},
+  {q:'What is something you changed your mind about?', pt:'Sobre o que você mudou de opinião?', f:['I used to think ___, but now ___.','What changed my mind was ___.'], ex:'I used to think English was impossible, but now I can talk a little every day.'},
+  {q:'Tell me about a person who inspires you.', pt:'Fale de alguém que te inspira.', f:['Someone who inspires me is ___.','It reminds me of ___.'], ex:'Someone who inspires me is my grandmother. She worked hard all her life.'}],
+ C1:[
+  {q:'If you could change one thing about your past, what would it be?', pt:'Se pudesse mudar uma coisa no seu passado, o que seria?', f:["If I could go back, I'd ___.",'Looking back, ___.'], ex:"If I could go back, I'd learn English earlier. Looking back, it would have opened many doors."},
+  {q:'Is technology making us happier?', pt:'A tecnologia está nos deixando mais felizes?', f:['To be fair, ___.','The bottom line is that ___.'], ex:'To be fair, it helps a lot. The bottom line is that we need balance.'},
+  {q:'What does success mean to you?', pt:'O que sucesso significa para você?', f:['For me, success means ___.','It is not just about ___.'], ex:'For me, success means having time for my family. It is not just about money.'}]}
+};
+const MICRO_S_NEW={
+"Where are you from?":[["I'm from Brazil.","Eu sou do Brasil."],["I live in a small city.","Eu moro numa cidade pequena."],["It is very hot there.","Lá é muito quente."]],
+"How long are you staying?":[["I'm staying for one week.","Eu vou ficar uma semana."],["I leave on Sunday.","Eu vou embora no domingo."],["I'm here with my family.","Eu estou aqui com a minha família."]],
+"What would you like to order?":[["I'd like the chicken, please.","Eu queria o frango, por favor."],["Can I have a water too?","Pode me trazer uma água também?"],["No onions, please.","Sem cebola, por favor."]],
+"Can I help you find something?":[["I'm looking for a jacket.","Estou procurando uma jaqueta."],["Do you have it in medium?","Vocês têm no tamanho médio?"],["How much is it?","Quanto custa?"]],
+"Where do you want to go?":[["I want to go to the airport.","Eu quero ir para o aeroporto."],["How much is it?","Quanto custa?"],["Can I pay by card?","Posso pagar no cartão?"]],
+"What is the purpose of your visit?":[["I'm here on vacation.","Estou aqui de férias."],["I'm visiting some friends.","Estou visitando uns amigos."],["I'm staying at a hotel downtown.","Estou num hotel no centro."]],
+"How was your trip?":[["It was great.","Foi ótima."],["The best part was the beach.","A melhor parte foi a praia."],["The flight was a little long.","O voo foi um pouco longo."]],
+"Have you been here before?":[["I've never been here before.","Eu nunca estive aqui antes."],["It's my first time in this country.","É a minha primeira vez neste país."],["I really like it so far.","Estou gostando muito até agora."]],
+"What are your plans for tomorrow?":[["I'm going to visit the museum.","Eu vou visitar o museu."],["Maybe I will go shopping.","Talvez eu vá fazer compras."],["At night I want to try a local restaurant.","À noite eu quero conhecer um restaurante local."]],
+"Is everything okay with your room?":[["There's a problem with the shower.","Tem um problema com o chuveiro."],["Could you send someone?","Vocês poderiam mandar alguém?"],["The rest is perfect, thanks.","O resto está perfeito, obrigado."]],
+"What did you think of the city?":[["What I liked most was the food.","O que eu mais gostei foi a comida."],["I was surprised by how friendly people were.","Fiquei surpreso com como as pessoas eram simpáticas."],["I'd love to come back someday.","Eu adoraria voltar um dia."]],
+"How can we make your stay better?":[["I was supposed to have a sea view.","Era para eu ter vista para o mar."],["Would it be possible to change rooms?","Seria possível trocar de quarto?"],["I'd really appreciate it.","Eu agradeceria muito."]],
+"What would you recommend to a friend visiting Brazil?":[["You should visit the Pantanal.","Você deveria visitar o Pantanal."],["Don't miss the local food.","Não deixe de provar a comida local."],["Try to learn a few words in Portuguese.","Tente aprender algumas palavras em português."]],
+"Tell me about a trip that went wrong.":[["It turned out that our flight was cancelled.","No fim das contas, nosso voo foi cancelado."],["We had to sleep at the airport.","A gente teve que dormir no aeroporto."],["I wish we had bought travel insurance.","Queria que a gente tivesse comprado seguro viagem."]],
+"How do you choose where to travel?":[["I usually look for places with good food.","Eu normalmente procuro lugares com comida boa."],["I also check how safe the city is.","Eu também vejo se a cidade é segura."],["The bottom line is that I want to relax.","No fim das contas, eu quero relaxar."]],
+"What is the best trip you have ever taken?":[["The best trip I ever took was to the beach.","A melhor viagem que eu já fiz foi para a praia."],["I went with my whole family.","Eu fui com a família toda."],["What made it special was the time together.","O que fez ser especial foi o tempo juntos."]],
+"Tell me about your family.":[["I have a daughter.","Eu tenho uma filha."],["She is thirteen.","Ela tem treze anos."],["She loves music.","Ela ama música."]],
+"What do you do in your free time?":[["I really like watching movies.","Eu gosto muito de assistir filmes."],["I usually go to the park on Sundays.","Eu normalmente vou ao parque aos domingos."],["Sometimes I cook for my family.","Às vezes eu cozinho para a minha família."]],
+"What is your favorite food?":[["My favorite food is barbecue.","Minha comida favorita é churrasco."],["I don't like spicy food.","Eu não gosto de comida apimentada."],["I eat rice and beans every day.","Eu como arroz e feijão todo dia."]],
+"What did you do last weekend?":[["Last weekend I visited my parents.","No fim de semana passado eu visitei meus pais."],["Then I watched a movie.","Depois eu assisti um filme."],["On Sunday I rested.","No domingo eu descansei."]],
+"Describe your city.":[["My city is small and hot.","Minha cidade é pequena e quente."],["There is a big park in the center.","Tem um parque grande no centro."],["People are very friendly.","As pessoas são muito simpáticas."]],
+"What were you like as a kid?":[["When I was a kid, I played outside all day.","Quando eu era criança, eu brincava fora o dia todo."],["I used to love soccer.","Eu adorava futebol."],["I was a little shy.","Eu era um pouco tímido."]],
+"Have you ever done something crazy?":[["Once I traveled alone without a plan.","Uma vez eu viajei sozinho sem plano."],["It was scary but fun.","Foi assustador, mas divertido."],["I would do it again.","Eu faria de novo."]],
+"What series are you watching?":[["I'm watching a crime series.","Estou assistindo uma série policial."],["It's about a detective in London.","É sobre um detetive em Londres."],["I watch it with English subtitles.","Eu assisto com legenda em inglês."]],
+"How has your life changed in the last five years?":[["I used to work all the time.","Eu trabalhava o tempo todo."],["Now I take more time for myself.","Agora eu tiro mais tempo para mim."],["The biggest change was learning to say no.","A maior mudança foi aprender a dizer não."]],
+"What makes you happy?":[["I feel happy when I spend time with my daughter.","Eu fico feliz quando passo tempo com a minha filha."],["I also love a good meal with friends.","Eu também amo uma boa refeição com amigos."],["For me, the most important thing is family.","Para mim, o mais importante é a família."]],
+"Do you prefer living in a big city or a small town?":[["I'd rather live in a small town.","Eu prefiro morar numa cidade pequena."],["It's quieter and safer.","É mais tranquila e mais segura."],["On the other hand, big cities have more jobs.","Por outro lado, cidades grandes têm mais empregos."]],
+"What is something you changed your mind about?":[["I used to think English was impossible.","Eu achava que inglês era impossível."],["Now I can talk a little every day.","Agora eu consigo falar um pouco todo dia."],["What changed my mind was practicing daily.","O que me fez mudar de ideia foi praticar todo dia."]],
+"Tell me about a person who inspires you.":[["Someone who inspires me is my grandmother.","Alguém que me inspira é a minha avó."],["She worked hard all her life.","Ela trabalhou duro a vida toda."],["She never gave up.","Ela nunca desistiu."]],
+"If you could change one thing about your past, what would it be?":[["If I could go back, I'd learn English earlier.","Se eu pudesse voltar, eu aprenderia inglês mais cedo."],["It would have opened many doors.","Teria aberto muitas portas."],["But it's never too late to start.","Mas nunca é tarde para começar."]],
+"Is technology making us happier?":[["To be fair, it helps a lot.","Para ser justo, ajuda muito."],["But we spend too much time on our phones.","Mas a gente passa tempo demais no celular."],["The bottom line is that we need balance.","No fim das contas, a gente precisa de equilíbrio."]],
+"What does success mean to you?":[["For me, success means having time for my family.","Para mim, sucesso é ter tempo para a minha família."],["It is not just about money.","Não é só sobre dinheiro."],["It's also about doing work I'm proud of.","É também fazer um trabalho do qual eu me orgulho."]]
+};
+const DIARIO_NEW={
+viagem:{A2:['Conte para onde você gostaria de viajar e por quê.','Descreva a última viagem que você fez.','Imagine que chegou no hotel: fale o que você diria na recepção.'],
+  B1:['Conte uma viagem que deu certo e uma coisa que deu errado.','Planeje em voz alta um dia inteiro de passeio numa cidade nova.'],
+  B2:['Recomende a sua cidade para um turista estrangeiro.','Conte um problema numa viagem e como você resolveu.'],
+  C1:['Compare viajar sozinho e viajar em grupo.','Fale sobre o que uma viagem já mudou em você.']},
+fluencia:{A2:['Conte como foi o seu dia em 5 frases.','Fale da sua família e do que vocês gostam de fazer.','Descreva a sua casa.'],
+  B1:['Conte uma história engraçada que aconteceu com você.','Fale de um filme ou série que você recomenda.'],
+  B2:['Dê a sua opinião sobre redes sociais.','Fale dos seus planos para os próximos anos.'],
+  C1:['Defenda uma opinião polêmica com argumentos.','Fale sobre uma decisão difícil e o que aprendeu.']}
+};
+const VIDEOS_NEW={
+viagem:{A2:['travel English phrases airport hotel','English for travel beginners','ordering food in English restaurant'],
+  B1:['travel vlog English subtitles','asking for directions in English','hotel check in English conversation'],
+  B2:['travel vlog English full','complaining at a hotel in English','renting a car in English'],
+  C1:['travel documentary English','flight cancelled what to say English','travel podcast English']},
+fluencia:{A2:['English conversation beginners daily life','6 Minute English BBC','talking about family in English'],
+  B1:['English small talk practice','telling a story in English','learn English with TV series'],
+  B2:['English conversation natural speed','learn English with movies','English idioms conversation'],
+  C1:['English podcast native speakers','TED talk','English debate discussion']}
+};
+
+
+/* ---------------- objetivos: conteúdo e troca ---------------- */
+PATTERNS.push(...NEW_PATS); KITS.push(...NEW_KITS);
+Object.assign(MICRO_S, MICRO_S_NEW);
+const T_BASE={ micro:JSON.parse(JSON.stringify(MICRO)), diario:JSON.parse(JSON.stringify(DIARIO)), videos:JSON.parse(JSON.stringify(VIDEOS)) };
+const T_CONTENT={ negocios:T_BASE,
+  viagem:{ micro:MICRO_NEW.viagem, diario:DIARIO_NEW.viagem, videos:VIDEOS_NEW.viagem },
+  fluencia:{ micro:MICRO_NEW.fluencia, diario:DIARIO_NEW.fluencia, videos:VIDEOS_NEW.fluencia } };
+Object.assign(state, { track:null, tracks:{} });
+function curTrack(){ return (state.track && TRACKS[state.track]) ? state.track : 'negocios'; }
+let trackApplied=null;
+function applyTrack(){
+  const t=curTrack(); if(trackApplied===t) return; trackApplied=t;
+  const c=T_CONTENT[t];
+  ['A2','B1','B2','C1'].forEach(l=>{ MICRO[l]=c.micro[l]; DIARIO[l]=c.diario[l]; VIDEOS[l]=c.videos[l]; });
+}
+function inTrack(type,id){ const T=TRACKS[curTrack()]; return (type==='pat'?T.pats:T.kits).includes(id); }
+patsFor=function(l){ return PATTERNS.filter(p=>p.lvl===trackLvl(l) && inTrack('pat',p.id)); };
+escKit=function(){
+  const L=lvlIdx(curLvl());
+  const ks=KITS.filter(k=>inTrack('kit',k.id) && lvlIdx(k.lvl)<=Math.max(L,1));
+  const same=ks.filter(k=>k.lvl===trackLvl(curLvl()));
+  return pickDay(dayNum()%2 && same.length ? same : ks) || ks[0] || KITS[0];
+};
+triItems=function(L){
+  const T=TRACKS[curTrack()];
+  const pats=T.pats.map(id=>PATTERNS.find(p=>p.id===id)).filter(p=>p && p.lvl===L);
+  const kits=T.kits.map(id=>KITS.find(k=>k.id===id)).filter(k=>k && k.lvl===L);
+  const out=[]; let ki=0;
+  pats.forEach((p,i)=>{ out.push({type:'pat', p}); if(i%2===1 && ki<kits.length) out.push({type:'kit', k:kits[ki++]}); });
+  while(ki<kits.length) out.push({type:'kit', k:kits[ki++]});
+  return out;
+};
+function baseOf(id){ return String(id).includes('/') ? String(id).split('/')[1] : String(id); }
+licaoId=function(it){ return curTrack()+'/'+(it.type==='pat' ? 'pat:'+it.p.id : 'kit:'+it.k.id); };
+praticaOk=function(id){ const [t,x]=baseOf(id).split(':'); return t==='pat' ? (state.fabDone[x]||0)>=3 : !!KD()[x]; };
+licaoTitulo=function(id){ const [t,x]=baseOf(id).split(':'); if(t==='pat'){ const p=PATTERNS.find(p=>p.id===x); return p?p.en:x; } const k=KITS.find(k=>k.id===x); return k?k.title:x; };
+
+function nAprovTrilha(t){ const pre=t+'/'; return (aprovSet ? [...aprovSet()] : []).filter(x=>x.startsWith(pre)).length; }
+function switchTrack(t, silencioso){
+  const old=state.track;
+  if(old===t) return;
+  if(old){ state.tracks[old]=Object.assign(state.tracks[old]||{}, { fabDone:state.fabDone, kitDone:state.game.kitDone||{}, heard:state.game.heard||{} }); }
+  const nx=state.tracks[t]|| (old ? { fabDone:{}, kitDone:{}, heard:{}, desde:today() }
+                               : { fabDone:state.fabDone||{}, kitDone:state.game.kitDone||{}, heard:state.game.heard||{}, desde:today() });
+  if(!nx.desde) nx.desde=today();
+  state.tracks[t]=nx;
+  state.fabDone=nx.fabDone; state.game.kitDone=nx.kitDone; state.game.heard=nx.heard;
+  state.track=t; trackApplied=null; applyTrack();
+  Object.assign(state,{ triLvl:null, triPat:null, triKit:null, triOpen:false, fab:null, fabPid:null, rv:null, open:null, prova:null });
+  save();
+  if(!silencioso){
+    cloudEvent('trilha', old ? `Objetivo trocado: ${TRACKS[old].n} → ${TRACKS[t].n}` : `Objetivo escolhido: ${TRACKS[t].n}`, 0);
+    if(cloud.sb && cloud.user){ cloud.sb.from('alunos').update({ trilha:t }).eq('id',cloud.user.id).then(()=>{}); if(cloud.aluno) cloud.aluno.trilha=t; }
+  }
+}
+
+/* ---------- telas de escolha ---------- */
+function trackCardsHTML(attr, atual){
+  return `<div class="tchoose">${Object.entries(TRACKS).map(([k,T])=>`<button class="tcard" ${attr}="${k}" aria-pressed="${atual===k}">
+    <span class="tcard__ic">${T.ic}</span><span class="tcard__b"><b>${esc(T.n)}</b><small>${esc(T.d)}</small></span>
+    ${atual===k?'<span class="tcard__tag">atual</span>':''}</button>`).join('')}</div>`;
+}
+function trackGateHTML(){
+  return `<section class="kit">
+    <p class="eyebrow">Antes de começar</p><h2 class="kit__title">Por que você quer aprender inglês?</h2>
+    <p class="kit__brief">Escolha o seu objetivo. A Trilha, os microdesafios, o diário e os vídeos vão ser montados para ele. Você pode trocar depois.</p>
+    ${trackCardsHTML('data-trackset', null)}</section>`;
+}
+function trackHomeCard(){
+  if(!state.track) return '';
+  const T=TRACKS[state.track];
+  return `<button class="tline" data-trackopen="1"><span>${T.ic}</span><span><small>Seu objetivo</small><b>${esc(T.n)}</b></span><span class="tline__a">Trocar</span></button>`;
+}
+function openTrackSheet(sel){
+  closeTrackSheet();
+  const d=document.createElement('div'); d.className='zesheet'; d.id='tsheet';
+  const atual=state.track;
+  let inner;
+  if(!sel){
+    inner=`<h3 class="tsheet__t">Trocar o objetivo</h3>
+      <p class="tsheet__d">Cada objetivo tem a sua própria Trilha. O que você já fez fica guardado.</p>
+      ${trackCardsHTML('data-tracksel', atual)}
+      <button class="act" data-trackx="1" style="margin-top:14px;width:100%;justify-content:center">Cancelar</button>`;
+  } else {
+    const T=TRACKS[sel], O=TRACKS[atual], volta=!!state.tracks[sel];
+    const m=cloud.mes;
+    inner=`<h3 class="tsheet__t">${T.ic} Trocar para ${esc(T.n)}?</h3>
+      <ul class="tsheet__l">
+        <li>Sua trilha de <b>${esc(O.n)}</b> fica salva${nAprovTrilha(atual)?` (${nAprovTrilha(atual)} lições aprovadas)`:''}. Dá para voltar quando quiser e continuar de onde parou.</li>
+        <li>${volta?`Você volta para a trilha de <b>${esc(T.n)}</b> de onde parou.`:`A trilha de <b>${esc(T.n)}</b> começa <b>do zero</b>.`}</li>
+        <li>As missões do dia (microdesafios, diário e vídeos) passam a ser de ${esc(T.n.toLowerCase())}. Suas frases e a revisão continuam.</li>
+        ${m?`<li>Reembolso de ${mesNome(m.mes)}: conta só as provas aprovadas no mês, de qualquer objetivo (hoje: ${m.aprovadas}). Lição repetida em outro objetivo não conta duas vezes.</li>`:''}
+      </ul>
+      <button class="big" data-trackgo="${sel}">Trocar para ${esc(T.n)}</button>
+      <button class="act" data-trackopen="1" style="margin-top:10px;width:100%;justify-content:center">Voltar</button>`;
+  }
+  d.innerHTML=`<div class="zesheet__box" role="dialog" aria-modal="true" aria-label="Objetivo">${inner}</div>`;
+  document.body.appendChild(d);
+}
+function closeTrackSheet(){ document.querySelectorAll('#tsheet').forEach(x=>x.remove()); }
+
+const _hojeHTMLTrack=hojeHTML;
+hojeHTML=function(){ const h=_hojeHTMLTrack(); return state.open ? h : h.replace('<div class="unitbar">', trackHomeCard()+'<div class="unitbar">'); };
+const _renderMetodoTrack=renderMetodo;
+renderMetodo=function(){
+  if(state.mode==='hoje' && cloud.user && !state.track && !(state.recovery && state.recovery!=='feito')){ view.innerHTML=trackGateHTML(); return; }
+  _renderMetodoTrack();
+};
+const _triHTMLTrack=triHTML;
+triHTML=function(){
+  const h=_triHTMLTrack(); if(state.prova || state.triKit || (state.triOpen && state.triPat)) return h;
+  const T=TRACKS[curTrack()];
+  return h.replace('<p class="unitbar__k">Etapa', `<p class="unitbar__k">${T.ic} ${esc(T.n)} · Etapa`);
+};
+const _renderTrack=render;
+render=function(){ applyTrack(); _renderTrack(); };
+
+/* matrícula: escolha do objetivo */
+const _authHTMLTrack=authHTML;
+authHTML=function(gate){
+  const h=_authHTMLTrack(gate); const sel=state.authDraft&&state.authDraft.trilha;
+  return h.replace(/<div class="compose__row" style="margin-top:8px"><input class="field" id="su-obj"[^>]*><\/div>/,
+    `<p class="hist__h" style="margin-top:14px">Por que você quer aprender inglês?</p>${trackCardsHTML('data-sutrack', sel)}`);
+};
+
+/* depois de entrar: decide o objetivo */
+const _afterLoginTrack=afterLogin;
+afterLogin=async function(){
+  await _afterLoginTrack();
+  if(!state.track){
+    const srv=cloud.aluno && cloud.aluno.trilha;
+    if(srv && TRACKS[srv]) switchTrack(srv, true);
+    else if(state.profile){ switchTrack('negocios', true); if(cloud.sb) cloud.sb.from('alunos').update({ trilha:'negocios' }).eq('id',cloud.user.id).then(()=>{}); }
+  }
+  trackApplied=null; render();
+};
+
+document.addEventListener('click', e=>{
+  const t=e.target.closest('[data-trackset],[data-trackopen],[data-tracksel],[data-trackgo],[data-trackx],[data-sutrack],#tsheet'); if(!t) return; const d=t.dataset;
+  if(d.sutrack){ state.authDraft=Object.assign(state.authDraft||{}, { trilha:d.sutrack });
+    document.querySelectorAll('[data-sutrack]').forEach(b=>b.setAttribute('aria-pressed', b===t)); return; }
+  if(d.trackset){ switchTrack(d.trackset); state.mode='hoje'; render(); window.scrollTo({top:0}); return; }
+  if(d.trackopen){ openTrackSheet(null); return; }
+  if(d.tracksel){ if(d.tracksel===state.track){ closeTrackSheet(); return; } openTrackSheet(d.tracksel); return; }
+  if(d.trackgo){ closeTrackSheet(); switchTrack(d.trackgo); state.mode='hoje'; setModeBtn('hoje'); render(); window.scrollTo({top:0});
+    toast(`Objetivo: ${TRACKS[d.trackgo].n}`); return; }
+  if(d.trackx || e.target===t){ closeTrackSheet(); }
 });
 
 /* ---------------- início ---------------- */
