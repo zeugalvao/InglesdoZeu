@@ -3833,6 +3833,10 @@ function traduzErro(e){
   if(/Invalid API key|No API key|apikey/i.test(m)) return 'Chave inválida. Copie de novo a Publishable key do projeto.';
   return m || 'Erro desconhecido.';
 }
+const RECOV = (()=>{ const s=location.hash+'&'+location.search;
+  if(/error_code=otp_expired|error=access_denied/.test(s)) return 'expirou';
+  return /type=recovery/.test(s) ? 'sim' : ''; })();
+if(RECOV) state.recovery=RECOV;
 async function cloudInit(){
   if(!CFG.url || !CFG.key){ cloud.status='off'; paintAcct(); return; }
   cloud.status='conectando'; paintAcct();
@@ -3840,6 +3844,7 @@ async function cloudInit(){
   if(!ok){ cloud.status='offline'; cloud.err='Sem internet agora. Seu progresso continua salvo neste aparelho e sobe quando a conexão voltar.'; render(); return; }
   try{ cloud.sb=window.supabase.createClient(CFG.url, CFG.key); }
   catch(e){ cloud.status='erro'; cloud.err=traduzErro(e); paintAcct(); return; }
+  cloud.sb.auth.onAuthStateChange(ev=>{ if(ev==='PASSWORD_RECOVERY' && state.recovery!=='feito'){ state.recovery='sim'; render(); } });
   const {data}=await cloud.sb.auth.getSession();
   if(data && data.session){ cloud.user=data.session.user; await afterLogin(); render(); }
   else { cloud.status = CFG.uid ? 'expirou' : 'saiu'; render(); }
@@ -4095,7 +4100,8 @@ function authHTML(gate){
     ${t==='entrar' ? `
       <div class="compose__row" style="margin-top:14px"><input class="field" id="lg-email" type="email" placeholder="e-mail" autocomplete="email" value="${esc((state.authDraft&&state.authDraft.email)||CFG.email||'')}"></div>
       <div class="compose__row" style="margin-top:8px"><input class="field" id="lg-pw" type="password" placeholder="senha" autocomplete="current-password"></div>
-      <div class="acts acts--bare" style="margin-top:12px"><button class="act act--main" data-login="1" ${cloud.busy?'disabled':''}>Entrar</button></div>`
+      <div class="acts acts--bare" style="margin-top:12px"><button class="act act--main" data-login="1" ${cloud.busy?'disabled':''}>Entrar</button>
+        <button class="linkbtn" data-esqueci="1" style="margin:0 0 0 auto">Esqueci minha senha</button></div>`
     : `
       <p class="kit__brief">Seu progresso vai para a nuvem, você acessa de qualquer aparelho, e o professor acompanha sua evolução.</p>
       <div class="compose__row" style="margin-top:14px"><input class="field" id="su-nome" placeholder="Seu nome" autocomplete="name" value="${esc((state.authDraft&&state.authDraft.nome)||'')}"></div>
@@ -5221,6 +5227,71 @@ document.addEventListener('click', e=>{
 }, true);
 const _helpIdReemb=helpId;
 helpId=function(){ if(state.mode==='conta' && cloud.user) return 'reembolso'; return _helpIdReemb(); };
+
+
+/* ---------------- esqueci minha senha ---------------- */
+function recuperacaoHTML(){
+  const R=state.recovery;
+  if(R==='pedir') return `<section class="kit">
+    <p class="eyebrow">Recuperar acesso</p><h2 class="kit__title">Esqueci minha senha</h2>
+    <p class="kit__brief">Digite o e-mail da sua matrícula. Vamos mandar um link para você criar uma senha nova.</p>
+    <div class="compose__row" style="margin-top:14px"><input class="field" id="rc-email" type="email" autocomplete="email" placeholder="seu e-mail" value="${esc((state.authDraft&&state.authDraft.email)||CFG.email||'')}"></div>
+    <div class="acts acts--bare" style="margin-top:12px"><button class="act act--main" data-rcenviar="1" ${cloud.busy?'disabled':''}>Enviar link</button><button class="act" data-rcvoltar="1">Voltar</button></div>
+    ${cloud.msg?`<p class="msg">${esc(cloud.msg)}</p>`:''}</section>`;
+  if(R==='enviado') return `<section class="kit">
+    <p class="eyebrow">Recuperar acesso</p><h2 class="kit__title">Confira seu e-mail 📬</h2>
+    <p class="kit__brief">Se esse e-mail tem matrícula, chegou uma mensagem com o link <b>“Reset Password”</b>. Abra o link <b>neste aparelho</b>. Olhe também a caixa de spam. O link vale por pouco tempo.</p>
+    <div class="acts acts--bare" style="margin-top:14px"><button class="act" data-rcvoltar="1">Voltar para entrar</button></div></section>`;
+  if(R==='expirou') return `<section class="kit">
+    <p class="eyebrow">Recuperar acesso</p><h2 class="kit__title">Esse link expirou</h2>
+    <p class="kit__brief">Links de recuperação valem por pouco tempo e só funcionam uma vez. Peça um novo.</p>
+    <div class="acts acts--bare" style="margin-top:14px"><button class="act act--main" data-esqueci="1">Pedir novo link</button><button class="act" data-rcvoltar="1">Voltar</button></div></section>`;
+  if(!cloud.user) return '<div class="empty"><h2>Abrindo o link…</h2><p>Só um instante.</p></div>';
+  return `<section class="kit">
+    <p class="eyebrow">Recuperar acesso</p><h2 class="kit__title">Crie uma senha nova</h2>
+    <p class="kit__brief">Conta: <b>${esc(cloud.user.email)}</b></p>
+    <div class="compose__row" style="margin-top:14px"><input class="field" id="rc-pw1" type="password" autocomplete="new-password" placeholder="nova senha (6 ou mais caracteres)"></div>
+    <div class="compose__row" style="margin-top:8px"><input class="field" id="rc-pw2" type="password" autocomplete="new-password" placeholder="repita a nova senha"></div>
+    <div class="acts acts--bare" style="margin-top:12px"><button class="act act--main" data-rcsalvar="1" ${cloud.busy?'disabled':''}>Salvar nova senha</button></div>
+    ${cloud.msg?`<p class="msg">${esc(cloud.msg)}</p>`:''}</section>`;
+}
+function limparUrl(){ try{ history.replaceState(null,'',location.pathname); }catch(e){} }
+const _renderMetodoRec=renderMetodo;
+renderMetodo=function(){
+  if(state.recovery && state.recovery!=='feito'){ view.innerHTML=recuperacaoHTML(); return; }
+  _renderMetodoRec();
+};
+const _renderRec=render;
+render=function(){
+  _renderRec();
+  const on=!!state.recovery && state.recovery!=='feito';
+  if(on){ document.body.classList.add('portao'); const f=document.getElementById('zefab'); if(f) f.hidden=true; }
+};
+document.addEventListener('click', async e=>{
+  const t=e.target.closest('[data-esqueci],[data-rcenviar],[data-rcvoltar],[data-rcsalvar]'); if(!t) return; const d=t.dataset;
+  if(d.esqueci){ const em=document.getElementById('lg-email'); if(em&&em.value) state.authDraft=Object.assign(state.authDraft||{},{email:em.value.trim()});
+    state.recovery='pedir'; cloud.msg=''; limparUrl(); render(); return; }
+  if(d.rcvoltar){ state.recovery=''; cloud.msg=''; cloud.tab='entrar'; limparUrl(); render(); return; }
+  if(d.rcenviar){
+    const email=(document.getElementById('rc-email').value||'').trim();
+    if(!/^\S+@\S+\.\S+$/.test(email)){ cloud.msg='Digite um e-mail válido.'; render(); return; }
+    if(!await ensureClient()){ cloud.msg=cloud.err||'Sem conexão.'; render(); return; }
+    cloud.busy=true; cloud.msg='enviando…'; render();
+    const {error}=await cloud.sb.auth.resetPasswordForEmail(email,{ redirectTo: location.origin+location.pathname });
+    cloud.busy=false;
+    if(error){ cloud.msg=traduzErro(error); render(); return; }
+    cloud.msg=''; state.recovery='enviado'; render(); return; }
+  if(d.rcsalvar){
+    const a=document.getElementById('rc-pw1').value, b=document.getElementById('rc-pw2').value;
+    if(a.length<6){ cloud.msg='A senha precisa ter pelo menos 6 caracteres.'; render(); return; }
+    if(a!==b){ cloud.msg='As duas senhas não estão iguais.'; render(); return; }
+    cloud.busy=true; cloud.msg='salvando…'; render();
+    const {error}=await cloud.sb.auth.updateUser({ password:a });
+    cloud.busy=false;
+    if(error){ cloud.msg=/different from the old|same as/i.test(error.message)?'A senha nova precisa ser diferente da antiga.':traduzErro(error); render(); return; }
+    cloud.msg=''; state.recovery='feito'; limparUrl(); toast('Senha nova salva! ✓');
+    state.mode='hoje'; setModeBtn('hoje'); render(); return; }
+});
 
 /* ---------------- início ---------------- */
 (async()=>{
