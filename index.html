@@ -5935,7 +5935,7 @@ function openTrackSheet(sel){
         <li>Sua trilha de <b>${esc(O.n)}</b> fica salva${nAprovTrilha(atual)?` (${nAprovTrilha(atual)} lições aprovadas)`:''}. Dá para voltar quando quiser e continuar de onde parou.</li>
         <li>${volta?`Você volta para a trilha de <b>${esc(T.n)}</b> de onde parou.`:`A trilha de <b>${esc(T.n)}</b> começa <b>do zero</b>.`}</li>
         <li>As missões do dia (microdesafios, diário e vídeos) passam a ser de ${esc(T.n.toLowerCase())}. Suas frases e a revisão continuam.</li>
-        ${m?`<li>Reembolso de ${mesNome(m.mes)}: conta só as provas aprovadas no mês, de qualquer objetivo (hoje: ${m.aprovadas}). Lição repetida em outro objetivo não conta duas vezes.</li>`:''}
+        ${m?`<li>Reembolso de ${mesNome(m.mes)}: conta os dias com a prova do dia aprovada, em qualquer objetivo (até agora: ${m.aprovadas} dias, +${brl(m.valor_max/m.meta)} por dia).</li>`:''}
       </ul>
       <button class="big" data-trackgo="${sel}">Trocar para ${esc(T.n)}</button>
       <button class="act" data-trackopen="1" style="margin-top:10px;width:100%;justify-content:center">Voltar</button>`;
@@ -6035,6 +6035,174 @@ document.addEventListener('click', e=>{
   if(mistura(v) && !confirm('Ainda tem palavras em português: '+palavrasPT(v).join(', ')+'. Salvar assim?')) return;
   p.text=v; p.core=coreOf(v); p.beats=beatsOf(v); save(); render(); toast('Frase corrigida ✓');
 });
+
+
+/* ==================================================================
+   PROVA DO DIA (vale reembolso) + PROVA FINAL DE CADA ETAPA
+   ================================================================== */
+MISSIONS.push({id:'provadia', slot:'Antes de dormir', t:'Prova do dia', min:12, r:'LPI',
+  why:'Prova completa sobre o que você praticou hoje e lições que já passou. Passou com 80%? O dia conta como aprovado e uma parte da mensalidade volta para você.'});
+ICON.provadia='📝';
+TASK_HINT.provadia='Termina quando você passar na prova do dia (80%). Ela libera depois das outras missões.';
+HELP.provadia={tip:'Prova completa do dia. 80% para aprovar o dia.', steps:[
+  'Ela libera quando você termina as outras missões do dia.',
+  '10 perguntas, 12 minutos: a estrutura que você praticou hoje na Fábrica e lições que você já passou.',
+  'Passou com 80%? <b>Dia aprovado</b>: uma parte da mensalidade volta para você no fim do mês.',
+  'Não passou? Revise e tente de novo depois de 30 minutos. Vale até meia-noite.']};
+function eDia(l){ return l==='dia'; }
+function eFinal(l){ return String(l).startsWith('final/'); }
+const _licaoTituloDia=licaoTitulo;
+licaoTitulo=function(id){ if(eDia(id)) return 'Prova do dia'; if(eFinal(id)) return 'Prova final da etapa '+id.split('/')[2]; return _licaoTituloDia(id); };
+function porDia(){ const m=cloud.mes; return m ? m.valor_max/m.meta : 0; }
+function outrasFeitas(){ const r=dayRec(); return missionsToday().filter(m=>!m.weekend && m.id!=='provadia').filter(m=>!r.done[m.id]); }
+
+/* abrir: escolhe a função certa no servidor */
+const _abrirProvaDia=abrirProva;
+abrirProva=async function(licao){
+  if(!eDia(licao) && !eFinal(licao)) return _abrirProvaDia(licao);
+  stopEsc && stopEsc(); state.fab=null;
+  state.prova={ licao, loading:true, i:-1, resp:{}, volta: state.mode };
+  state.mode='tri'; setModeBtn('tri'); render(); window.scrollTo({top:0});
+  if(!cloud.sb || !cloud.user){ state.prova={licao, volta:state.prova.volta, err:'Para fazer a prova você precisa estar na sua conta e com internet.'}; render(); return; }
+  const r = eDia(licao) ? await cloud.sb.rpc('iniciar_prova_dia') : await cloud.sb.rpc('iniciar_prova_final',{ p_nivel: licao.split('/')[2] });
+  const volta=state.prova.volta;
+  if(r.error){
+    const m=String(r.error.message||''), w=/ESPERA:(\d+)/.exec(m);
+    state.prova={ licao, volta, err: w ? `Você poderá tentar de novo em ${w[1]} min. Aproveite para revisar as frases de hoje.` : m };
+    render(); return;
+  }
+  const d=r.data; let saved={};
+  try{ saved=JSON.parse(localStorage.getItem('zeu:prova:'+d.id)||'{}'); }catch(e){}
+  state.prova={ licao, volta, id:d.id, perguntas:d.perguntas, expira:new Date(d.expira_em).getTime(), i:d.retomada?0:-1, resp:saved, atual:d.licao_atual };
+  render();
+};
+/* resultado: dia aprovado fecha a missão; prova final conclui a etapa */
+const _entregarProvaDia=entregarProva;
+entregarProva=async function(){
+  const P=state.prova; if(!P || (!eDia(P.licao) && !eFinal(P.licao))) return _entregarProvaDia();
+  if(P.sending || P.res) return;
+  P.sending=true; render();
+  const r=await cloud.sb.rpc('entregar_prova',{ p_tentativa:P.id, p_respostas:P.resp });
+  P.sending=false;
+  if(r.error){ P.sendErr=String(r.error.message||'Não consegui entregar. Confira a internet e tente de novo.'); render(); return; }
+  P.res=r.data; try{ localStorage.removeItem('zeu:prova:'+P.id); }catch(e){}
+  if(r.data.mes){ cloud.mes=r.data.mes; state.game.aprovCache=r.data.mes.aprovadas_todas||[]; }
+  if(r.data.aprovado){
+    if(eDia(P.licao)){ gain(30,'dia aprovado'); markDone('provadia', true); }
+    else { const L=P.licao.split('/')[2];
+      if(typeof issueCert==='function') issueCert(L);
+      const nx=LVLS[Math.min(4, lvlIdx(L)+1)];
+      if(state.profile && lvlIdx(state.profile.level)<=lvlIdx(L) && L!=='C1'){ state.profile.level=nx; state.triLvl=nx; }
+    }
+  }
+  save(); render(); window.scrollTo({top:0});
+};
+/* textos da tela de prova conforme o tipo */
+const _provaHTMLDia=provaHTML;
+provaHTML=function(){
+  const P=state.prova; let h=_provaHTMLDia();
+  const dia=eDia(P.licao), fin=eFinal(P.licao), m=cloud.mes;
+  if(dia) h=h.replace('📝 Prova da lição','📝 Prova do dia'); else if(fin) h=h.replace('📝 Prova da lição','🏆 Prova final');
+  if(P.i<0 && !P.res && !P.err && !P.loading){
+    const extra = dia ? `<li>${P.atual?`6 perguntas sobre <b>${esc(licaoTitulo(P.atual))}</b> (a estrutura de hoje) e 4 de lições que você já passou.`:'Perguntas sobre o que você praticou hoje.'}</li>
+        ${m?`<li>Passou hoje = <b>+${brl(porDia())}</b> no seu reembolso de ${mesNome(m.mes)}.</li>`:''}`
+      : fin ? `<li>Perguntas de <b>todas as lições</b> desta etapa.</li><li>Passou? A etapa fica concluída, você ganha o certificado e segue para a próxima.</li>` : '';
+    h=h.replace(/<li>Não passou\? A lição recomeça[^<]*<\/li>/, dia||fin?'<li>Não passou? Revise e tente de novo depois de 30 minutos.</li>':'$&')
+       .replace(/<li>Cada prova aprovada no mês vale[\s\S]*?<\/li>/, '')
+       .replace('</ul>', extra+'</ul>');
+  }
+  if(P.res){
+    const R=P.res;
+    if(R.aprovado && dia) h=h.replace(/<p class="prova__msg">[\s\S]*?<\/p>/, `<p class="prova__msg"><b>Dia aprovado!</b> ${brl(m&&m.valor_ganho)} de ${brl(m&&m.valor_max)} já voltando para você em ${mesNome(m&&m.mes)} (${m?m.aprovadas:''} de ${m?m.meta:''} dias).${m&&!m.mensalidade_paga?' <i>O reembolso vale depois que a mensalidade do mês for confirmada.</i>':''}</p>`)
+                           .replace('<small>Reembolso</small><b>+'+brl(valorPorProva())+'</b>', '<small>Hoje</small><b>+'+brl(porDia())+'</b>');
+    else if(R.aprovado && fin) h=h.replace(/<p class="prova__msg">[\s\S]*?<\/p>/, `<p class="prova__msg"><b>Etapa ${P.licao.split('/')[2]} concluída!</b> Seu certificado está em Conquistas. Agora você segue para a próxima etapa.</p>`)
+                               .replace('<small>Reembolso</small><b>+'+brl(valorPorProva())+'</b>', '<small>XP</small><b>+200</b>');
+    else if(R.aprovado) h=h.replace(/<p class="prova__msg">[\s\S]*?<\/p>/, `<p class="prova__msg"><b>Lição aprovada!</b> Ela fica verde na Trilha.</p>`)
+                         .replace('<small>Reembolso</small><b>+'+brl(valorPorProva())+'</b>', '<small>XP</small><b>+50</b>');
+    else if(dia||fin) h=h.replace(/<p class="prova__msg">[\s\S]*?<\/p>/, `<p class="prova__msg">Você precisa de <b>${Math.round((m?m.nota_minima:0.8)*100)}%</b> para passar. Revise o que errou abaixo e tente de novo daqui a <b>${R.espera_min||30} min</b>.</p>`)
+                      .replace('>Voltar à lição<','>Voltar<');
+  }
+  return h;
+};
+/* voltar para onde estava */
+document.addEventListener('click', e=>{
+  const t=e.target.closest('[data-provafim],[data-provax]'); if(!t) return;
+  const P=state.prova; if(!P || (!eDia(P.licao) && !eFinal(P.licao))) return;
+  e.stopImmediatePropagation();
+  if(t.dataset.provax && P.i>=0 && !P.res && !P.err && !confirm('Sair da prova? Suas respostas ficam guardadas, mas o tempo continua contando.')) return;
+  const volta=P.volta||'hoje'; clearInterval(provaTick); state.prova=null;
+  if(eDia(P.licao)){ state.mode='hoje'; setModeBtn('hoje'); state.open = dayRec().done.provadia ? null : 'provadia'; }
+  else { state.mode=volta; setModeBtn(volta); }
+  render(); window.scrollTo({top:0});
+}, true);
+
+/* missão do dia */
+const _missionBodyDia=missionBody;
+missionBody=function(m){
+  if(m.id==='fabrica' && !state.fabPid){ const da=licaoDaVezPat(); if(da) state.fabPid=da; }
+  if(m.id!=='provadia') return _missionBodyDia(m);
+  const md=cloud.mes, feito=dayRec().done.provadia || (md && md.dia_hoje);
+  if(feito) return `<div class="provacta provacta--ok">✓ Dia aprovado! ${md?`${brl(md.valor_ganho)} de ${brl(md.valor_max)} no reembolso de ${mesNome(md.mes)}.`:''} Volte amanhã para a próxima.</div>`;
+  const falta=outrasFeitas();
+  if(falta.length) return `<div class="provacta provacta--lock">🔒 A prova do dia libera quando você terminar as outras missões. Faltam:
+      <ul class="lockl">${falta.map(x=>`<li>${ICON[x.id]||''} ${esc(x.t)}</li>`).join('')}</ul></div>
+      <button class="big" data-lnextpend="1">Ir para: ${esc(falta[0].t)}</button>`;
+  return `<div class="provacta"><b>Tudo pronto para a prova de hoje.</b> 10 perguntas, 12 minutos, 80% para passar.${md?` Passou = <b>+${brl(porDia())}</b> de reembolso.`:''}
+      <button class="big" data-provaopen="dia" style="margin-top:12px">📝 Começar a prova do dia</button></div>`;
+};
+function licaoDaVezPat(){
+  const md=cloud.mes, A=aprovSet(), L=trackLvl(curLvl());
+  if(md && md.licao_da_vez && md.licao_da_vez.startsWith('pat:')){ const id=md.licao_da_vez.slice(4); if(inTrack('pat',id)) return id; }
+  const T=TRACKS[curTrack()]; const p=T.pats.map(id=>PATTERNS.find(x=>x.id===id)).find(p=>p && p.lvl===L && !A.has(curTrack()+'/pat:'+p.id));
+  return p ? p.id : null;
+}
+document.addEventListener('click', e=>{ const t=e.target.closest('[data-lnextpend]'); if(!t) return;
+  const f=outrasFeitas()[0]; if(f){ state.open=f.id; render(); window.scrollTo({top:0}); } });
+const _taskProgDia=taskProg;
+taskProg=function(id){ if(id==='provadia') return (dayRec().done.provadia || (cloud.mes&&cloud.mes.dia_hoje)) ? 1 : 0; return _taskProgDia(id); };
+const _timerTargetDia=timerTarget;
+timerTarget=function(){ const t=_timerTargetDia(); return t==='provadia' ? null : t; };
+const _carregarMesDia=carregarMes;
+carregarMes=async function(){ await _carregarMesDia(); if(cloud.mes && cloud.mes.dia_hoje && !dayRec().done.provadia){ markDone('provadia', true); save(); render(); } };
+
+/* prova final: no fim do caminho de cada etapa */
+const _triHTMLFinal=triHTML;
+triHTML=function(){
+  const h=_triHTMLFinal(); if(state.prova || state.triKit || (state.triOpen && state.triPat)) return h;
+  const L=state.triLvl || trackLvl(curLvl()), items=triItems(L), A=aprovSet();
+  const fid='final/'+curTrack()+'/'+L, ok=A.has(fid);
+  const falta=items.filter(it=>!A.has(licaoId(it))).length;
+  const end = ok ? `<div class="pnode pnode--end" style="--off:0px"><button class="node node--done" data-cert="${L}" aria-label="Ver certificado"><span class="node__ic">🏆</span></button>
+        <span class="pnode__l">Etapa ${L} concluída</span><span class="pnode__s">toque para ver o certificado</span></div>`
+    : falta ? `<div class="pnode pnode--end" style="--off:0px"><div class="chest">🔒</div><span class="pnode__l">Prova final ${L}</span>
+        <span class="pnode__s">libera quando as ${items.length} lições estiverem aprovadas (faltam ${falta})</span></div>`
+    : `<div class="pnode pnode--end" style="--off:0px"><div class="bubble">Prova final</div><button class="node node--cur" data-provaopen="${fid}" style="--p:90"><span class="node__ic">🏆</span></button>
+        <span class="pnode__l">Prova final ${L}</span><span class="pnode__s">20 perguntas · 25 min · 80%</span></div>`;
+  return h.replace(/<div class="pnode pnode--end"[\s\S]*?<span class="pnode__s">[^<]*<\/span><\/div>/, end);
+};
+
+/* reembolso mostrado por dia */
+reembolsoCardHTML=function(compact){
+  const m=cloud.mes; if(!m || !cloud.user) return '';
+  const pct=Math.min(100, m.aprovadas/m.meta*100), semPix=cloud.aluno && !cloud.aluno.chave_pix;
+  const hoje = m.dia_hoje ? '✓ hoje aprovado' : 'hoje: falta a prova do dia';
+  return `<button class="rcard ${compact?'rcard--c':''}" data-gomode="${compact?'conta':'hoje'}">
+    <span class="rcard__ic">💰</span>
+    <span class="rcard__b"><small>Reembolso de ${mesNome(m.mes)} · +${brl(porDia())} por dia aprovado</small>
+      <b>${brl(m.valor_ganho)} <i>de ${brl(m.valor_max)}</i></b>
+      <span class="rcard__bar"><span style="width:${pct.toFixed(1)}%"></span></span>
+      <small>${Math.min(m.aprovadas,m.meta)} de ${m.meta} dias aprovados · ${hoje}${m.reembolso_pago?' · ✓ Pix enviado':!m.mensalidade_paga?' · aguardando confirmação da mensalidade':''}${semPix?' · <u>cadastre sua chave Pix</u>':''}</small></span></button>`;
+};
+const _provaCTADia=provaCTA;
+provaCTA=function(id){ return _provaCTADia(id).replace(/ Agora prove que aprendeu: vale [^.]*\./, ' Agora prove que aprendeu: 80% para passar.'); };
+HELP.reembolso={tip:'Cada dia com a prova do dia aprovada devolve um pedaço da mensalidade.', steps:[
+  'A mensalidade é paga por Pix. Você recebe de volta até <b>50%</b> no seu Pix (chave CPF).',
+  'O valor é dividido por dia: cada <b>prova do dia</b> aprovada soma uma parte, até a meta do mês.',
+  'As provas das lições e a prova final servem para avançar na Trilha.',
+  'Cadastre sua <b>chave Pix</b> em Minha conta. O reembolso é enviado depois do fechamento do mês.']};
+const _payHTMLDia=payHTML;
+payHTML=function(){ return _payHTMLDia().replace(/<small>Provas<\/small>/g,'<small>Dias aprovados</small>')
+  .replace(/proporcional a (\d+) provas aprovadas · (R\$ [\d,]+) por prova/, 'proporcional a $1 dias com prova do dia aprovada · $2 por dia'); };
 
 /* ---------------- início ---------------- */
 (async()=>{
