@@ -760,6 +760,7 @@ body[data-mode="col"] .bar,body[data-mode="tra"] .bar{display:flex}
 @keyframes toastin{from{opacity:0;transform:translate(-50%,-10px)}to{opacity:1;transform:translate(-50%,0)}}
 .banner{top:62px}
 [hidden]{display:none!important}
+.mixwarn{background:#FFF5D6;border:2px solid #FFD666;border-radius:14px;padding:10px 12px;margin:0 0 14px;font-weight:700;font-size:14px;color:#7A5A00}
 
 /* ===== objetivos ===== */
 .tchoose{display:grid;gap:10px;margin-top:12px}
@@ -3465,7 +3466,7 @@ view.addEventListener('click', async e=>{
   if(d.fabown){ const inp=document.getElementById('fab-own'), msg=document.getElementById('fab-msg'); const v=(inp&&inp.value||'').trim();
     if(!v) return; const pat=PATTERNS.find(p=>p.id===d.fabown);
     const ok=keep(v, '', coreOf(v), 'criada por você · '+pat.en); if(ok) gain(8,'frase criada por você'); save(); renderStats(); say(v,1,null);
-    if(msg) msg.textContent = ok ? 'Salva. Ela vai aparecer na sua revisão.' : 'Essa já estava na coleção.'; inp.value=''; return; }
+    if(msg) msg.textContent = ok ? 'Salva. Ela vai aparecer na sua revisão.' : isSaved(v)?'Essa já estava na coleção.':'Não salvei. Corrija a frase e salve de novo.'; inp.value=''; return; }
 
   if(d.escplay){ escPlay(); return; }
   if(d.escstop){ stopEsc(); const s=document.getElementById('esc-st'); if(s) s.textContent='Parado.'; return; }
@@ -3476,7 +3477,7 @@ view.addEventListener('click', async e=>{
   if(d.podnext){ state.video=null; podPhrase(true); render(); return; }
   if(d.miss){ addMissing(); return; }
   if(d.vsave){ const inp=document.getElementById('vid-in'), st=document.getElementById('vid-st'); const v=(inp&&inp.value||'').trim(); if(!v) return;
-    const ok=keep(v, '', coreOf(v), 'ouvida em vídeo'); save(); renderStats(); if(st) st.textContent= ok?'Salva na coleção e na revisão.':'Essa já estava salva.'; inp.value=''; return; }
+    const ok=keep(v, '', coreOf(v), 'ouvida em vídeo'); save(); renderStats(); if(st) st.textContent= ok?'Salva na coleção e na revisão.':isSaved(v)?'Essa já estava salva.':'Não salvei. Corrija a frase e salve de novo.'; inp.value=''; return; }
 
   if(d.trilvl){ state.triLvl=d.trilvl; state.triPat=null; state.fab=null; scMem.fab=''; render(); return; }
   if(d.tripat){ state.triPat=d.tripat; state.fab=null; scMem.fab=''; render(); const el=document.getElementById('tri-drill'); if(el) el.scrollIntoView({behavior:'smooth',block:'start'}); return; }
@@ -5990,6 +5991,49 @@ document.addEventListener('click', e=>{
   if(d.trackgo){ closeTrackSheet(); switchTrack(d.trackgo); state.mode='hoje'; setModeBtn('hoje'); render(); window.scrollTo({top:0});
     toast(`Objetivo: ${TRACKS[d.trackgo].n}`); return; }
   if(d.trackx || e.target===t){ closeTrackSheet(); }
+});
+
+
+/* ---------------- frases misturadas com português ---------------- */
+const PT_WORDS=new Set(['até','nós','você','voce','vocês','não','nao','é','está','estão','estou','que','para','pra','com','uma','eu','ele','ela','eles','muito','mais','meu','minha','isso','esse','essa','também','quando','onde','como','porque','obrigado','obrigada','sim','mas','foi','vou','tá','tô','já','agora','aqui','ali','então','tudo','bom','boa','dia','noite','sobre','depois','antes','ainda','nada','gente','fazer','ter','tenho','tem','ser','sou','era']);
+function palavrasPT(t){ return String(t||'').toLowerCase().replace(/[^a-záàâãéêíóôõúüç' ]/g,' ').split(/\s+/).filter(w=>w && (PT_WORDS.has(w) || /[áàâãéêíóôõúç]/.test(w))); }
+function mistura(t){ return palavrasPT(t).length>0; }
+const _keepMix=keep;
+keep=function(en, pt, core, note){
+  if(en && mistura(en) && !window.__keepForce){
+    const w=palavrasPT(en);
+    if(!confirm(`Essa frase parece ter palavras em português: “${w.join('”, “')}”.\n\nPode ter sido o corretor do teclado. Quer salvar assim mesmo?\n\n${en}`)) return false;
+  }
+  return _keepMix(en, pt, core, note);
+};
+/* campos em inglês: sem corretor do teclado em português */
+function semCorretor(){
+  document.querySelectorAll('#vid-in,#fab-own,#rec-txt,#ed-in,#in-en,[data-wr],[data-presp]').forEach(el=>{
+    el.setAttribute('autocorrect','off'); el.setAttribute('autocapitalize','off'); el.setAttribute('spellcheck','false'); el.setAttribute('lang','en');
+    if(!el.getAttribute('autocomplete')) el.setAttribute('autocomplete','off');
+  });
+}
+const _renderMix=render;
+render=function(){ _renderMix(); semCorretor(); };
+document.addEventListener('focusin', e=>{ if(e.target.matches && e.target.matches('input,textarea')) semCorretor(); });
+/* aviso na revisão quando a frase salva está misturada */
+const _reviewHTMLMix=reviewHTML;
+reviewHTML=function(ctx){
+  const html=_reviewHTMLMix(ctx), R=state.rv;
+  if(!R || R.i>=R.q.length) return html;
+  const p=find(R.q[R.i]); if(!p || !mistura(p.text)) return html;
+  return html.replace('<div class="drill">', `<div class="drill"><div class="mixwarn">⚠️ Essa frase tem palavras em português (${esc(palavrasPT(p.text).join(', '))}). Provavelmente o corretor do teclado trocou.
+    <div class="acts acts--bare" style="margin-top:8px"><button class="act act--main" data-mixfix="${p.id}">✏️ Corrigir a frase</button><button class="act" data-mixdel="${p.id}">🗑 Apagar</button></div></div>`);
+};
+document.addEventListener('click', e=>{
+  const t=e.target.closest('[data-mixfix],[data-mixdel]'); if(!t) return;
+  const id=t.dataset.mixfix||t.dataset.mixdel, p=find(id); if(!p) return;
+  if(t.dataset.mixdel){ if(!confirm('Apagar esta frase?')) return;
+    state.phrases=state.phrases.filter(x=>x.id!==id); if(state.rv){ state.rv.q=state.rv.q.filter(x=>x!==id); } save(); renderStats(); render(); return; }
+  const novo=prompt('Corrija a frase em inglês:', p.text); if(novo==null) return;
+  const v=novo.trim(); if(!v) return;
+  if(mistura(v) && !confirm('Ainda tem palavras em português: '+palavrasPT(v).join(', ')+'. Salvar assim?')) return;
+  p.text=v; p.core=coreOf(v); p.beats=beatsOf(v); save(); render(); toast('Frase corrigida ✓');
 });
 
 /* ---------------- início ---------------- */
